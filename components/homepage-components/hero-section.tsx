@@ -290,7 +290,7 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
           data-reveal
           className="text-5xl sm:text-7xl md:text-[8rem] lg:text-[10rem] font-bold tracking-[-0.04em] leading-[0.9] text-text-950 mb-8 md:mb-12 text-center"
         >
-          SM <span className="text-text-400 italic font-light">Chemicals</span>
+          SM <span className="text-text-400 font-light">Chemicals</span>
         </h1>
 
         <div
@@ -303,7 +303,7 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
           <div className="relative h-10 md:h-16 w-full flex justify-center items-center">
             <div
               ref={sectorRef}
-              className="absolute text-2xl sm:text-3xl md:text-5xl font-light italic text-accent-500 tracking-tight text-center"
+              className="absolute text-2xl sm:text-3xl md:text-5xl font-light text-accent-500 tracking-tight text-center"
             >
               {sectors[index].toUpperCase()}
             </div>
