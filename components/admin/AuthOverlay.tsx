@@ -17,7 +17,7 @@ export default function AuthOverlay({
 
 	return createPortal(
 		<div
-			className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#0a0d09]"
+			className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-deep"
 			role="status"
 			aria-live="polite"
 		>

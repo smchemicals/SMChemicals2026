@@ -9,21 +9,21 @@ type BaseProps = {
 	children: React.ReactNode;
 };
 
-const TEXT = "text-[12px] font-black uppercase tracking-[0.4em]";
+const TEXT = "text-[12px] font-bold uppercase tracking-[0.25em] whitespace-nowrap";
 
 function classes(variant: Variant, className?: string) {
 	const base =
-		"group relative inline-flex items-center justify-center gap-3 h-14 px-12 rounded-sm cursor-pointer transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed";
+		"group relative inline-flex items-center justify-center gap-3 h-14 px-10 rounded-sm cursor-pointer transition-all duration-500 outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed";
 	if (variant === "outline")
 		return cn(
 			base,
-			"border border-background-200 text-text-950 transition-colors hover:bg-text-950 hover:text-background-50",
+			"border border-foreground/20 text-foreground hover:border-accent hover:text-accent",
 			TEXT,
 			className,
 		);
 	return cn(
 		base,
-		"overflow-hidden bg-text-950 text-background-50 hover:scale-[1.02]",
+		"overflow-hidden bg-cta text-cta-foreground shadow-[0_8px_30px_-12px] shadow-cta/60 hover:shadow-cta/80",
 		className,
 	);
 }
@@ -40,13 +40,10 @@ function Inner({
 		<>
 			<span
 				aria-hidden
-				className="absolute inset-0 bg-background-500 translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0"
+				className="absolute inset-0 bg-cta-hover translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0"
 			/>
 			<span
-				className={cn(
-					"relative z-10 inline-flex items-center gap-3 transition-colors duration-500 group-hover:text-black",
-					TEXT,
-				)}
+				className={cn("relative z-10 inline-flex items-center gap-3", TEXT)}
 			>
 				{children}
 			</span>

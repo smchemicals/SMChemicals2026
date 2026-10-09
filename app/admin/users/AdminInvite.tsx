@@ -45,7 +45,7 @@ export function AdminInvite({ roles }: { roles: RoleRow[] }) {
 						className={`${inputCls} cursor-pointer`}
 					>
 						{assignable.map((r) => (
-							<option key={r.key} value={r.key} className="bg-[#0a0d09]">
+							<option key={r.key} value={r.key} className="bg-deep">
 								{r.label}
 							</option>
 						))}

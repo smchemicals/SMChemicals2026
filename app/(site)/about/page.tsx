@@ -15,11 +15,11 @@ export default async function AboutPage() {
     const about = await getPublishedAbout();
 
     return (
-        <main>
+        <>
             <AboutHero />
             <AboutValues content={about.values} />
             <AboutTimeline content={about.timeline} />
             <AboutCertifications content={about.certifications} />
-        </main>
+        </>
     );
 }

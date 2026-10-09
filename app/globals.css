@@ -1,166 +1,174 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * Theme for SM Chemicals.
+ *
+ * Four palette colours (set in :root further down) feed a small set of colour
+ * roles: background, foreground, muted, accent, surface and line. Components
+ * only use the roles (bg-background, text-muted, border-line, …). A section can
+ * change mood with data-surface="inverse | accent | photo".
+ *
+ * Brand (from the SMC logo): blue #0087cb, red #ed3237, sky #65b6df,
+ * charcoal #373435. The site is dark navy, led by blue; red is kept for the
+ * primary calls to action.
+ */
 
+/* ── Roles and surfaces ─────────────────────────────────────────────────── */
+
+/*
+ * Roles. Colours come from the base surface by default; the font roles fall
+ * back along a chain. Any role on any surface can be hand-tuned with
+ * --tune-{surface}-{role}.
+ */
 @theme {
-  /* Text Scale */
-  --color-text-50: #f3f6ef;
-  --color-text-100: #e6ecdf;
-  --color-text-200: #cdd9bf;
-  --color-text-300: #b4c69f;
-  --color-text-400: #9cb47e;
-  --color-text-500: #83a15e;
-  --color-text-600: #69814b;
-  --color-text-700: #4e6039;
-  --color-text-800: #344026;
-  --color-text-900: #1a2013;
-  --color-text-950: #0d1009;
+  --color-background: var(--tune-base-background, var(--palette-background));
+  --color-foreground: var(--tune-base-foreground, var(--palette-foreground));
+  --color-muted: var(--tune-base-muted, var(--palette-muted));
+  --color-accent: var(--tune-base-accent, var(--palette-accent));
+  --color-surface: var(--tune-base-surface, color-mix(in oklab, var(--color-foreground) 5%, var(--color-background)));
+  --color-line: var(--tune-base-line, color-mix(in oklab, var(--color-foreground) 16%, transparent));
 
-  /* Background Scale */
-  --color-background-50: #f3f8ec;
-  --color-background-100: #e7f1da;
-  --color-background-200: #cfe4b4;
-  --color-background-300: #b7d68f;
-  --color-background-400: #9fc969;
-  --color-background-500: #87bb44;
-  --color-background-600: #6c9636;
-  --color-background-700: #517029;
-  --color-background-800: #364b1b;
-  --color-background-900: #1b250e;
-  --color-background-950: #0e1307;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-body: var(--font-sans);
+  --font-display: var(--font-sans);
+  --font-heading: var(--font-display);
+  --font-label: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
 
-  /* Primary Scale */
-  --color-primary-50: #f3faea;
-  --color-primary-100: #e7f6d5;
-  --color-primary-200: #cfecac;
-  --color-primary-300: #b7e382;
-  --color-primary-400: #9fd959;
-  --color-primary-500: #88d02f;
-  --color-primary-600: #6ca626;
-  --color-primary-700: #517d1c;
-  --color-primary-800: #365313;
-  --color-primary-900: #1b2a09;
-  --color-primary-950: #0e1505;
+/*
+ * Surfaces: one palette, several moods. Put data-surface on a section (or on
+ * <html> for a page-wide shift). Every surface derives from the palette.
+ */
+@layer theme {
+  [data-surface="base"] {
+    --color-background: var(--tune-base-background, var(--palette-background));
+    --color-foreground: var(--tune-base-foreground, var(--palette-foreground));
+    --color-muted: var(--tune-base-muted, var(--palette-muted));
+    --color-accent: var(--tune-base-accent, var(--palette-accent));
+    --color-surface: var(--tune-base-surface, color-mix(in oklab, var(--color-foreground) 5%, var(--color-background)));
+    --color-line: var(--tune-base-line, color-mix(in oklab, var(--color-foreground) 16%, transparent));
+  }
 
-  /* Secondary Scale */
-  --color-secondary-50: #f4fde8;
-  --color-secondary-100: #e8fad1;
-  --color-secondary-200: #d2f5a3;
-  --color-secondary-300: #bbf075;
-  --color-secondary-400: #a4ec46;
-  --color-secondary-500: #8de718;
-  --color-secondary-600: #71b913;
-  --color-secondary-700: #558a0f;
-  --color-secondary-800: #395c0a;
-  --color-secondary-900: #1c2e05;
-  --color-secondary-950: #0e1702;
+  [data-surface="inverse"] {
+    --color-background: var(--tune-inverse-background, var(--palette-foreground));
+    --color-foreground: var(--tune-inverse-foreground, var(--palette-background));
+    --color-muted: var(--tune-inverse-muted, color-mix(in oklab, var(--palette-background) 72%, var(--palette-foreground)));
+    --color-accent: var(--tune-inverse-accent, var(--palette-accent));
+    --color-surface: var(--tune-inverse-surface, color-mix(in oklab, var(--color-foreground) 7%, var(--color-background)));
+    --color-line: var(--tune-inverse-line, color-mix(in oklab, var(--color-foreground) 22%, transparent));
+  }
 
-  /* Accent Scale */
-  --color-accent-50: #f4ffe5;
-  --color-accent-100: #e8ffcc;
-  --color-accent-200: #d1ff99;
-  --color-accent-300: #baff66;
-  --color-accent-400: #a3ff33;
-  --color-accent-500: #8cff00;
-  --color-accent-600: #70cc00;
-  --color-accent-700: #549900;
-  --color-accent-800: #386600;
-  --color-accent-900: #1c3300;
-  --color-accent-950: #0e1a00;
+  [data-surface="accent"] {
+    --color-background: var(--tune-accent-background, var(--palette-accent));
+    --color-foreground: var(--tune-accent-foreground, var(--palette-background));
+    --color-muted: var(--tune-accent-muted, color-mix(in oklab, var(--palette-background) 82%, var(--palette-accent)));
+    --color-accent: var(--tune-accent-accent, var(--palette-foreground));
+    --color-surface: var(--tune-accent-surface, color-mix(in oklab, var(--color-foreground) 8%, var(--color-background)));
+    --color-line: var(--tune-accent-line, color-mix(in oklab, var(--color-foreground) 30%, transparent));
+  }
 
-  /* Semantic Mapping */
-  --color-background: var(--color-background-50);
-  --color-foreground: var(--color-text-950);
-  --color-border: var(--color-background-200);
-  --color-ring: var(--color-accent-500);
+  /* Text set over a photograph: no ground of its own, light ink. Pair it with a
+     scrim (a soft darkening of the photo) so the text stays readable. */
+  [data-surface="photo"] {
+    --color-background: var(--tune-photo-background, transparent);
+    --color-foreground: var(--tune-photo-foreground, var(--palette-background));
+    --color-muted: var(--tune-photo-muted, color-mix(in oklab, var(--palette-background) 78%, transparent));
+    --color-accent: var(--tune-photo-accent, var(--palette-background));
+    --color-surface: var(--tune-photo-surface, color-mix(in oklab, var(--palette-foreground) 30%, transparent));
+    --color-line: var(--tune-photo-line, color-mix(in oklab, var(--palette-background) 35%, transparent));
+    --scrim: var(--tune-photo-scrim, color-mix(in oklab, var(--palette-foreground) 60%, transparent));
+  }
+}
+
+/* ── SM Chemicals values ────────────────────────────────────────────────── */
+
+:root {
+  /* Palette */
+  --palette-background: #061420;
+  --palette-foreground: #e8f0f6;
+  --palette-muted: #8ea4b6;
+  --palette-accent: #1592d6; /* logo blue, lifted to read on navy */
+
+  /* Surface tuning */
+  --tune-base-surface: #0b1e2e;
+  --tune-base-line: rgb(232 240 246 / 0.1);
+
+  /* Fonts (next/font variables from app/layout.tsx) */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Grid: max-w-7xl, px-6 → lg:px-10 */
+  --grid-columns: 12;
+  --grid-gutter: 2rem;
+  --grid-margin: 1.5rem;
+  --grid-max: 80rem;
+  --grid-baseline: 0.5rem;
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --grid-margin: 2.5rem;
+  }
+}
+
+/* Brand extras the roles don't cover. */
+@theme {
+  /* Primary call to action: logo red, deepened so white text passes 4.5:1. */
+  --color-cta: #e02a30;
+  --color-cta-hover: #c8242a;
+  --color-cta-foreground: #ffffff;
+  /* Darkest band (footer, hero vignette). */
+  --color-deep: #030c14;
+  --color-sky: #65b6df;
+}
+
+/*
+ * Legacy scale utilities (text-text-950, bg-background-50, …). The public site
+ * uses the roles directly; the admin CMS still uses these, so each one is
+ * derived from the roles and follows the palette.
+ */
+@theme inline {
+  /* Deeper accent for fills that carry white text (passes 4.5:1). */
+  --color-accent-strong: color-mix(in srgb, var(--color-accent) 78%, black);
+
+  --color-text-950: var(--color-foreground);
+  --color-text-800: color-mix(in srgb, var(--color-foreground) 80%, var(--color-background));
+  --color-text-500: color-mix(in srgb, var(--color-muted) 85%, var(--color-foreground));
+  --color-text-400: var(--color-muted);
+  --color-text-300: color-mix(in srgb, var(--color-muted) 70%, var(--color-background));
+  --color-text-200: color-mix(in srgb, var(--color-muted) 40%, var(--color-background));
+
+  --color-background-50: var(--color-background);
+  --color-background-100: var(--color-surface);
+  --color-background-200: var(--color-line);
+  --color-background-500: var(--color-accent);
+  --color-background-950: var(--color-foreground);
+
+  --color-accent-500: var(--color-accent);
+  --color-accent-700: var(--color-accent);
+
+  --color-border: var(--color-line);
+  --color-ring: var(--color-accent);
 
   --radius-lg: 0.5rem;
   --radius-md: calc(0.5rem - 2px);
   --radius-sm: calc(0.5rem - 4px);
 }
 
-/* Dark Mode Overrides */
 @layer base {
-  .dark {
-    /* Text Scale Dark */
-    --color-text-50: #0d1009;
-    --color-text-100: #1a2013;
-    --color-text-200: #344026;
-    --color-text-300: #4e6039;
-    --color-text-400: #69814b;
-    --color-text-500: #83a15e;
-    --color-text-600: #9cb47e;
-    --color-text-700: #b4c69f;
-    --color-text-800: #cdd9bf;
-    --color-text-900: #e6ecdf;
-    --color-text-950: #f3f6ef;
-
-    /* Background Scale Dark */
-    --color-background-50: #0e1307;
-    --color-background-100: #1b250e;
-    --color-background-200: #364b1b;
-    --color-background-300: #517029;
-    --color-background-400: #6c9636;
-    --color-background-500: #87bb44;
-    --color-background-600: #9fc969;
-    --color-background-700: #b7d68f;
-    --color-background-800: #cfe4b4;
-    --color-background-900: #e7f1da;
-    --color-background-950: #f3f8ec;
-
-    /* Primary Scale Dark */
-    --color-primary-50: #0e1505;
-    --color-primary-100: #1b2a09;
-    --color-primary-200: #365313;
-    --color-primary-300: #517d1c;
-    --color-primary-400: #6ca626;
-    --color-primary-500: #88d02f;
-    --color-primary-600: #9fd959;
-    --color-primary-700: #b7e382;
-    --color-primary-800: #cfecac;
-    --color-primary-900: #e7f6d5;
-    --color-primary-950: #f3faea;
-
-    /* Secondary Scale Dark */
-    --color-secondary-50: #0e1702;
-    --color-secondary-100: #1c2e05;
-    --color-secondary-200: #395c0a;
-    --color-secondary-300: #558a0f;
-    --color-secondary-400: #71b913;
-    --color-secondary-500: #8de718;
-    --color-secondary-600: #a4ec46;
-    --color-secondary-700: #bbf075;
-    --color-secondary-800: #d2f5a3;
-    --color-secondary-900: #e8fad1;
-    --color-secondary-950: #f4fde8;
-
-    /* Accent Scale Dark */
-    --color-accent-50: #0e1a00;
-    --color-accent-100: #1c3300;
-    --color-accent-200: #386600;
-    --color-accent-300: #549900;
-    --color-accent-400: #70cc00;
-    --color-accent-500: #8cff00;
-    --color-accent-600: #a3ff33;
-    --color-accent-700: #baff66;
-    --color-accent-800: #d1ff99;
-    --color-accent-900: #e8ffcc;
-    --color-accent-950: #f4ffe5;
-
-    /* Semantic Overrides */
-    --color-background: var(--color-background-50);
-    --color-foreground: var(--color-text-950);
-    --color-border: var(--color-background-200);
-  }
-
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: #fff;
   }
 }

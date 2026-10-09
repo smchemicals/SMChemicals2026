@@ -183,35 +183,35 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
   return (
     <section
       ref={rootRef}
-      className="py-20 lg:py-24 bg-background-50 border-t border-background-200 font-sans text-text-950"
+      className="py-20 lg:py-24 bg-background border-t border-line font-sans text-foreground"
     >
       {/* Mobile: accordion (no sticky / fixed) */}
-      <div className="lg:hidden border-t border-background-200">
+      <div className="lg:hidden border-t border-line">
         {sortedCategories.map((cat) => {
           const open = openCategory === cat.id;
           return (
             <div
               key={cat.id}
               id={`m-cat-${cat.id}`}
-              className="border-b border-background-200 scroll-mt-24"
+              className="border-b border-line scroll-mt-24"
             >
               <button
                 onClick={() => setOpenCategory(open ? null : cat.id)}
                 aria-expanded={open}
-                className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left active:bg-background-100 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left active:bg-surface transition-colors cursor-pointer"
               >
                 <span className="flex flex-col min-w-0">
-                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-text-400 mb-1.5">
+                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-1.5">
                     {String(cat.products.length).padStart(2, "0")} Products
                   </span>
-                  <span className="text-base font-black uppercase tracking-wider text-text-950 leading-tight">
+                  <span className="text-base font-black uppercase tracking-wider text-foreground leading-tight">
                     {cat.name}
                   </span>
                 </span>
                 <ChevronDown
                   size={20}
                   className={`shrink-0 transition-transform duration-300 ${
-                    open ? "rotate-180 text-text-950" : "text-text-400"
+                    open ? "rotate-180 text-foreground" : "text-muted"
                   }`}
                 />
               </button>
@@ -222,10 +222,10 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
                 }`}
               >
                 <div className="overflow-hidden">
-                  <p className="px-6 pb-6 text-text-800 text-base font-light leading-relaxed">
+                  <p className="px-6 pb-6 text-foreground/75 text-base font-light leading-relaxed">
                     {cat.blurb}
                   </p>
-                  <div className="grid grid-cols-1 border-t border-background-200">
+                  <div className="grid grid-cols-1 border-t border-line">
                     {cat.products.map((product) => (
                       <ProductCard
                         key={product.id}
@@ -246,7 +246,7 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
         <div className="flex flex-row gap-16">
           <aside className="w-60 shrink-0">
             <div className="sticky top-32">
-              <span className="text-base font-black uppercase tracking-[0.3em] text-text-950 block mb-6">
+              <span className="text-base font-black uppercase tracking-[0.3em] text-foreground block mb-6">
                 Portfolio
               </span>
               <ul className="space-y-1">
@@ -259,15 +259,15 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
                       <span
                         className={`h-px transition-all duration-500 ${
                           activeId === cat.id
-                            ? "w-6 bg-text-950"
-                            : "w-2 bg-background-200 group-hover:w-4 group-hover:bg-text-400"
+                            ? "w-6 bg-accent"
+                            : "w-2 bg-line group-hover:w-4 group-hover:bg-muted"
                         }`}
                       />
                       <span
                         className={`text-base font-black uppercase tracking-[0.2em] transition-colors duration-500 ${
                           activeId === cat.id
-                            ? "text-text-950"
-                            : "text-text-400 group-hover:text-text-950"
+                            ? "text-foreground"
+                            : "text-muted group-hover:text-foreground"
                         }`}
                       >
                         {cat.name}
@@ -282,21 +282,21 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
           <div className="flex-1 min-w-0 space-y-24">
             {sortedCategories.map((cat) => (
               <section key={cat.id} id={`cat-${cat.id}`} className="scroll-mt-32">
-                <div className="flex items-end justify-between gap-6 border-b border-background-200 pb-6 mb-8">
+                <div className="flex items-end justify-between gap-6 border-b border-line pb-6 mb-8">
                   <div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-text-400 block mb-3">
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted block mb-3">
                       {String(cat.products.length).padStart(2, "0")} Products
                     </span>
-                    <h2 className="text-2xl lg:text-3xl font-black uppercase tracking-wider text-text-950">
+                    <h2 className="text-2xl lg:text-3xl font-black uppercase tracking-wider text-foreground">
                       {cat.name}
                     </h2>
                   </div>
                 </div>
-                <p className="text-text-800 text-base font-light leading-relaxed max-w-2xl mb-10">
+                <p className="text-foreground/75 text-base font-light leading-relaxed max-w-2xl mb-10">
                   {cat.blurb}
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 border-t border-l border-background-200 overflow-hidden bg-background-50">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 border-t border-l border-line overflow-hidden bg-background">
                   {cat.products.map((product) => (
                     <ProductCard
                       key={product.id}
@@ -314,28 +314,28 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
       {openProduct && (
         <div ref={drawerRef} className="fixed inset-0 z-[1100] flex justify-end">
           <div
-            className="absolute inset-0 bg-text-950/20 backdrop-blur-sm"
+            className="absolute inset-0 bg-deep/80 backdrop-blur-sm"
             onClick={closeDrawer}
           />
           <div
             ref={panelRef}
-            className="relative h-full w-full max-w-xl bg-background-50 flex flex-col shadow-2xl border-l border-background-200"
+            className="relative h-full w-full max-w-xl bg-background flex flex-col shadow-2xl border-l border-line"
           >
-            <div className="flex items-start justify-between gap-6 p-8 lg:p-12 border-b border-background-200 bg-background-50">
+            <div className="flex items-start justify-between gap-6 p-8 lg:p-12 border-b border-line bg-background">
               <div>
                 {openProduct.spec.chemicalName &&
                   openProduct.spec.chemicalName !== openProduct.name && (
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-text-400 block mb-3">
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted block mb-3">
                       {openProduct.spec.chemicalName}
                     </span>
                   )}
-                <h3 className="text-xl lg:text-2xl font-black uppercase tracking-wider text-text-950 leading-tight">
+                <h3 className="text-xl lg:text-2xl font-black uppercase tracking-wider text-foreground leading-tight">
                   {openProduct.name}
                 </h3>
               </div>
               <button
                 onClick={closeDrawer}
-                className="shrink-0 p-2 -mr-2 text-text-400 hover:text-text-950 transition-colors duration-300 cursor-pointer"
+                className="shrink-0 p-2 -mr-2 text-muted hover:text-foreground transition-colors duration-300 cursor-pointer"
                 aria-label="Close"
               >
                 <X size={20} />
@@ -344,7 +344,7 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
 
             <div
               data-lenis-prevent
-              className="flex-1 overflow-y-auto overscroll-contain p-8 lg:p-12 space-y-12 bg-background-50"
+              className="flex-1 overflow-y-auto overscroll-contain p-8 lg:p-12 space-y-12 bg-background"
             >
               {quoteMode ? (
                 <ProductQuoteForm
@@ -354,7 +354,7 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
               ) : (
                 <>
               {openProduct.image && (
-                <div className="overflow-hidden rounded-sm border border-background-200">
+                <div className="overflow-hidden rounded-sm border border-line">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={openProduct.image}
@@ -364,26 +364,26 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
                 </div>
               )}
               <div className="space-y-4">
-                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-text-950 block">
+                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground block">
                   Overview
                 </span>
-                <p className="text-text-800 text-base font-light leading-relaxed">
+                <p className="text-foreground/75 text-base font-light leading-relaxed">
                   {openProduct.description}
                 </p>
               </div>
 
               {drawerSpecs.length > 0 && (
                 <div>
-                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-text-950 block mb-6">
+                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground block mb-6">
                     Specifications
                   </span>
-                  <dl className="divide-y divide-background-200 border-y border-background-200">
+                  <dl className="divide-y divide-line border-y border-line">
                     {drawerSpecs.map(({ key, label }) => (
                       <div key={key} className="flex gap-6 py-4">
-                        <dt className="w-32 shrink-0 text-[11px] font-black uppercase tracking-[0.2em] text-text-400 pt-0.5">
+                        <dt className="w-32 shrink-0 text-[11px] font-black uppercase tracking-[0.2em] text-muted pt-0.5">
                           {label}
                         </dt>
-                        <dd className="text-base font-light text-text-950 break-words leading-relaxed">
+                        <dd className="text-base font-light text-foreground break-words leading-relaxed">
                           {openProduct.spec[key]}
                         </dd>
                       </div>
@@ -396,7 +396,7 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
             </div>
 
             {!quoteMode && (
-              <div className="p-8 lg:p-12 border-t border-background-200 bg-background-50">
+              <div className="p-8 lg:p-12 border-t border-line bg-background">
                 <CtaSubmit
                   type="button"
                   onClick={() => setQuoteMode(true)}
@@ -434,30 +434,30 @@ function ProductCard({
   return (
     <button
       onClick={onOpen}
-      className={`${reveal ? "pg-card " : ""}group text-left flex flex-col h-full bg-background-50 p-8 lg:p-10 border-b border-r border-background-200 transition-all duration-500 hover:bg-background-100 relative overflow-hidden cursor-pointer`}
+      className={`${reveal ? "pg-card " : ""}group text-left flex flex-col h-full bg-background p-8 lg:p-10 border-b border-r border-line transition-all duration-500 hover:bg-surface relative overflow-hidden cursor-pointer`}
     >
       <div className="flex items-start justify-between gap-4 mb-4 relative z-10">
-        <h3 className="text-base font-bold uppercase tracking-wider text-text-950 leading-snug">
+        <h3 className="text-base font-bold uppercase tracking-wider text-foreground leading-snug transition-colors group-hover:text-accent">
           {product.name}
         </h3>
         <ArrowUpRight
           size={16}
-          className="shrink-0 text-text-400 group-hover:text-text-950 group-hover:scale-110 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-500"
+          className="shrink-0 text-muted group-hover:text-accent group-hover:scale-110 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-500"
         />
       </div>
 
-      <p className="text-base font-light leading-relaxed text-text-800 line-clamp-3 mb-8 relative z-10">
+      <p className="text-base font-light leading-relaxed text-foreground/75 line-clamp-3 mb-8 relative z-10">
         {product.description}
       </p>
 
       {keySpecs.length > 0 && (
-        <dl className="mt-auto flex flex-wrap gap-x-6 gap-y-3 pt-5 border-t border-background-200 relative z-10 w-full">
+        <dl className="mt-auto flex flex-wrap gap-x-6 gap-y-3 pt-5 border-t border-line relative z-10 w-full">
           {keySpecs.map(({ key, label }) => (
             <div key={key} className="min-w-0">
-              <dt className="text-[11px] font-black uppercase tracking-[0.2em] text-text-400 mb-0.5">
+              <dt className="text-[11px] font-black uppercase tracking-[0.2em] text-muted mb-0.5">
                 {label}
               </dt>
-              <dd className="text-[12px] font-medium text-text-950/80 truncate">
+              <dd className="text-[12px] font-medium text-foreground/80 truncate">
                 {product.spec[key]}
               </dd>
             </div>
@@ -465,7 +465,7 @@ function ProductCard({
         </dl>
       )}
 
-      <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-background-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-line opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     </button>
   );
 }

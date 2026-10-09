@@ -6,9 +6,9 @@ import type { Product } from "@/data/products";
 import { CtaSubmit } from "@/components/ui/cta-button";
 
 const inputCls =
-	"w-full bg-transparent border-b border-background-200 py-3 text-text-950 placeholder:text-text-300 focus:outline-none focus:border-accent-500 transition-colors font-light text-base";
+	"w-full bg-transparent border-b border-line py-3 text-foreground placeholder:text-muted/70 focus:outline-none focus:border-accent transition-colors font-light text-base";
 const labelCls =
-	"text-[11px] font-black text-text-400 uppercase tracking-[0.3em] block mb-1.5";
+	"text-[11px] font-black text-muted uppercase tracking-[0.3em] block mb-1.5";
 
 const UNITS = ["Kg", "Litre", "Tonne", "Bag", "Drum", "Other"];
 
@@ -70,19 +70,19 @@ export function ProductQuoteForm({
 	if (done) {
 		return (
 			<div className="py-16 text-center">
-				<CheckCircle2 className="mx-auto mb-5 h-14 w-14 text-accent-700" />
-				<h4 className="text-2xl font-bold tracking-tight text-text-950">
+				<CheckCircle2 className="mx-auto mb-5 h-14 w-14 text-accent" />
+				<h4 className="text-2xl font-bold tracking-tight text-foreground">
 					Quote request sent
 				</h4>
-				<p className="mx-auto mt-3 max-w-sm text-text-800 text-base font-light leading-relaxed">
+				<p className="mx-auto mt-3 max-w-sm text-foreground/75 text-base font-light leading-relaxed">
 					Thanks — our team will get back to you with pricing for{" "}
-					<span className="font-medium text-text-950">{product.name}</span>{" "}
+					<span className="font-medium text-foreground">{product.name}</span>{" "}
 					shortly.
 				</p>
 				<button
 					type="button"
 					onClick={onBack}
-					className="mt-8 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.3em] text-text-950 hover:text-accent-700 transition-colors cursor-pointer"
+					className="mt-8 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.3em] text-foreground hover:text-accent transition-colors cursor-pointer"
 				>
 					<ArrowLeft className="h-4 w-4" /> Back to product
 				</button>
@@ -95,17 +95,17 @@ export function ProductQuoteForm({
 			<button
 				type="button"
 				onClick={onBack}
-				className="mb-8 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.3em] text-text-400 hover:text-text-950 transition-colors cursor-pointer"
+				className="mb-8 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.3em] text-muted hover:text-foreground transition-colors cursor-pointer"
 			>
 				<ArrowLeft className="h-4 w-4" /> Back to details
 			</button>
 
-			<span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-700 block mb-2">
+			<span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent block mb-2">
 				Request a Quote
 			</span>
-			<p className="text-text-800 text-base font-light leading-relaxed mb-8">
+			<p className="text-foreground/75 text-base font-light leading-relaxed mb-8">
 				Tell us your requirement for{" "}
-				<span className="font-medium text-text-950">{product.name}</span> and we
+				<span className="font-medium text-foreground">{product.name}</span> and we
 				will respond with pricing and availability.
 			</p>
 
@@ -204,7 +204,7 @@ export function ProductQuoteForm({
 				</div>
 
 				{error && (
-					<p className="text-base font-medium text-red-600">{error}</p>
+					<p className="text-base font-medium text-red-400">{error}</p>
 				)}
 
 				<CtaSubmit type="submit" disabled={loading} className="w-full">

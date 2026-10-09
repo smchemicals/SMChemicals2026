@@ -8,9 +8,9 @@ import { X, Upload, Send, CheckCircle2, RefreshCw } from "lucide-react";
 import { CtaSubmit } from "@/components/ui/cta-button";
 
 const inputCls =
-	"w-full bg-transparent border-b border-background-200 py-3 text-text-950 placeholder:text-text-300 focus:outline-none focus:border-accent-500 transition-colors font-light";
+	"w-full bg-transparent border-b border-line py-3 text-foreground placeholder:text-muted/70 focus:outline-none focus:border-accent transition-colors font-light";
 const labelCls =
-	"text-[11px] font-black text-text-400 uppercase tracking-[0.3em] block mb-1";
+	"text-[11px] font-black text-muted uppercase tracking-[0.3em] block mb-1";
 
 function toBase64(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -147,25 +147,25 @@ export function CareerApplyModal({
 			<div
 				ref={backdropRef}
 				onClick={close}
-				className="absolute inset-0 bg-text-950/50 backdrop-blur-sm"
+				className="absolute inset-0 bg-deep/80 backdrop-blur-sm"
 			/>
 			<div
 				ref={panelRef}
 				data-lenis-prevent
-				className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain bg-background-50 border border-background-200 shadow-2xl"
+				className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain bg-surface border border-line shadow-2xl"
 			>
-				<div className="flex items-start justify-between gap-6 p-8 border-b border-background-200">
+				<div className="flex items-start justify-between gap-6 p-8 border-b border-line">
 					<div>
-						<span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-700 block mb-2">
+						<span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent block mb-2">
 							Apply
 						</span>
-						<h3 className="text-2xl font-bold tracking-tight text-text-950 leading-tight">
+						<h3 className="text-2xl font-bold tracking-tight text-foreground leading-tight">
 							{roleTitle ?? "General Application"}
 						</h3>
 					</div>
 					<button
 						onClick={close}
-						className="shrink-0 p-2 -mr-2 text-text-400 hover:text-text-950 transition-colors cursor-pointer"
+						className="shrink-0 p-2 -mr-2 text-muted hover:text-foreground transition-colors cursor-pointer"
 						aria-label="Close"
 					>
 						<X size={22} />
@@ -174,11 +174,11 @@ export function CareerApplyModal({
 
 				{done ? (
 					<div className="p-12 text-center">
-						<CheckCircle2 className="h-14 w-14 text-accent-700 mx-auto mb-5" />
-						<h4 className="text-2xl font-bold text-text-950 tracking-tight">
+						<CheckCircle2 className="h-14 w-14 text-accent mx-auto mb-5" />
+						<h4 className="text-2xl font-bold text-foreground tracking-tight">
 							Application sent
 						</h4>
-						<p className="mt-3 text-text-400 text-base font-light">
+						<p className="mt-3 text-muted text-base font-light">
 							Thanks — we&apos;ll review it and be in touch.
 						</p>
 						<CtaSubmit variant="outline" onClick={close} className="mt-8">
@@ -212,9 +212,9 @@ export function CareerApplyModal({
 								/>
 								<label
 									htmlFor="resume-input"
-									className="flex items-center gap-2 py-3 border-b border-background-200 text-text-500 cursor-pointer hover:border-accent-500 transition-colors"
+									className="flex items-center gap-2 py-3 border-b border-line text-muted cursor-pointer hover:border-accent transition-colors"
 								>
-									<Upload size={15} className="shrink-0 text-text-400" />
+									<Upload size={15} className="shrink-0 text-muted" />
 									<span className="truncate text-base font-light">
 										{fileName ?? "Choose PDF…"}
 									</span>
@@ -232,7 +232,7 @@ export function CareerApplyModal({
 							/>
 						</div>
 
-						{error && <p className="text-base text-red-600 font-medium">{error}</p>}
+						{error && <p className="text-base text-red-400 font-medium">{error}</p>}
 
 						<CtaSubmit type="submit" disabled={isLoading} className="w-full">
 							{isLoading ? (

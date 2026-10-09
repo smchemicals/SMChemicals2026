@@ -4,9 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { ArrowUpRight, FlaskConical } from "lucide-react";
-import Link from "next/link";
 import { useReveal } from "@/hooks/use-reveal";
 import type { HomeContent } from "@/data/content";
+import { BrandGlow } from "@/components/ui/page-hero";
+import { CtaButton } from "@/components/ui/cta-button";
 
 const Counter = ({
   value,
@@ -45,7 +46,7 @@ const MolecularBackground = ({
     if (!ctx) return;
 
     const accentColor = getComputedStyle(document.documentElement)
-      .getPropertyValue("--color-accent-500")
+      .getPropertyValue("--color-accent")
       .trim();
     let particles: Particle[] = [];
     let frame: number;
@@ -178,7 +179,7 @@ const MolecularBackground = ({
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-0 pointer-events-none opacity-80 mix-blend-plus-lighter"
+      className="absolute inset-0 z-0 pointer-events-none opacity-70 mix-blend-plus-lighter"
     />
   );
 };
@@ -267,8 +268,9 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
       onMouseMove={handleInteraction}
       onTouchMove={handleInteraction}
       data-header-theme={"dark"}
-      className="dark relative min-h-screen flex flex-col justify-between bg-background-50 text-text-950 overflow-hidden selection:bg-accent-500 selection:text-black"
+      className="relative min-h-screen flex flex-col justify-between bg-background text-foreground overflow-hidden"
     >
+      <BrandGlow />
       <MolecularBackground mousePosition={mousePosition} />
 
       <div
@@ -279,31 +281,31 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
           data-reveal
           className="flex items-center gap-4 md:gap-6 mb-8 md:mb-12"
         >
-          <div className="h-px w-5 md:w-12 bg-accent-500/40 shrink-0" />
-          <span className="text-[11px] sm:text-sm md:text-base uppercase tracking-[0.2em] sm:tracking-[0.4em] md:tracking-[0.7em] font-black text-text-400 text-center whitespace-nowrap">
+          <div className="h-px w-5 md:w-12 bg-accent/60 shrink-0" />
+          <span className="text-[11px] sm:text-sm uppercase tracking-[0.3em] sm:tracking-[0.5em] font-bold text-accent text-center whitespace-nowrap">
             Est. 2008 · Chemical Engineering
           </span>
-          <div className="h-px w-5 md:w-12 bg-accent-500/40 shrink-0" />
+          <div className="h-px w-5 md:w-12 bg-accent/60 shrink-0" />
         </div>
 
         <h1
           data-reveal
-          className="text-5xl sm:text-7xl md:text-[8rem] lg:text-[10rem] font-bold tracking-[-0.04em] leading-[0.9] text-text-950 mb-8 md:mb-12 text-center"
+          className="text-5xl sm:text-7xl md:text-[8rem] lg:text-[10rem] font-bold tracking-[-0.04em] leading-[0.9] text-foreground mb-8 md:mb-12 text-center"
         >
-          SM <span className="text-text-400 font-light">Chemicals</span>
+          SM <span className="font-light italic text-muted">Chemicals</span>
         </h1>
 
         <div
           data-reveal
           className="flex flex-col items-center w-full mb-8 md:mb-12"
         >
-          <span className="text-[11px] md:text-[11px] uppercase tracking-[0.4em] md:tracking-[0.6em] text-text-400 font-bold mb-3">
+          <span className="text-[11px] md:text-[11px] uppercase tracking-[0.4em] md:tracking-[0.6em] text-muted font-bold mb-3">
             Engineering Chemicals for
           </span>
           <div className="relative h-10 md:h-16 w-full flex justify-center items-center">
             <div
               ref={sectorRef}
-              className="absolute text-2xl sm:text-3xl md:text-5xl font-light text-accent-500 tracking-tight text-center"
+              className="absolute text-2xl sm:text-3xl md:text-5xl font-light text-sky tracking-tight text-center"
             >
               {sectors[index].toUpperCase()}
             </div>
@@ -312,7 +314,7 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
 
         <p
           data-reveal
-          className="max-w-xs sm:max-w-md md:max-w-2xl text-center text-text-400 text-base sm:text-lg md:text-xl font-light tracking-wide leading-relaxed mb-10 md:mb-12"
+          className="max-w-xs sm:max-w-md md:max-w-2xl text-center text-foreground/75 text-base sm:text-lg md:text-xl font-light tracking-wide leading-relaxed mb-10 md:mb-12"
         >
           {tagline}
         </p>
@@ -321,30 +323,22 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
           data-reveal
           className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto px-4 sm:px-0"
         >
-          <Link
-            href="/products"
-            className="group relative h-14 w-full sm:w-56 flex items-center justify-center bg-accent-500 rounded-sm overflow-hidden transition-colors"
-          >
-            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-            <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.3em] text-black">
-              Explore Products
-            </span>
-            <FlaskConical className="relative z-10 ml-3 w-4 h-4 text-black" />
-          </Link>
-
-          <Link
+          <CtaButton href="/products" className="w-full sm:w-auto">
+            Explore Products
+            <FlaskConical className="w-4 h-4" />
+          </CtaButton>
+          <CtaButton
             href="/about#milestones"
-            className="group relative h-14 w-full sm:w-56 flex items-center justify-center border border-text-300 hover:border-accent-500 rounded-sm transition-all duration-500"
+            variant="outline"
+            className="w-full sm:w-auto"
           >
-            <span className="text-[11px] font-black uppercase tracking-[0.3em] text-text-400 group-hover:text-accent-500">
-              View Portfolio
-            </span>
-            <ArrowUpRight className="ml-3 w-4 h-4 text-text-400 group-hover:text-accent-500 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
-          </Link>
+            Our Journey
+            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </CtaButton>
         </div>
       </div>
 
-      <div className="relative z-10 w-full border-t border-background-200/60 bg-background-50/50 backdrop-blur-sm">
+      <div className="relative z-10 w-full border-t border-line bg-deep/60 backdrop-blur-sm">
         <div
           ref={statsScope}
           className="max-w-7xl mx-auto w-full px-6 sm:px-10 py-8 md:py-12 grid grid-cols-2 md:grid-cols-5 gap-y-8 gap-x-6"
@@ -356,18 +350,18 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
               className="flex flex-col items-center md:items-start group cursor-default"
             >
               <div className="flex items-baseline mb-1">
-                <span className="text-2xl sm:text-4xl md:text-5xl font-extralight tracking-tighter text-text-950">
+                <span className="text-2xl sm:text-4xl md:text-5xl font-extralight tracking-tighter text-foreground">
                   <Counter
                     value={s.value}
                     decimals={s.decimals}
                     delay={1.1 + i * 0.12}
                   />
                 </span>
-                <span className="text-base sm:text-lg md:text-2xl text-accent-500 ml-0.5 font-bold tracking-normal">
+                <span className="text-base sm:text-lg md:text-2xl text-accent ml-0.5 font-bold tracking-normal">
                   {s.suffix}
                 </span>
               </div>
-              <p className="text-[11px] font-black uppercase tracking-[0.3em] text-text-400 group-hover:text-accent-500 transition-colors duration-500">
+              <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted group-hover:text-accent transition-colors duration-500">
                 {s.label}
               </p>
             </div>

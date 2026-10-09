@@ -17,3 +17,10 @@ supabase/migrations/
 supabase/README.md
 supabase/dev-seed.sql
 scripts/bootstrap-admin.mjs
+
+# Design Lab: local dev tool, never committed. Sync with
+# `node scripts/design-lab.mjs`; instrumentation-client.ts mounts it in dev.
+/.design-lab/
+/scripts/design-lab.mjs
+/instrumentation-client.ts
+/app/tokens.css

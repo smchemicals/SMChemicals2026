@@ -55,21 +55,21 @@ export function ContactForm() {
     };
 
     const inputClasses = `
-        w-full bg-transparent border-b border-background-200 py-4
-        text-text-950 placeholder:text-text-300
-        hover:text-text-500 focus:text-text-500
-        focus:outline-none focus:border-accent-500
+        w-full bg-transparent border-b border-line py-4
+        text-foreground placeholder:text-muted/60
+        hover:border-foreground/30
+        focus:outline-none focus:border-accent
         transition-colors font-light text-lg appearance-none rounded-none
     `;
 
-    const labelClasses = "text-[11px] font-black text-text-400 uppercase tracking-[0.3em] block mb-1";
+    const labelClasses = "text-[11px] font-black text-muted uppercase tracking-[0.3em] block mb-1";
 
     if (isSubmitted) {
         return (
             <div className="py-20 text-center animate-in fade-in zoom-in duration-500">
-                <CheckCircle2 className="h-16 w-16 text-text-500 mx-auto mb-6"/>
-                <h3 className="text-3xl font-bold text-text-950 tracking-tighter">Request Sent Successfully</h3>
-                <p className="mt-4 text-text-400 text-base font-light">We&apos;ll be in touch within two working days.</p>
+                <CheckCircle2 className="h-16 w-16 text-accent mx-auto mb-6"/>
+                <h3 className="text-3xl font-bold text-foreground tracking-tighter">Request Sent Successfully</h3>
+                <p className="mt-4 text-muted text-base font-light">We&apos;ll be in touch within two working days.</p>
                 <div className="flex justify-center">
                     <CtaSubmit
                         variant="outline"
@@ -77,7 +77,7 @@ export function ContactForm() {
                         onClick={() => setIsSubmitted(false)}
                         className="mt-8"
                     >
-                        Reset Form / Send another enquiry
+                        Send another enquiry
                     </CtaSubmit>
                 </div>
             </div>
@@ -89,15 +89,15 @@ export function ContactForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12 text-left">
                 <div className="group">
                     <label className={labelClasses}>Full Name</label>
-                    <input name="fullName" type="text" placeholder="Entry name..." required className={inputClasses}/>
+                    <input name="fullName" type="text" placeholder="Your name" required className={inputClasses}/>
                 </div>
                 <div className="group">
-                    <label className={labelClasses}>Company Entity</label>
-                    <input name="company" type="text" placeholder="Organization..." required className={inputClasses}/>
+                    <label className={labelClasses}>Company</label>
+                    <input name="company" type="text" placeholder="Company name" required className={inputClasses}/>
                 </div>
                 <div className="group">
                     <label className={labelClasses}>Email Address</label>
-                    <input name="email" type="email" placeholder="terminal@domain.com" required className={inputClasses}/>
+                    <input name="email" type="email" placeholder="you@company.com" required className={inputClasses}/>
                 </div>
                 <div className="group">
                     <label className={labelClasses}>Contact Number</label>
@@ -111,20 +111,20 @@ export function ContactForm() {
                         defaultValue=""
                         className={inputClasses}
                     >
-                        <option value="" disabled className="text-text-300">
+                        <option value="" disabled className="text-muted/70">
                             Select sector...
                         </option>
                         {industries.map((ind) => (
                             <option
                                 key={ind}
                                 value={ind}
-                                className="bg-background-50 text-text-950"
+                                className="bg-background text-foreground"
                             >
                                 {ind}
                             </option>
                         ))}
                     </select>
-                    <div className="absolute right-0 bottom-6 pointer-events-none text-text-300">
+                    <div className="absolute right-0 bottom-6 pointer-events-none text-muted/70">
                         <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
                             <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5"/>
                         </svg>
@@ -137,13 +137,13 @@ export function ContactForm() {
             </div>
 
             <div className="group text-left">
-                <label className={labelClasses}>Detailed Specifications</label>
-                <textarea name="message" rows={4} placeholder="Input requirements..." required
+                <label className={labelClasses}>Requirements</label>
+                <textarea name="message" rows={4} placeholder="Quantities, grade, delivery location, timelines…" required
                           className={`${inputClasses} resize-none`}/>
             </div>
 
             {error && (
-                <p className="text-center text-base font-medium text-red-600">{error}</p>
+                <p className="text-center text-base font-medium text-red-400">{error}</p>
             )}
 
             <div className="flex justify-center pt-6">

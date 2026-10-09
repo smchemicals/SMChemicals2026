@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 export default async function ContactPage() {
     const contact = await getPublishedContact();
     return (
-        <main className="bg-background-50 selection:bg-accent-500 selection:text-black">
+        <>
             <ContactHero/>
             <ContactGrid contact={contact}/>
             <ContactInquiry/>
-        </main>
+        </>
     );
 }

@@ -47,12 +47,16 @@ export function Footer({
   });
 
   return (
-    <footer className="relative overflow-hidden bg-[#0a0d09] text-background-50 selection:bg-accent-500 selection:text-black">
+    <footer className="relative overflow-hidden bg-deep text-foreground">
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-60"
+      />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.05]"
         style={{
           backgroundImage:
-            "radial-gradient(circle at center, var(--color-accent-500) 1px, transparent 1px)",
+            "radial-gradient(circle at center, var(--color-accent) 1px, transparent 1px)",
           backgroundSize: "34px 34px",
         }}
       />
@@ -63,14 +67,14 @@ export function Footer({
           <div data-reveal className="lg:col-span-5">
             <Link href="/" className="inline-flex items-center">
               <Image
-                src="/Logo-BW.png"
+                src="/smc_logo.png"
                 alt="SM Chemicals"
-                width={767}
-                height={485}
-                className="h-16 w-auto brightness-0 invert"
+                width={1534}
+                height={970}
+                className="h-16 w-auto"
               />
             </Link>
-            <p className="mt-6 max-w-sm text-base font-light leading-relaxed text-white/45">
+            <p className="mt-6 max-w-sm text-base font-light leading-relaxed text-muted">
               High-precision industrial chemical formulations, engineered for
               India&apos;s infrastructure since 2008.
             </p>
@@ -78,20 +82,20 @@ export function Footer({
             <div className="mt-8 space-y-3">
               <a
                 href={`tel:${phone.replace(/\s+/g, "")}`}
-                className="group flex items-center gap-3 text-base font-light text-white/60 transition-colors hover:text-accent-500"
+                className="group flex items-center gap-3 text-base font-light text-foreground/70 transition-colors hover:text-accent"
               >
-                <Phone className="h-4 w-4 text-accent-500" />
+                <Phone className="h-4 w-4 text-accent" />
                 {phone}
               </a>
               <a
                 href={`mailto:${email}`}
-                className="group flex items-center gap-3 text-base font-light text-white/60 transition-colors hover:text-accent-500"
+                className="group flex items-center gap-3 text-base font-light text-foreground/70 transition-colors hover:text-accent"
               >
-                <Mail className="h-4 w-4 text-accent-500" />
+                <Mail className="h-4 w-4 text-accent" />
                 {email}
               </a>
-              <div className="flex items-start gap-3 text-base font-light text-white/60">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-500" />
+              <div className="flex items-start gap-3 text-base font-light text-foreground/70">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                 {SITE.location} · Telangana, India
               </div>
             </div>
@@ -101,7 +105,7 @@ export function Footer({
           <div className="grid grid-cols-2 gap-8 lg:col-span-5 lg:col-start-8">
             {columns.map((col) => (
               <div key={col.title} data-reveal>
-                <h3 className="mb-6 text-[11px] font-black uppercase tracking-[0.3em] text-accent-500">
+                <h3 className="mb-6 text-[11px] font-black uppercase tracking-[0.3em] text-accent">
                   {col.title}
                 </h3>
                 <ul className="space-y-3.5">
@@ -109,7 +113,7 @@ export function Footer({
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className="group inline-flex items-center text-base font-light text-white/55 transition-colors hover:text-white"
+                        className="group inline-flex items-center text-base font-light text-foreground/65 transition-colors hover:text-foreground"
                       >
                         {link.name}
                         <ArrowUpRight className="ml-1 h-3 w-3 -translate-y-0.5 translate-x-0.5 opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" />
@@ -124,19 +128,19 @@ export function Footer({
       </div>
 
       {/* Bottom bar */}
-      <div className="relative border-t border-white/10">
+      <div className="relative border-t border-line">
         <div className="mx-auto max-w-7xl px-6 sm:px-10 py-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="text-[11px] font-light tracking-wide text-white/35">
+          <p className="text-[11px] font-light tracking-wide text-muted">
             &copy; {year} {SITE.name}. All rights reserved.
           </p>
           <a
             href="https://abhiramankuntimaddi.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group text-[11px] font-light tracking-wide text-white/35 transition-colors hover:text-accent-500"
+            className="group text-[11px] font-light tracking-wide text-muted transition-colors hover:text-accent"
           >
             Website brought to life by{" "}
-            <span className="font-medium text-white/70 group-hover:text-accent-500">
+            <span className="font-medium text-foreground/80 group-hover:text-accent">
               Abhiraman Kuntimaddi
             </span>
             <ArrowUpRight className="ml-0.5 inline h-3 w-3 -translate-y-0.5" />

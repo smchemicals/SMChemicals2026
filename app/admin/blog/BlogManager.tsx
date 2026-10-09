@@ -203,7 +203,7 @@ function PostEditor({
 	if (typeof document === "undefined") return null;
 
 	return createPortal(
-		<div className="fixed inset-0 z-[1100] flex flex-col bg-[#0a0d09]">
+		<div className="fixed inset-0 z-[1100] flex flex-col bg-deep">
 			<div className="flex flex-none items-center justify-between gap-4 border-b border-white/10 px-6 py-4 md:px-10">
 				<div className="flex items-center gap-5">
 					<button

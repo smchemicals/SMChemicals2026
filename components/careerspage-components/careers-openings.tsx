@@ -29,42 +29,42 @@ export function CareersOpenings({ content }: { content: CareersContent }) {
 	});
 
 	return (
-		<section className="bg-background-50 py-24 lg:py-32">
+		<section className="bg-background py-24 lg:py-32">
 			<div className="max-w-7xl mx-auto px-6 sm:px-10">
 				<div ref={introScope} className="mb-20 lg:mb-28">
 					<div data-reveal className="flex items-center gap-3 mb-6">
-						<div className="h-px w-8 bg-accent-700" />
-						<span className="text-[11px] font-black text-accent-700 uppercase tracking-[0.5em]">
+						<div className="h-px w-8 bg-accent" />
+						<span className="text-[11px] font-black text-accent uppercase tracking-[0.5em]">
 							{careersIntro.eyebrow}
 						</span>
 					</div>
 					<h2
 						data-reveal
-						className="text-5xl md:text-7xl font-bold tracking-tighter text-text-950 leading-[0.9] mb-8"
+						className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground leading-[0.9] mb-8"
 					>
 						{careersIntro.heading}{" "}
-						<span className="text-text-400 font-light italic">
+						<span className="text-muted font-light italic">
 							{careersIntro.headingAccent}
 						</span>
 					</h2>
 					<p
 						data-reveal
-						className="max-w-2xl text-text-800 text-lg md:text-xl font-light leading-relaxed mb-16"
+						className="max-w-2xl text-foreground/75 text-lg md:text-xl font-light leading-relaxed mb-16"
 					>
 						{careersIntro.body}
 					</p>
 
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-background-200 border border-background-200">
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-line border border-line">
 						{careersIntro.values.map((v) => (
 							<div
 								key={v.title}
 								data-reveal
-								className="bg-background-50 p-8 lg:p-10"
+								className="bg-background p-8 lg:p-10"
 							>
-								<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-text-950 mb-3">
+								<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-foreground mb-3">
 									{v.title}
 								</h3>
-								<p className="text-text-800 text-lg font-light leading-relaxed">
+								<p className="text-foreground/75 text-lg font-light leading-relaxed">
 									{v.detail}
 								</p>
 							</div>
@@ -72,39 +72,39 @@ export function CareersOpenings({ content }: { content: CareersContent }) {
 					</div>
 				</div>
 
-				<div className="flex items-end justify-between gap-6 border-b border-background-200 pb-6 mb-10">
-					<h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-text-950">
-						Open <span className="text-text-400 font-light italic">positions.</span>
+				<div className="flex items-end justify-between gap-6 border-b border-line pb-6 mb-10">
+					<h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-foreground">
+						Open <span className="text-muted font-light italic">positions.</span>
 					</h2>
-					<span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent-700 tabular-nums">
+					<span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent tabular-nums">
 						{String(openings.length).padStart(2, "0")} Roles
 					</span>
 				</div>
 
 				{openings.length > 0 ? (
-					<div ref={listScope} className="border-t border-l border-background-200">
+					<div ref={listScope} className="border-t border-l border-line">
 						{openings.map((role) => (
 							<button
 								key={role.id}
 								type="button"
 								onClick={() => openApply(role.title)}
 								data-reveal
-								className="group flex w-full flex-col gap-4 border-b border-r border-background-200 p-8 lg:p-10 text-left transition-colors hover:bg-background-100 sm:flex-row sm:items-center sm:justify-between cursor-pointer"
+								className="group flex w-full flex-col gap-4 border-b border-r border-line p-8 lg:p-10 text-left transition-colors hover:bg-surface sm:flex-row sm:items-center sm:justify-between cursor-pointer"
 							>
 								<div className="min-w-0">
-									<h3 className="text-xl lg:text-2xl font-bold tracking-tight text-text-950 mb-3">
+									<h3 className="text-xl lg:text-2xl font-bold tracking-tight text-foreground mb-3">
 										{role.title}
 									</h3>
-									<div className="flex flex-wrap gap-x-5 gap-y-1 text-[11px] font-black uppercase tracking-[0.2em] text-accent-700 mb-4">
+									<div className="flex flex-wrap gap-x-5 gap-y-1 text-[11px] font-black uppercase tracking-[0.2em] text-accent mb-4">
 										<span>{role.department}</span>
 										<span>{role.type}</span>
 										<span>{role.location}</span>
 									</div>
-									<p className="max-w-xl text-text-800 text-lg font-light leading-relaxed">
+									<p className="max-w-xl text-foreground/75 text-lg font-light leading-relaxed">
 										{role.description}
 									</p>
 								</div>
-								<div className="flex items-center gap-2 shrink-0 text-[11px] font-black uppercase tracking-[0.3em] text-text-950 group-hover:text-accent-700 transition-colors">
+								<div className="flex items-center gap-2 shrink-0 text-[11px] font-black uppercase tracking-[0.3em] text-foreground group-hover:text-accent transition-colors">
 									Apply
 									<ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
 								</div>
@@ -112,14 +112,14 @@ export function CareersOpenings({ content }: { content: CareersContent }) {
 						))}
 					</div>
 				) : (
-					<p className="text-text-800 text-lg font-light">
+					<p className="text-foreground/75 text-lg font-light">
 						No open roles right now.
 					</p>
 				)}
 
 				{/* General application */}
-				<div className="mt-16 flex flex-col items-start gap-4 border-t border-background-200 pt-12 sm:flex-row sm:items-center sm:justify-between">
-					<p className="text-text-800 text-base font-light max-w-md">
+				<div className="mt-16 flex flex-col items-start gap-4 border-t border-line pt-12 sm:flex-row sm:items-center sm:justify-between">
+					<p className="text-foreground/75 text-base font-light max-w-md">
 						Don&apos;t see the right role? We still want to hear from strong
 						people.
 					</p>

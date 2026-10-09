@@ -86,12 +86,12 @@ export default function AdminLoginPage() {
 		"w-full border-b border-white/15 bg-transparent py-3 text-white text-xl font-light outline-none transition-colors placeholder:text-white/20 focus:border-accent-500";
 
 	return (
-		<div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#0a0d09] px-6 selection:bg-accent-500 selection:text-black">
+		<div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-deep px-6 selection:bg-accent-500 selection:text-black">
 			<div
 				className="pointer-events-none absolute inset-0 opacity-[0.06]"
 				style={{
 					backgroundImage:
-						"radial-gradient(circle at center, var(--color-accent-500) 1px, transparent 1px)",
+						"radial-gradient(circle at center, var(--color-accent) 1px, transparent 1px)",
 					backgroundSize: "34px 34px",
 				}}
 			/>

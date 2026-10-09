@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight, Phone, Mail } from "lucide-react";
 import { useSection } from "@/hooks/use-section";
+import { CtaButton } from "@/components/ui/cta-button";
+import { BrandGlow, Eyebrow } from "@/components/ui/page-hero";
 
 export function CtaSection({
   phone,
@@ -23,22 +25,20 @@ export function CtaSection({
   });
 
   return (
-    <section className="relative py-24 lg:py-32 bg-background-50 text-text-950 border-t border-background-200">
+    <section className="relative overflow-hidden py-24 lg:py-32 bg-background text-foreground">
+      <BrandGlow />
       <div ref={scope} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         <div className="max-w-4xl mb-16 lg:mb-24">
-          <span
-            data-reveal
-            className="text-[11px] font-black text-text-400 uppercase tracking-[0.3em] block mb-4"
-          >
+          <Eyebrow data-reveal className="mb-6">
             Direct Contact
-          </span>
+          </Eyebrow>
           <h2
             data-reveal
-            className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-wider text-text-950 leading-[0.95]"
+            className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tighter text-foreground leading-[0.95]"
           >
-            Ready to Transform <br />
-            <span className="text-text-400 font-light italic">
-              Your Supply Chain?
+            Ready to transform <br />
+            <span className="text-muted font-light italic">
+              your supply chain?
             </span>
           </h2>
         </div>
@@ -47,10 +47,10 @@ export function CtaSection({
           <div className="lg:col-span-7">
             <p
               data-reveal
-              className="text-base sm:text-lg md:text-xl text-text-800 font-light leading-relaxed max-w-2xl"
+              className="text-base sm:text-lg md:text-xl text-foreground/75 font-light leading-relaxed max-w-2xl"
             >
               Partner with{" "}
-              <span className="text-text-950 font-medium">SM Chemicals</span>{" "}
+              <span className="text-foreground font-medium">SM Chemicals</span>{" "}
               for reliable, high-purity industrial compounds tailored
               specifically to your infrastructure requirements.
             </p>
@@ -60,20 +60,13 @@ export function CtaSection({
             data-reveal
             className="lg:col-span-5 flex flex-col sm:flex-row gap-6 w-full justify-start lg:justify-end items-center"
           >
-            {/* Your original button animation preserved */}
-            <Link
-              href="/contact"
-              className="group relative h-16 px-12 flex items-center justify-center bg-text-950 text-background-50 rounded-sm overflow-hidden transition-all duration-500 hover:scale-[1.02]"
-            >
-              <div className="absolute inset-0 bg-background-500 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.19,1,0.22,1]" />
-              <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.4em] group-hover:text-black transition-colors duration-500">
-                Request a Quote
-              </span>
-            </Link>
+            <CtaButton href="/contact" className="h-16">
+              Request a Quote
+            </CtaButton>
 
             <Link
               href="/products"
-              className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.4em] text-text-400 hover:text-text-950 transition-colors duration-500"
+              className="flex items-center gap-3 whitespace-nowrap text-[12px] font-bold uppercase tracking-[0.25em] text-foreground/75 hover:text-accent transition-colors duration-500"
             >
               Explore Catalogue
               <ArrowRight className="h-4 w-4" />
@@ -81,7 +74,7 @@ export function CtaSection({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-background-200 border border-background-200 overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-line border border-line overflow-hidden">
           {[
             {
               href: `tel:${phone.replace(/\s+/g, "")}`,
@@ -100,17 +93,17 @@ export function CtaSection({
               key={item.href}
               href={item.href}
               data-reveal
-              className="group bg-background-50 p-8 sm:p-12 flex items-center justify-between transition-colors duration-500 hover:bg-background-100"
+              className="group bg-background/80 backdrop-blur-sm p-8 sm:p-12 flex items-center justify-between transition-colors duration-500 hover:bg-surface"
             >
               <div className="space-y-1">
-                <span className="text-[11px] font-black text-text-400 uppercase tracking-[0.2em] block">
+                <span className="text-[11px] font-bold text-muted uppercase tracking-[0.25em] block">
                   {item.label}
                 </span>
-                <span className="text-base sm:text-lg text-text-950 font-medium tracking-tight block">
+                <span className="text-base sm:text-lg text-foreground font-medium tracking-tight block">
                   {item.value}
                 </span>
               </div>
-              <div className="w-10 h-10 flex items-center justify-center bg-background-100 rounded-md border border-background-200 text-text-400 group-hover:text-text-950 group-hover:border-text-950 transition-all duration-500">
+              <div className="w-10 h-10 flex items-center justify-center bg-accent/10 rounded-md border border-accent/20 text-accent group-hover:bg-accent-strong group-hover:text-white group-hover:border-accent transition-all duration-500">
                 <item.icon className="w-4 h-4" />
               </div>
             </a>

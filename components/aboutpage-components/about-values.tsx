@@ -5,6 +5,7 @@ import { Target, Eye } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import type { AboutValuesSection } from "@/data/about";
+import { Eyebrow } from "@/components/ui/page-hero";
 
 const cardIcons = [Target, Eye];
 
@@ -66,47 +67,45 @@ export function AboutValues({ content }: { content: AboutValuesSection }) {
   return (
     <section
       data-header-theme="dark"
-      className="bg-background-50 border-t border-background-200 py-16 lg:py-24 font-sans text-text-950"
+      className="bg-background border-t border-line py-16 lg:py-24 font-sans text-foreground"
     >
       <div ref={scope} className="mx-auto max-w-7xl px-6 lg:px-8">
         <div data-reveal className="max-w-2xl mb-12 lg:mb-16">
-          <span className="text-[11px] font-black uppercase tracking-[0.3em] text-text-400 block mb-2">
-            {content.eyebrow}
-          </span>
-          <h2 className="text-2xl lg:text-3xl font-black uppercase tracking-wider text-text-950">
+          <Eyebrow className="mb-5">{content.eyebrow}</Eyebrow>
+          <h2 className="text-3xl lg:text-5xl font-bold tracking-tighter text-foreground">
             {content.heading}
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 border border-background-200 bg-background-200 gap-px overflow-hidden relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 border border-line bg-line gap-px overflow-hidden relative">
           {content.cards.map((card, i) => {
             const Icon = cardIcons[i] ?? Target;
             return (
               <div
                 key={i}
                 data-card
-                className="bg-background-50 p-8 md:p-12 transition-all duration-500 hover:bg-background-100 group relative flex flex-col justify-between min-h-[280px] lg:min-h-[320px]"
+                className="bg-background p-8 md:p-12 transition-all duration-500 hover:bg-surface group relative flex flex-col justify-between min-h-[280px] lg:min-h-[320px]"
               >
                 <div>
                   <div className="mb-8">
-                    <div className="w-12 h-12 flex items-center justify-center bg-background-100 rounded-lg border border-background-200 text-text-400 group-hover:text-text-950 group-hover:border-text-950 transition-all duration-500">
+                    <div className="w-12 h-12 flex items-center justify-center bg-accent/10 rounded-lg border border-accent/20 text-accent group-hover:border-accent/60 transition-all duration-500">
                       <Icon className="w-5 h-5 group-hover:scale-110 transition-transform duration-500" />
                     </div>
                   </div>
 
-                  <h3 className="text-xl lg:text-2xl font-black uppercase tracking-wider text-text-950 mb-4">
+                  <h3 className="text-2xl lg:text-3xl font-bold tracking-tight text-foreground mb-4">
                     Our{" "}
-                    <span className="font-light text-text-400 block sm:inline">
+                    <span className="font-light italic text-muted block sm:inline">
                       {card.title}
                     </span>
                   </h3>
 
-                  <p className="text-base md:text-lg text-text-800 leading-relaxed max-w-md font-light">
+                  <p className="text-base md:text-lg text-foreground/75 leading-relaxed max-w-md font-light">
                     {card.body}
                   </p>
                 </div>
 
-                <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-background-200 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-line opacity-0 group-hover:opacity-100 transition-all duration-500" />
               </div>
             );
           })}

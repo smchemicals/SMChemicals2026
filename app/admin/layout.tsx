@@ -21,18 +21,18 @@ export default async function AdminLayout({
 	const permissions = profile?.permissions ?? [];
 
 	return (
-		<div className="relative min-h-dvh bg-[#0a0d09] text-white antialiased selection:bg-accent-500 selection:text-black">
+		<div className="relative min-h-dvh bg-deep text-white antialiased selection:bg-accent-500 selection:text-black">
 			<div
 				className="pointer-events-none fixed inset-0 z-0 opacity-[0.06]"
 				style={{
 					backgroundImage:
-						"radial-gradient(circle at center, var(--color-accent-500) 1px, transparent 1px)",
+						"radial-gradient(circle at center, var(--color-accent) 1px, transparent 1px)",
 					backgroundSize: "34px 34px",
 				}}
 			/>
 
 			{profile && (
-				<header className="sticky top-0 z-30 border-b border-white/10 bg-[#0a0d09]/85 backdrop-blur">
+				<header className="sticky top-0 z-30 border-b border-white/10 bg-deep/85 backdrop-blur">
 					<div className="flex items-center justify-between px-6 py-5 md:px-10">
 						<div className="flex items-center gap-10">
 							<Link

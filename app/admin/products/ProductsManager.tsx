@@ -359,8 +359,8 @@ function ProductDrawer({
 				className="absolute inset-0 bg-black/60 backdrop-blur-sm"
 				onClick={onClose}
 			/>
-			<div className="relative h-full w-full max-w-xl overflow-y-auto border-l border-white/10 bg-[#0a0d09] shadow-2xl">
-				<div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#0a0d09] px-8 py-6">
+			<div className="relative h-full w-full max-w-xl overflow-y-auto border-l border-white/10 bg-deep shadow-2xl">
+				<div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-deep px-8 py-6">
 					<div className="flex items-center gap-3">
 						<span className="h-px w-5 bg-accent-500" />
 						<span className="uppercase tracking-[0.3em] text-accent-500 text-[0.6rem] font-black">
@@ -388,7 +388,7 @@ function ProductDrawer({
 								className={`${inputCls} cursor-pointer`}
 							>
 								{categories.map((c) => (
-									<option key={c.id} value={c.id} className="bg-[#0a0d09]">
+									<option key={c.id} value={c.id} className="bg-deep">
 										{c.name}
 									</option>
 								))}

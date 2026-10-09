@@ -68,7 +68,7 @@ function Row({
 							<option
 								key={r.key}
 								value={r.key}
-								className="bg-[#0a0d09] normal-case"
+								className="bg-deep normal-case"
 							>
 								{r.label}
 							</option>
