@@ -98,28 +98,28 @@ export function IndustriesSection() {
                   <div className="absolute inset-0 bg-background-500 translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-[0.19,1,0.22,1] z-0" />
 
                   <div className="flex flex-col h-full relative z-10 justify-between">
-                    <div className="flex justify-between items-start">
-                      <Icon
-                        strokeWidth={1.5}
-                        className="h-7 w-7 text-text-400 group-hover:text-black transition-all duration-500"
-                      />
+                    <div className="relative flex justify-center items-center">
                       {isPopular && (
-                        <span className="text-[11px] font-black uppercase tracking-[0.2em] bg-text-950 text-background-50 px-2 py-0.5 rounded-sm group-hover:bg-black transition-colors">
+                        <span className="absolute left-0 top-0 text-[11px] font-black uppercase tracking-[0.2em] bg-text-950 text-background-50 px-2 py-0.5 rounded-sm group-hover:bg-black transition-colors">
                           Popular
                         </span>
                       )}
+                      <Icon
+                        strokeWidth={1.5}
+                        className="h-17 w-17 text-text-400 mt-10 group-hover:text-black transition-all duration-500"
+                      />
                     </div>
 
-                    <div>
+                    <div className="text-center">
                       <span className="text-[11px] font-black uppercase tracking-[0.2em] text-text-300 group-hover:text-black/60 block mb-2">
                         {String(cat.products.length).padStart(2, "0")} Products
                       </span>
-                      <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-text-950 group-hover:text-black leading-tight transition-colors duration-500 md:pr-7">
+                      <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-text-950 group-hover:text-black leading-tight transition-colors duration-500">
                         {cat.name}
                       </h3>
                     </div>
 
-                    <ArrowUpRight className="hidden md:block absolute bottom-0 right-0 h-4 w-4 text-text-200 group-hover:text-black transition-all duration-500" />
+                    <ArrowUpRight className="hidden md:block absolute top-0 right-0 h-4 w-4 text-text-200 group-hover:text-black transition-all duration-500" />
                   </div>
                 </Link>
               </div>

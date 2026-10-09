@@ -71,7 +71,7 @@ export function FeaturesSection() {
                                 <div
                                     className="p-2 bg-white/5 border border-white/10 group-hover:border-accent-500/50 transition-colors">
                                     <feat.icon strokeWidth={1}
-                                               className="h-5 w-5 text-white/40 group-hover:text-accent-500"/>
+                                               className="h-10 w-10 text-white/40 group-hover:text-accent-500"/>
                                 </div>
                                 <div className="text-right">
                                     <span className="block text-4xl font-light tracking-tighter text-white">
@@ -85,7 +85,7 @@ export function FeaturesSection() {
                             </div>
 
                             <div>
-                                <p className="text-base text-white/40 font-light leading-snug group-hover:text-white/80 transition-colors">
+                                <p className="text-xl md:text-lg text-white/40 font-light leading-snug group-hover:text-white/80 transition-colors">
                                     {feat.description}
                                 </p>
                             </div>
