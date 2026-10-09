@@ -63,11 +63,11 @@ export function Footer({
           <div data-reveal className="lg:col-span-5">
             <Link href="/" className="inline-flex items-center">
               <Image
-                src="/logo-header.png"
+                src="/Logo-BW.png"
                 alt="SM Chemicals"
-                width={2260}
-                height={320}
-                className="h-7 w-auto brightness-0 invert"
+                width={767}
+                height={485}
+                className="h-16 w-auto brightness-0 invert"
               />
             </Link>
             <p className="mt-6 max-w-sm text-base font-light leading-relaxed text-white/45">

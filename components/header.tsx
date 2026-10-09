@@ -103,11 +103,11 @@ export function Header() {
         <div className="relative mx-auto max-w-7xl px-6 sm:px-10 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo-header.png"
+              src="/Logo-BW.png"
               alt="SM Chemicals"
-              width={2260}
-              height={320}
-              className="h-6 sm:h-7 w-auto brightness-0 invert"
+              width={767}
+              height={485}
+              className="h-10 sm:h-12 w-auto brightness-0 invert"
               priority
             />
           </Link>

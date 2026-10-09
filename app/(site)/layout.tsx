@@ -19,7 +19,7 @@ export default async function SiteLayout({
     '@type': 'Organization',
     name: SITE.name,
     url: SITE.url,
-    logo: `${SITE.url}/logo-header.png`,
+    logo: `${SITE.url}/Logo-BW.png`,
     email: contact.email,
     telephone: contact.phone,
     description: SITE.description,
