@@ -16,3 +16,4 @@ node_modules/
 supabase/migrations/
 supabase/README.md
 supabase/dev-seed.sql
+scripts/bootstrap-admin.mjs

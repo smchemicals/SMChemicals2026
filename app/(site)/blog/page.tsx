@@ -22,7 +22,7 @@ export default async function BlogPage() {
 	const posts = await getPublishedPosts();
 
 	return (
-		<div data-header-theme="dark">
+		<div data-header-theme="dark" className="flex flex-1 flex-col">
 			<section className="dark relative bg-background-50 text-text-950 overflow-hidden pt-36 pb-12 border-b border-background-200">
 				<div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
 					<div className="flex items-center gap-3 mb-5">
@@ -42,7 +42,7 @@ export default async function BlogPage() {
 				</div>
 			</section>
 
-			<section className="bg-background-50 py-20 lg:py-28">
+			<section className="flex-1 bg-background-50 py-20 lg:py-28">
 				<div className="max-w-7xl mx-auto px-6 lg:px-10">
 					{posts.length === 0 ? (
 						<p className="text-text-800 text-lg font-light">

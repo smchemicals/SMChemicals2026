@@ -39,9 +39,11 @@ export default async function SiteLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
       />
-      <Header />
-      <main>{children}</main>
-      <Footer phone={contact.phone} email={contact.email} />
+      <div className="flex min-h-dvh flex-col">
+        <Header />
+        <main className="flex flex-1 flex-col">{children}</main>
+        <Footer phone={contact.phone} email={contact.email} />
+      </div>
       {isDraft && <PreviewBanner />}
     </SmoothScroll>
   )
