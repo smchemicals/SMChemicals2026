@@ -83,7 +83,7 @@ export default function AdminLoginPage() {
 	}, [state]);
 
 	const inputCls =
-		"w-full border-b border-white/15 bg-transparent py-3 text-white text-xl font-light outline-none transition-colors placeholder:text-white/20 focus:border-accent-500";
+		"w-full border-b border-white/15 bg-transparent py-3 text-white text-xl font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
 
 	return (
 		<div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-deep px-6 selection:bg-accent-500 selection:text-black">
@@ -105,12 +105,12 @@ export default function AdminLoginPage() {
 			<div className="relative z-10 w-full max-w-sm">
 				<div className="mb-4 flex items-center gap-3">
 					<span className="h-px w-6 bg-accent-500" />
-					<span className="uppercase tracking-[0.5em] text-accent-500 text-[0.62rem] font-black">
+					<span className="type-label text-accent-500">
 						SM Chemicals
 					</span>
 				</div>
 				<h1 className="mb-10 text-white text-4xl md:text-5xl font-bold tracking-tighter leading-[0.9]">
-					Chemicals <span className="text-white/25 font-light italic">CMS.</span>
+					Chemicals <span className="text-white/45 font-light">CMS.</span>
 				</h1>
 
 				<form action={formAction} className="flex flex-col gap-6">
@@ -119,7 +119,7 @@ export default function AdminLoginPage() {
 						<input type="hidden" name="cf-turnstile-response" value={token} />
 					)}
 					<label className="flex flex-col gap-2">
-						<span className="uppercase tracking-[0.3em] text-white/40 text-[0.62rem] font-black">
+						<span className="type-label text-white/60">
 							Email
 						</span>
 						<input
@@ -133,7 +133,7 @@ export default function AdminLoginPage() {
 						/>
 					</label>
 					<label className="flex flex-col gap-2">
-						<span className="uppercase tracking-[0.3em] text-white/40 text-[0.62rem] font-black">
+						<span className="type-label text-white/60">
 							Password
 						</span>
 						<input
@@ -151,7 +151,7 @@ export default function AdminLoginPage() {
 					<button
 						type="submit"
 						disabled={pending}
-						className="group mt-2 inline-flex w-fit cursor-pointer items-center gap-3 bg-accent-500 px-9 py-4 uppercase tracking-[0.3em] text-black text-[0.75rem] font-black transition-colors hover:bg-white disabled:opacity-50"
+						className="type-label group mt-2 inline-flex w-fit cursor-pointer items-center gap-3 bg-cta px-9 py-4 text-white transition-colors hover:bg-cta-hover disabled:opacity-50"
 					>
 						{pending ? "Signing in…" : "Sign in"}
 						<span className="transition-transform duration-500 group-hover:translate-x-1">

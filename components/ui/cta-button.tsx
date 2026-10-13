@@ -9,7 +9,7 @@ type BaseProps = {
 	children: React.ReactNode;
 };
 
-const TEXT = "text-[12px] font-bold uppercase tracking-[0.25em] whitespace-nowrap";
+const TEXT = "type-label whitespace-nowrap";
 
 function classes(variant: Variant, className?: string) {
 	const base =
@@ -17,7 +17,7 @@ function classes(variant: Variant, className?: string) {
 	if (variant === "outline")
 		return cn(
 			base,
-			"border border-foreground/20 text-foreground hover:border-accent hover:text-accent",
+			"border border-foreground/20 text-foreground hover:border-accent hover:text-accent-ink",
 			TEXT,
 			className,
 		);

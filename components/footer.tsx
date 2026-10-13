@@ -47,7 +47,7 @@ export function Footer({
   });
 
   return (
-    <footer className="relative overflow-hidden bg-deep text-foreground">
+    <footer data-surface="inverse" className="relative overflow-hidden bg-background text-foreground">
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-60"
@@ -82,20 +82,20 @@ export function Footer({
             <div className="mt-8 space-y-3">
               <a
                 href={`tel:${phone.replace(/\s+/g, "")}`}
-                className="group flex items-center gap-3 text-base font-light text-foreground/70 transition-colors hover:text-accent"
+                className="group flex items-center gap-3 text-base font-light text-foreground/70 transition-colors hover:text-accent-ink"
               >
-                <Phone className="h-4 w-4 text-accent" />
+                <Phone className="h-4 w-4 text-accent-ink" />
                 {phone}
               </a>
               <a
                 href={`mailto:${email}`}
-                className="group flex items-center gap-3 text-base font-light text-foreground/70 transition-colors hover:text-accent"
+                className="group flex items-center gap-3 text-base font-light text-foreground/70 transition-colors hover:text-accent-ink"
               >
-                <Mail className="h-4 w-4 text-accent" />
+                <Mail className="h-4 w-4 text-accent-ink" />
                 {email}
               </a>
               <div className="flex items-start gap-3 text-base font-light text-foreground/70">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-ink" />
                 {SITE.location} · Telangana, India
               </div>
             </div>
@@ -105,7 +105,7 @@ export function Footer({
           <div className="grid grid-cols-2 gap-8 lg:col-span-5 lg:col-start-8">
             {columns.map((col) => (
               <div key={col.title} data-reveal>
-                <h3 className="mb-6 text-[11px] font-black uppercase tracking-[0.3em] text-accent">
+                <h3 className="type-label mb-6 text-accent-ink">
                   {col.title}
                 </h3>
                 <ul className="space-y-3.5">
@@ -130,17 +130,17 @@ export function Footer({
       {/* Bottom bar */}
       <div className="relative border-t border-line">
         <div className="mx-auto max-w-7xl px-6 sm:px-10 py-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="text-[11px] font-light tracking-wide text-muted">
+          <p className="text-xs text-muted">
             &copy; {year} {SITE.name}. All rights reserved.
           </p>
           <a
             href="https://abhiramankuntimaddi.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group text-[11px] font-light tracking-wide text-muted transition-colors hover:text-accent"
+            className="group text-xs text-muted transition-colors hover:text-accent-ink"
           >
             Website brought to life by{" "}
-            <span className="font-medium text-foreground/80 group-hover:text-accent">
+            <span className="font-medium text-foreground/80 group-hover:text-accent-ink">
               Abhiraman Kuntimaddi
             </span>
             <ArrowUpRight className="ml-0.5 inline h-3 w-3 -translate-y-0.5" />

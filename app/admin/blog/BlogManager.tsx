@@ -16,11 +16,11 @@ import { savePost, deletePost, type BlogState } from "./actions";
 import type { BlogPost } from "@/data/blog";
 
 const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/20 focus:border-accent-500";
+	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
 const labelCls =
-	"uppercase tracking-[0.25em] text-white/40 text-[0.55rem] font-black";
+	"type-label text-white/60";
 const btnPrimary =
-	"inline-flex items-center gap-2 bg-accent-500 px-7 py-3.5 uppercase tracking-[0.3em] text-black text-[0.65rem] font-black transition-colors hover:bg-white disabled:opacity-50 cursor-pointer";
+	"type-label inline-flex items-center gap-2 bg-cta px-7 py-3.5 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
 
 function fmt(iso: string | null) {
 	return iso ? new Date(iso).toLocaleDateString() : "—";
@@ -59,11 +59,11 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 				>
 					<Plus size={14} /> New post
 				</button>
-				{msg && <span className="text-white/55 text-xs">{msg}</span>}
+				{msg && <span className="text-white/70 text-xs">{msg}</span>}
 			</div>
 
 			{posts.length === 0 ? (
-				<p className="border border-white/10 bg-white/[0.02] px-6 py-10 text-center text-white/35 text-sm font-light">
+				<p className="border border-white/10 bg-white/[0.02] px-6 py-10 text-center text-white/55 text-sm font-light">
 					No posts yet. Create your first one.
 				</p>
 			) : (
@@ -79,16 +79,16 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 										{p.title}
 									</span>
 									<span
-										className={`shrink-0 border px-2 py-0.5 uppercase tracking-[0.18em] text-[0.5rem] font-black ${
+										className={`type-label shrink-0 border px-2 py-0.5 ${
 											p.published
 												? "border-accent-500/40 bg-accent-500/10 text-accent-500"
-												: "border-white/15 text-white/45"
+												: "border-white/15 text-white/65"
 										}`}
 									>
 										{p.published ? "Published" : "Draft"}
 									</span>
 								</div>
-								<span className="text-white/35 text-xs font-light tracking-wide">
+								<span className="text-white/55 text-xs font-light tracking-wide">
 									/{p.slug} · {fmt(p.publishedAt)}
 								</span>
 							</div>
@@ -97,7 +97,7 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 									href={`/preview?path=/blog/${p.slug}`}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="p-2 text-white/45 transition-colors hover:text-accent-500 cursor-pointer"
+									className="p-2 text-white/65 transition-colors hover:text-accent-500 cursor-pointer"
 									aria-label="Preview"
 									title="Preview"
 								>
@@ -106,7 +106,7 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 								<button
 									type="button"
 									onClick={() => setEditing(p)}
-									className="p-2 text-white/45 transition-colors hover:text-accent-500 cursor-pointer"
+									className="p-2 text-white/65 transition-colors hover:text-accent-500 cursor-pointer"
 									aria-label="Edit"
 								>
 									<Pencil size={15} />
@@ -115,7 +115,7 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 									type="button"
 									disabled={pending}
 									onClick={() => onDelete(p)}
-									className="p-2 text-white/45 transition-colors hover:text-red-400 disabled:opacity-50 cursor-pointer"
+									className="p-2 text-white/65 transition-colors hover:text-red-400 disabled:opacity-50 cursor-pointer"
 									aria-label="Delete"
 								>
 									<Trash2 size={15} />
@@ -209,15 +209,15 @@ function PostEditor({
 					<button
 						type="button"
 						onClick={onClose}
-						className="inline-flex items-center gap-2 text-white/60 transition-colors hover:text-white cursor-pointer"
+						className="inline-flex items-center gap-2 text-white/75 transition-colors hover:text-white cursor-pointer"
 					>
 						<ArrowLeft size={16} />
-						<span className="uppercase tracking-[0.2em] text-[0.6rem] font-black">
+						<span className="type-label">
 							Back
 						</span>
 					</button>
 					<span className="h-4 w-px bg-white/15" />
-					<span className="uppercase tracking-[0.3em] text-accent-500 text-[0.6rem] font-black">
+					<span className="type-label text-accent-500">
 						{post ? "Edit post" : "New post"}
 					</span>
 				</div>
@@ -238,7 +238,7 @@ function PostEditor({
 					<button
 						type="button"
 						onClick={onClose}
-						className="text-white/40 hover:text-white transition-colors cursor-pointer"
+						className="text-white/60 hover:text-white transition-colors cursor-pointer"
 						aria-label="Close"
 					>
 						<X size={20} />
@@ -273,7 +273,7 @@ function PostEditor({
 						<label className="flex flex-col gap-1.5">
 							<span className={labelCls}>
 								Slug{" "}
-								<span className="text-white/25">/blog/{slug || "…"}</span>
+								<span className="text-white/45">/blog/{slug || "…"}</span>
 							</span>
 							<input
 								name="slug"
@@ -281,7 +281,7 @@ function PostEditor({
 								readOnly
 								tabIndex={-1}
 								placeholder="auto-filled from title"
-								className={`${inputCls} cursor-default text-white/50`}
+								className={`${inputCls} cursor-default text-white/65`}
 							/>
 						</label>
 						<label className="flex flex-col gap-1.5">
@@ -311,7 +311,7 @@ function PostEditor({
 									</button>
 								</div>
 							) : (
-								<label className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-dashed border-white/15 py-6 text-white/50 text-xs transition-colors hover:border-accent-500 hover:text-accent-500">
+								<label className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-dashed border-white/15 py-6 text-white/65 text-xs transition-colors hover:border-accent-500 hover:text-accent-500">
 									<Upload size={14} />
 									{uploading ? "Uploading…" : "Upload cover (PNG/JPG, ≤5MB)"}
 									<input
@@ -339,7 +339,7 @@ function PostEditor({
 								defaultChecked={post?.published ?? false}
 								className="h-4 w-4 accent-accent-500 cursor-pointer"
 							/>
-							<span className="uppercase tracking-[0.2em] text-white/70 text-[0.62rem] font-black">
+							<span className="type-label text-white/70">
 								Published (live on the site)
 							</span>
 						</label>

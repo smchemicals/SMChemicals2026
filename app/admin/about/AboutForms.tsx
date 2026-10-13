@@ -19,19 +19,19 @@ import type {
 } from "@/data/about";
 
 const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/20 focus:border-accent-500";
+	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
 const labelCls =
-	"uppercase tracking-[0.25em] text-white/40 text-[0.55rem] font-black";
+	"type-label text-white/60";
 const btnCls =
-	"inline-flex items-center gap-2 bg-accent-500 px-7 py-3.5 uppercase tracking-[0.3em] text-black text-[0.65rem] font-black transition-colors hover:bg-white disabled:opacity-50 cursor-pointer";
+	"type-label inline-flex items-center gap-2 bg-cta px-7 py-3.5 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
 const ghostBtnCls =
-	"inline-flex items-center gap-2 border border-white/15 px-4 py-2.5 uppercase tracking-[0.25em] text-white/60 text-[0.58rem] font-black transition-colors hover:border-accent-500 hover:text-accent-500 cursor-pointer";
+	"type-label inline-flex items-center gap-2 border border-white/15 px-4 py-2.5 text-white/75 transition-colors hover:border-accent-500 hover:text-accent-500 cursor-pointer";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
 	return (
 		<div className="mb-8 flex items-center gap-3">
 			<span className="h-px w-6 bg-accent-500" />
-			<h2 className="uppercase tracking-[0.4em] text-accent-500 text-[0.62rem] font-black">
+			<h2 className="type-label text-accent-500">
 				{children}
 			</h2>
 		</div>
@@ -44,7 +44,7 @@ function RemoveBtn({ onClick }: { onClick: () => void }) {
 			type="button"
 			onClick={onClick}
 			aria-label="Remove"
-			className="shrink-0 text-white/30 transition-colors hover:text-red-400 cursor-pointer"
+			className="shrink-0 text-white/50 transition-colors hover:text-red-400 cursor-pointer"
 		>
 			<Trash2 size={15} />
 		</button>
@@ -120,7 +120,7 @@ export function AboutValuesForm({ section }: { section: AboutValuesSection }) {
 
 			<div className="mt-8 mb-2 flex items-center gap-3">
 				<span className="h-px w-5 bg-accent-500/60" />
-				<span className="uppercase tracking-[0.3em] text-white/60 text-[0.6rem] font-black">
+				<span className="type-label text-white/75">
 					Cards
 				</span>
 			</div>
@@ -232,7 +232,7 @@ export function AboutTimelineForm({
 
 			<div className="mt-8 mb-2 flex items-center gap-3">
 				<span className="h-px w-5 bg-accent-500/60" />
-				<span className="uppercase tracking-[0.3em] text-white/60 text-[0.6rem] font-black">
+				<span className="type-label text-white/75">
 					Entries
 				</span>
 			</div>
@@ -369,7 +369,7 @@ export function AboutCertsForm({ section }: { section: AboutCertsSection }) {
 
 			<div className="mt-8 mb-2 flex items-center gap-3">
 				<span className="h-px w-5 bg-accent-500/60" />
-				<span className="uppercase tracking-[0.3em] text-white/60 text-[0.6rem] font-black">
+				<span className="type-label text-white/75">
 					Spec tiles
 				</span>
 			</div>

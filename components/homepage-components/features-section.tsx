@@ -37,18 +37,18 @@ export function FeaturesSection() {
 
     return (
         <section className="py-24 lg:py-32 bg-surface text-foreground border-y border-line">
-            <div ref={scope} className="mx-auto max-w-7xl px-6">
+            <div ref={scope} className="mx-auto max-w-7xl px-6 sm:px-10">
 
                 <div className="flex flex-col lg:flex-row items-end justify-between gap-8 mb-6">
                     <div data-reveal className="flex flex-col">
                         <Eyebrow className="mb-6">Technical Core</Eyebrow>
-                        <h2 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.85] text-foreground">
-                            Precision <span className="text-muted font-light italic ml-2">Refined.</span>
+                        <h2 className="text-6xl md:text-8xl font-semibold tracking-tight leading-[0.85] text-foreground">
+                            Precision <span className="text-muted font-light ml-2">Refined.</span>
                         </h2>
                     </div>
 
                     <div data-reveal className="max-w-[320px] lg:text-right pb-2">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed text-muted">
+                        <p className="type-label leading-relaxed text-muted">
                             Advanced molecular consistency delivering measurable industrial advantage.
                         </p>
                     </div>
@@ -60,21 +60,21 @@ export function FeaturesSection() {
                     {features.map((feat) => (
                         <div
                             key={feat.name}
-                            data-reveal
-                            className="group bg-surface p-8 h-80 flex flex-col justify-between transition-colors hover:bg-background"
+                            data-cell
+                            className="group bg-surface p-8 gap-12 md:h-80 flex flex-col justify-between transition-colors hover:bg-background"
                         >
                             <div className="flex justify-between items-start">
                                 <div
                                     className="p-2 rounded-sm bg-accent/10 border border-accent/20 group-hover:border-accent/60 transition-colors">
                                     <feat.icon strokeWidth={1}
-                                               className="h-10 w-10 text-accent"/>
+                                               className="h-10 w-10 text-accent-ink"/>
                                 </div>
                                 <div className="text-right">
-                                    <span className="block text-4xl font-light tracking-tighter text-foreground">
+                                    <span className="block font-heading text-4xl font-light tracking-tight text-foreground">
                                         {feat.stat}
                                     </span>
                                     <span
-                                        className="block text-[11px] font-black uppercase tracking-widest text-accent mt-1">
+                                        className="type-label block text-accent-ink mt-1">
                                         {feat.name}
                                     </span>
                                 </div>

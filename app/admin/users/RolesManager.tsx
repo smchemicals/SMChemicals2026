@@ -13,11 +13,11 @@ import {
 } from "./role-actions";
 
 const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/20 focus:border-accent-500";
+	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
 const labelCls =
-	"uppercase tracking-[0.25em] text-white/40 text-[0.55rem] font-black";
+	"type-label text-white/60";
 const btnCls =
-	"inline-flex items-center gap-2 bg-accent-500 px-6 py-3 uppercase tracking-[0.28em] text-black text-[0.6rem] font-black transition-colors hover:bg-white disabled:opacity-50 cursor-pointer";
+	"type-label inline-flex items-center gap-2 bg-cta px-6 py-3 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
 
 function RoleCard({
 	role,
@@ -44,9 +44,9 @@ function RoleCard({
 					<span className="text-white text-lg font-bold tracking-tight">
 						{role.label}
 					</span>
-					<span className="text-white/30 text-xs font-light">/{role.key}</span>
+					<span className="text-white/50 text-xs font-light">/{role.key}</span>
 					{role.is_system && (
-						<span className="border border-white/15 px-2 py-0.5 uppercase tracking-[0.18em] text-white/40 text-[0.5rem] font-black">
+						<span className="type-label border border-white/15 px-2 py-0.5 text-white/60">
 							Built-in
 						</span>
 					)}
@@ -66,7 +66,7 @@ function RoleCard({
 								router.refresh();
 							});
 						}}
-						className="text-white/40 transition-colors hover:text-red-400 disabled:opacity-50 cursor-pointer"
+						className="text-white/60 transition-colors hover:text-red-400 disabled:opacity-50 cursor-pointer"
 						aria-label="Delete role"
 					>
 						<Trash2 size={15} />
@@ -75,7 +75,7 @@ function RoleCard({
 			</div>
 
 			{isFounder ? (
-				<p className="text-white/40 text-xs font-light">
+				<p className="text-white/60 text-xs font-light">
 					Founder always has full access to every section.
 				</p>
 			) : (
@@ -161,7 +161,7 @@ export function RolesManager({
 			>
 				<div className="mb-4 flex items-center gap-3">
 					<span className="h-px w-5 bg-accent-500/60" />
-					<span className="uppercase tracking-[0.3em] text-white/60 text-[0.6rem] font-black">
+					<span className="type-label text-white/75">
 						New role
 					</span>
 				</div>

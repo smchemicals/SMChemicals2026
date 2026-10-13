@@ -10,8 +10,9 @@
  * change mood with data-surface="inverse | accent | photo".
  *
  * Brand (from the SMC logo): blue #0087cb, red #ed3237, sky #65b6df,
- * charcoal #373435. The site is dark navy, led by blue; red is kept for the
- * primary calls to action.
+ * charcoal #373435. Palette is the Design Lab's "Ice · Navy · SMC blue": a
+ * light ice ground with navy ink, led by the logo blue. Dark bands (footer)
+ * use data-surface="inverse", tuned to the Lab's "Navy · Ice · SMC blue".
  */
 
 /* ── Roles and surfaces ─────────────────────────────────────────────────── */
@@ -26,6 +27,7 @@
   --color-foreground: var(--tune-base-foreground, var(--palette-foreground));
   --color-muted: var(--tune-base-muted, var(--palette-muted));
   --color-accent: var(--tune-base-accent, var(--palette-accent));
+  --color-accent-ink: color-mix(in srgb, var(--color-accent) 78%, black);
   --color-surface: var(--tune-base-surface, color-mix(in oklab, var(--color-foreground) 5%, var(--color-background)));
   --color-line: var(--tune-base-line, color-mix(in oklab, var(--color-foreground) 16%, transparent));
 
@@ -38,6 +40,10 @@
 }
 
 /*
+ * accent-ink is the accent as text: on the light base the logo blue is a
+ * touch light for small type, so it is deepened to pass 4.5:1. On dark
+ * surfaces the accent already reads, so ink = accent.
+ *
  * Surfaces: one palette, several moods. Put data-surface on a section (or on
  * <html> for a page-wide shift). Every surface derives from the palette.
  */
@@ -47,6 +53,7 @@
     --color-foreground: var(--tune-base-foreground, var(--palette-foreground));
     --color-muted: var(--tune-base-muted, var(--palette-muted));
     --color-accent: var(--tune-base-accent, var(--palette-accent));
+    --color-accent-ink: color-mix(in srgb, var(--color-accent) 78%, black);
     --color-surface: var(--tune-base-surface, color-mix(in oklab, var(--color-foreground) 5%, var(--color-background)));
     --color-line: var(--tune-base-line, color-mix(in oklab, var(--color-foreground) 16%, transparent));
   }
@@ -56,6 +63,7 @@
     --color-foreground: var(--tune-inverse-foreground, var(--palette-background));
     --color-muted: var(--tune-inverse-muted, color-mix(in oklab, var(--palette-background) 72%, var(--palette-foreground)));
     --color-accent: var(--tune-inverse-accent, var(--palette-accent));
+    --color-accent-ink: var(--color-accent);
     --color-surface: var(--tune-inverse-surface, color-mix(in oklab, var(--color-foreground) 7%, var(--color-background)));
     --color-line: var(--tune-inverse-line, color-mix(in oklab, var(--color-foreground) 22%, transparent));
   }
@@ -65,6 +73,7 @@
     --color-foreground: var(--tune-accent-foreground, var(--palette-background));
     --color-muted: var(--tune-accent-muted, color-mix(in oklab, var(--palette-background) 82%, var(--palette-accent)));
     --color-accent: var(--tune-accent-accent, var(--palette-foreground));
+    --color-accent-ink: var(--color-accent);
     --color-surface: var(--tune-accent-surface, color-mix(in oklab, var(--color-foreground) 8%, var(--color-background)));
     --color-line: var(--tune-accent-line, color-mix(in oklab, var(--color-foreground) 30%, transparent));
   }
@@ -76,6 +85,7 @@
     --color-foreground: var(--tune-photo-foreground, var(--palette-background));
     --color-muted: var(--tune-photo-muted, color-mix(in oklab, var(--palette-background) 78%, transparent));
     --color-accent: var(--tune-photo-accent, var(--palette-background));
+    --color-accent-ink: var(--color-accent);
     --color-surface: var(--tune-photo-surface, color-mix(in oklab, var(--palette-foreground) 30%, transparent));
     --color-line: var(--tune-photo-line, color-mix(in oklab, var(--palette-background) 35%, transparent));
     --scrim: var(--tune-photo-scrim, color-mix(in oklab, var(--palette-foreground) 60%, transparent));
@@ -85,20 +95,27 @@
 /* ── SM Chemicals values ────────────────────────────────────────────────── */
 
 :root {
-  /* Palette */
-  --palette-background: #061420;
-  --palette-foreground: #e8f0f6;
-  --palette-muted: #8ea4b6;
-  --palette-accent: #1592d6; /* logo blue, lifted to read on navy */
+  /* Palette: Design Lab "Ice · Navy · SMC blue" */
+  --palette-background: #eef6fb;
+  --palette-foreground: #0f2431;
+  --palette-muted: #4d6575;
+  --palette-accent: #0087cb;
 
-  /* Surface tuning */
-  --tune-base-surface: #0b1e2e;
-  --tune-base-line: rgb(232 240 246 / 0.1);
+  /* Surface tuning: white cards on ice; inverse = Lab "Navy · Ice · SMC blue" */
+  --tune-base-surface: #ffffff;
+  --tune-base-line: rgb(15 36 49 / 0.12);
+  --tune-inverse-background: #071722;
+  --tune-inverse-foreground: #e6f1f8;
+  --tune-inverse-muted: #8ea5b5;
+  --tune-inverse-surface: #0c2130;
+  --tune-inverse-line: rgb(230 241 248 / 0.1);
 
-  /* Fonts (next/font variables from app/layout.tsx) */
+  /* Fonts (next/font variables from app/layout.tsx): Sora for headings and
+     display numbers, Inter for body text, labels and UI. */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
 
-  /* Grid: max-w-7xl, px-6 → lg:px-10 */
+  /* Grid: max-w-7xl, px-6 → sm:px-10 (header, heroes and every section) */
   --grid-columns: 12;
   --grid-gutter: 2rem;
   --grid-margin: 1.5rem;
@@ -106,7 +123,7 @@
   --grid-baseline: 0.5rem;
 }
 
-@media (min-width: 64rem) {
+@media (min-width: 40rem) {
   :root {
     --grid-margin: 2.5rem;
   }
@@ -114,12 +131,15 @@
 
 /* Brand extras the roles don't cover. */
 @theme {
-  /* Primary call to action: logo red, deepened so white text passes 4.5:1. */
-  --color-cta: #e02a30;
-  --color-cta-hover: #c8242a;
+  /* Primary call to action: logo blue, deepened so white text passes 4.5:1. */
+  --color-cta: #0074b0;
+  --color-cta-hover: #005d8e;
   --color-cta-foreground: #ffffff;
-  /* Darkest band (footer, hero vignette). */
-  --color-deep: #030c14;
+  /* Logo red: small brand marks only (badges), and errors. */
+  --color-brand-red: #d8262c;
+  --color-danger: #c4242a;
+  /* Navy for overlays and scrims over the light ground. */
+  --color-deep: #071722;
   --color-sky: #65b6df;
 }
 
@@ -159,7 +179,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    color-scheme: dark;
+    color-scheme: light;
   }
   * {
     @apply border-border;
@@ -167,8 +187,50 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+  h1,
+  h2 {
+    font-family: var(--font-heading);
+  }
   ::selection {
     background: var(--color-accent);
     color: #fff;
   }
+}
+
+/*
+ * Card-grid reveal (lib/reveal-cells.ts): a 1px accent line that sweeps the
+ * top edge of each [data-cell] as it enters. GSAP drives the two variables;
+ * without them (reduced motion, no JS) the line simply isn't there.
+ */
+@layer components {
+  :where([data-cell]) {
+    position: relative;
+  }
+  [data-cell]::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    z-index: 20;
+    height: 1px;
+    pointer-events: none;
+    background: var(--color-accent);
+    transform-origin: left center;
+    transform: scaleX(var(--cell-sweep, 0));
+    opacity: var(--cell-sweep-o, 0);
+  }
+}
+
+/*
+ * Type roles beyond the font families:
+ * - type-label: the one small-caps label (eyebrows, nav, buttons, spec
+ *   names, stat captions). One size, one weight, one tracking everywhere.
+ */
+@utility type-label {
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }

@@ -19,10 +19,10 @@ export default async function NotFound() {
 			<Header />
 			<main className="relative flex flex-1 items-center overflow-hidden bg-background pt-32 pb-24">
 				<BrandGlow />
-				<div className="relative z-10 mx-auto w-full max-w-7xl px-6 lg:px-10">
+				<div className="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-10">
 					<Eyebrow className="mb-6">Error 404</Eyebrow>
-					<h1 className="text-5xl font-bold leading-[0.95] tracking-tighter text-foreground md:text-7xl">
-						Page <span className="font-light italic text-muted">not found.</span>
+					<h1 className="text-5xl font-semibold leading-none tracking-tight text-foreground md:text-7xl">
+						Page <span className="font-light text-muted">not found.</span>
 					</h1>
 					<p className="mt-6 max-w-xl text-base font-light leading-relaxed text-foreground/75 md:text-lg">
 						The page you&apos;re looking for doesn&apos;t exist or has moved.

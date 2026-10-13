@@ -23,6 +23,8 @@ export interface ProductCategory {
 	id: string;
 	name: string;
 	blurb: string;
+	/* Shows a "Popular" badge on the homepage's Industrial Scopes. */
+	popular?: boolean;
 	products: Product[];
 }
 

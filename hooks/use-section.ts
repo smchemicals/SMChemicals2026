@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
+import { revealCells } from "@/lib/reveal-cells";
 
 interface SectionOptions {
 	// Entry (staggered reveal of [data-reveal] children as the section enters)
@@ -26,8 +27,9 @@ interface SectionOptions {
 }
 
 /**
- * One ref per section: staggered entry on its `[data-reveal]` children, plus a
- * scrubbed fade + drift-up exit on the scope element as the section leaves.
+ * One ref per section: staggered entry on its `[data-reveal]` children, the
+ * card-grid reveal on any `[data-cell]` inside it (see lib/reveal-cells.ts),
+ * plus a scrubbed fade + drift-up exit on the scope element as it leaves.
  */
 export function useSection<T extends HTMLElement = HTMLDivElement>(
 	opts: SectionOptions = {},
@@ -93,6 +95,8 @@ export function useSection<T extends HTMLElement = HTMLDivElement>(
 					});
 				}
 			}
+
+			revealCells(el);
 
 			if (exit) {
 				gsap.to(el, {

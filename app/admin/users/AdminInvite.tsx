@@ -7,9 +7,9 @@ import type { RoleRow } from "@/lib/cms/roles";
 const initial: CreateUserState = {};
 
 const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-3 text-white font-light outline-none transition-colors placeholder:text-white/20 focus:border-accent-500";
+	"w-full border-b border-white/15 bg-transparent py-3 text-white font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
 const labelCls =
-	"uppercase tracking-[0.3em] text-white/40 text-[0.6rem] font-black";
+	"type-label text-white/60";
 
 export function AdminInvite({ roles }: { roles: RoleRow[] }) {
 	const [state, action, pending] = useActionState(createUser, initial);
@@ -67,7 +67,7 @@ export function AdminInvite({ roles }: { roles: RoleRow[] }) {
 			<button
 				type="submit"
 				disabled={pending}
-				className="group mt-2 inline-flex w-fit cursor-pointer items-center gap-3 bg-accent-500 px-8 py-4 uppercase tracking-[0.3em] text-black text-[0.7rem] font-black transition-colors hover:bg-white disabled:opacity-50"
+				className="type-label group mt-2 inline-flex w-fit cursor-pointer items-center gap-3 bg-cta px-8 py-4 text-white transition-colors hover:bg-cta-hover disabled:opacity-50"
 			>
 				{pending ? "Creating…" : "Create user"}
 				<span className="transition-transform duration-500 group-hover:translate-x-1">

@@ -120,7 +120,7 @@ export function Header() {
                 className="relative group py-2"
               >
                 <span
-                  className={`text-[11px] font-bold uppercase tracking-[0.25em] transition-colors ${isActive(item.href) ? "text-foreground" : "text-foreground/60 group-hover:text-foreground"}`}
+                  className={`type-label transition-colors ${isActive(item.href) ? "text-foreground" : "text-foreground/60 group-hover:text-foreground"}`}
                 >
                   {item.name}
                 </span>
@@ -135,7 +135,7 @@ export function Header() {
             <button
               type="button"
               onClick={goInquiry}
-              className="hidden lg:inline-flex items-center rounded-sm bg-cta px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.25em] text-cta-foreground hover:bg-cta-hover transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="type-label hidden lg:inline-flex items-center rounded-sm bg-cta px-5 py-2.5 text-cta-foreground hover:bg-cta-hover transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               Inquiry
             </button>
@@ -158,7 +158,7 @@ export function Header() {
 
       <div
         ref={menuRef}
-        className="fixed inset-0 bg-deep z-[900] flex flex-col justify-center px-8"
+        className="fixed inset-0 bg-background z-[900] flex flex-col justify-center px-8"
         style={{
           clipPath: "circle(0% at calc(100% - 32px) 40px)",
           pointerEvents: mobileMenuOpen ? "auto" : "none",
@@ -186,7 +186,7 @@ export function Header() {
         <button
           type="button"
           onClick={goInquiry}
-          className="menu-item opacity-0 mt-12 self-start rounded-sm bg-cta px-6 py-4 text-[12px] font-bold uppercase tracking-[0.25em] text-cta-foreground cursor-pointer"
+          className="type-label menu-item opacity-0 mt-12 self-start rounded-sm bg-cta px-6 py-4 text-cta-foreground cursor-pointer"
         >
           Send an inquiry
         </button>

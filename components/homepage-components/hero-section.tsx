@@ -179,13 +179,107 @@ const MolecularBackground = ({
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-0 pointer-events-none opacity-70 mix-blend-plus-lighter"
+      className="absolute inset-0 z-0 pointer-events-none opacity-60"
     />
   );
 };
 
+/* Seconds each sector holds before the next one comes in. */
+const SECTOR_HOLD = 3.2;
+
+/*
+ * The rotating sector line. Every sector is rendered once, stacked in the same
+ * spot; one GSAP timeline loops through them. The current word lifts and
+ * softens out as the next rises into focus. Running on GSAP's ticker means it
+ * pauses with the tab. Reduced motion gets a plain crossfade; screen readers
+ * get the full list once.
+ */
+function SectorTicker({ sectors }: { sectors: string[] }) {
+  const root = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const words = gsap.utils.toArray<HTMLElement>("[data-word]", root.current);
+      if (!words.length) return;
+
+      gsap.set(words, { autoAlpha: 0 });
+      gsap.set(words[0], { autoAlpha: 1 });
+      if (words.length < 2) return;
+
+      const mm = gsap.matchMedia();
+      mm.add(
+        {
+          motion: "(prefers-reduced-motion: no-preference)",
+          reduce: "(prefers-reduced-motion: reduce)",
+        },
+        (ctx) => {
+          const { motion } = ctx.conditions as { motion: boolean };
+          const tl = gsap.timeline({ repeat: -1, delay: 1.2 });
+
+          words.forEach((word, k) => {
+            const next = words[(k + 1) % words.length];
+            const at = `+=${SECTOR_HOLD}`;
+
+            if (!motion) {
+              tl.to(word, { autoAlpha: 0, duration: 0.4 }, at).to(
+                next,
+                { autoAlpha: 1, duration: 0.4 },
+                "<0.2",
+              );
+              return;
+            }
+
+            tl.to(
+              word,
+              {
+                y: -18,
+                autoAlpha: 0,
+                filter: "blur(8px)",
+                duration: 0.5,
+                ease: "power2.in",
+              },
+              at,
+            ).fromTo(
+              next,
+              { y: 18, autoAlpha: 0, filter: "blur(8px)" },
+              {
+                y: 0,
+                autoAlpha: 1,
+                filter: "blur(0px)",
+                duration: 0.9,
+                ease: "expo",
+                // The loop's last step brings word 0 back; it must stay
+                // visible until then rather than being hidden at build.
+                immediateRender: false,
+              },
+              "-=0.15",
+            );
+          });
+        },
+      );
+    },
+    { scope: root, dependencies: [sectors.join("|")] },
+  );
+
+  return (
+    <div ref={root} className="w-full">
+      <span className="sr-only">{sectors.join(", ")}</span>
+      <div aria-hidden className="relative h-12 sm:h-14 md:h-20 w-full">
+        {sectors.map((sector) => (
+          <div
+            key={sector}
+            data-word
+            className="absolute inset-0 flex items-center justify-center font-heading text-3xl sm:text-4xl md:text-6xl font-medium leading-none tracking-tight text-accent-ink whitespace-nowrap"
+          >
+            {sector}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
-  const [index, setIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const mousePosition = useRef({ x: -1000, y: -1000 });
 
@@ -197,32 +291,6 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
     delay: 1.1,
     duration: 0.7,
   });
-  const sectorRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const t = setInterval(
-      () => setIndex((i) => (i + 1) % sectors.length),
-      4500,
-    );
-    return () => clearInterval(t);
-  }, []);
-
-  useGSAP(
-    () => {
-      gsap.fromTo(
-        sectorRef.current,
-        { y: 20, autoAlpha: 0, filter: "blur(10px)" },
-        {
-          y: 0,
-          autoAlpha: 1,
-          filter: "blur(0px)",
-          duration: 0.8,
-          ease: "expo",
-        },
-      );
-    },
-    { dependencies: [index] },
-  );
 
   // Scrub parallax exit: content fades + drifts up faster, the stats bar drifts
   // slower for depth, as the hero scrolls away.
@@ -282,7 +350,7 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
           className="flex items-center gap-4 md:gap-6 mb-8 md:mb-12"
         >
           <div className="h-px w-5 md:w-12 bg-accent/60 shrink-0" />
-          <span className="text-[11px] sm:text-sm uppercase tracking-[0.3em] sm:tracking-[0.5em] font-bold text-accent text-center whitespace-nowrap">
+          <span className="type-label text-accent-ink text-center whitespace-nowrap">
             Est. 2008 · Chemical Engineering
           </span>
           <div className="h-px w-5 md:w-12 bg-accent/60 shrink-0" />
@@ -290,26 +358,19 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
 
         <h1
           data-reveal
-          className="text-5xl sm:text-7xl md:text-[8rem] lg:text-[10rem] font-bold tracking-[-0.04em] leading-[0.9] text-foreground mb-8 md:mb-12 text-center"
+          className="text-5xl sm:text-7xl md:text-[8rem] lg:text-[10rem] font-semibold tracking-tight leading-[0.9] text-foreground mb-8 md:mb-12 text-center"
         >
-          SM <span className="font-light italic text-muted">Chemicals</span>
+          SM <span className="font-light text-muted">Chemicals</span>
         </h1>
 
         <div
           data-reveal
           className="flex flex-col items-center w-full mb-8 md:mb-12"
         >
-          <span className="text-[11px] md:text-[11px] uppercase tracking-[0.4em] md:tracking-[0.6em] text-muted font-bold mb-3">
+          <span className="type-label text-muted mb-3">
             Engineering Chemicals for
           </span>
-          <div className="relative h-10 md:h-16 w-full flex justify-center items-center">
-            <div
-              ref={sectorRef}
-              className="absolute text-2xl sm:text-3xl md:text-5xl font-light text-sky tracking-tight text-center"
-            >
-              {sectors[index].toUpperCase()}
-            </div>
-          </div>
+          <SectorTicker sectors={sectors} />
         </div>
 
         <p
@@ -338,7 +399,7 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
         </div>
       </div>
 
-      <div className="relative z-10 w-full border-t border-line bg-deep/60 backdrop-blur-sm">
+      <div className="relative z-10 w-full border-t border-line bg-surface/70 backdrop-blur-sm">
         <div
           ref={statsScope}
           className="max-w-7xl mx-auto w-full px-6 sm:px-10 py-8 md:py-12 grid grid-cols-2 md:grid-cols-5 gap-y-8 gap-x-6"
@@ -350,18 +411,18 @@ export default function HeroSection({ sectors, stats, tagline }: HomeContent) {
               className="flex flex-col items-center md:items-start group cursor-default"
             >
               <div className="flex items-baseline mb-1">
-                <span className="text-2xl sm:text-4xl md:text-5xl font-extralight tracking-tighter text-foreground">
+                <span className="font-heading text-2xl sm:text-4xl md:text-5xl font-light tracking-tight text-foreground">
                   <Counter
                     value={s.value}
                     decimals={s.decimals}
                     delay={1.1 + i * 0.12}
                   />
                 </span>
-                <span className="text-base sm:text-lg md:text-2xl text-accent ml-0.5 font-bold tracking-normal">
+                <span className="text-base sm:text-lg md:text-2xl text-accent-ink ml-0.5 font-bold tracking-normal">
                   {s.suffix}
                 </span>
               </div>
-              <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted group-hover:text-accent transition-colors duration-500">
+              <p className="type-label text-muted group-hover:text-accent-ink transition-colors duration-500">
                 {s.label}
               </p>
             </div>

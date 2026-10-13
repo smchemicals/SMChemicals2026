@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useSection } from "@/hooks/use-section";
 import type { CareersContent } from "@/data/careers";
 import { CareerApplyModal } from "./career-apply-modal";
+import { Eyebrow } from "@/components/ui/page-hero";
 import { CtaSubmit } from "@/components/ui/cta-button";
 
 export function CareersOpenings({ content }: { content: CareersContent }) {
@@ -29,21 +30,18 @@ export function CareersOpenings({ content }: { content: CareersContent }) {
 	});
 
 	return (
-		<section className="bg-background py-24 lg:py-32">
+		<section className="bg-background pt-12 pb-24 lg:pt-16 lg:pb-32">
 			<div className="max-w-7xl mx-auto px-6 sm:px-10">
 				<div ref={introScope} className="mb-20 lg:mb-28">
-					<div data-reveal className="flex items-center gap-3 mb-6">
-						<div className="h-px w-8 bg-accent" />
-						<span className="text-[11px] font-black text-accent uppercase tracking-[0.5em]">
-							{careersIntro.eyebrow}
-						</span>
-					</div>
+					<Eyebrow data-reveal className="mb-6">
+						{careersIntro.eyebrow}
+					</Eyebrow>
 					<h2
 						data-reveal
-						className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground leading-[0.9] mb-8"
+						className="text-5xl md:text-7xl font-semibold tracking-tight text-foreground leading-none mb-8"
 					>
 						{careersIntro.heading}{" "}
-						<span className="text-muted font-light italic">
+						<span className="text-muted font-light">
 							{careersIntro.headingAccent}
 						</span>
 					</h2>
@@ -58,10 +56,10 @@ export function CareersOpenings({ content }: { content: CareersContent }) {
 						{careersIntro.values.map((v) => (
 							<div
 								key={v.title}
-								data-reveal
+								data-cell
 								className="bg-background p-8 lg:p-10"
 							>
-								<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-foreground mb-3">
+								<h3 className="type-label text-foreground mb-3">
 									{v.title}
 								</h3>
 								<p className="text-foreground/75 text-lg font-light leading-relaxed">
@@ -73,10 +71,10 @@ export function CareersOpenings({ content }: { content: CareersContent }) {
 				</div>
 
 				<div className="flex items-end justify-between gap-6 border-b border-line pb-6 mb-10">
-					<h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-foreground">
-						Open <span className="text-muted font-light italic">positions.</span>
+					<h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-foreground">
+						Open <span className="text-muted font-light">positions.</span>
 					</h2>
-					<span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent tabular-nums">
+					<span className="type-label text-accent-ink tabular-nums">
 						{String(openings.length).padStart(2, "0")} Roles
 					</span>
 				</div>
@@ -88,14 +86,14 @@ export function CareersOpenings({ content }: { content: CareersContent }) {
 								key={role.id}
 								type="button"
 								onClick={() => openApply(role.title)}
-								data-reveal
+								data-cell
 								className="group flex w-full flex-col gap-4 border-b border-r border-line p-8 lg:p-10 text-left transition-colors hover:bg-surface sm:flex-row sm:items-center sm:justify-between cursor-pointer"
 							>
 								<div className="min-w-0">
-									<h3 className="text-xl lg:text-2xl font-bold tracking-tight text-foreground mb-3">
+									<h3 className="font-heading text-xl lg:text-2xl font-semibold tracking-tight text-foreground mb-3">
 										{role.title}
 									</h3>
-									<div className="flex flex-wrap gap-x-5 gap-y-1 text-[11px] font-black uppercase tracking-[0.2em] text-accent mb-4">
+									<div className="type-label flex flex-wrap gap-x-5 gap-y-1 text-accent-ink mb-4">
 										<span>{role.department}</span>
 										<span>{role.type}</span>
 										<span>{role.location}</span>
@@ -104,7 +102,7 @@ export function CareersOpenings({ content }: { content: CareersContent }) {
 										{role.description}
 									</p>
 								</div>
-								<div className="flex items-center gap-2 shrink-0 text-[11px] font-black uppercase tracking-[0.3em] text-foreground group-hover:text-accent transition-colors">
+								<div className="type-label flex items-center gap-2 shrink-0 text-foreground group-hover:text-accent-ink transition-colors">
 									Apply
 									<ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
 								</div>

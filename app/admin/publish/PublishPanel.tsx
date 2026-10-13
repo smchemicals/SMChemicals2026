@@ -8,18 +8,18 @@ import type { PageDraft, PageStatus } from "@/lib/cms/snapshots";
 function StatusChip({ status, count }: { status: PageStatus; count: number }) {
 	if (status === "dirty")
 		return (
-			<span className="border border-accent-500/40 bg-accent-500/10 px-2.5 py-0.5 uppercase tracking-[0.18em] text-accent-500 text-[0.55rem] font-black">
+			<span className="type-label border border-accent-500/40 bg-accent-500/10 px-2.5 py-0.5 text-accent-500">
 				{count} unpublished change{count === 1 ? "" : "s"}
 			</span>
 		);
 	if (status === "unpublished")
 		return (
-			<span className="border border-white/20 px-2.5 py-0.5 uppercase tracking-[0.18em] text-white/55 text-[0.55rem] font-black">
+			<span className="type-label border border-white/20 px-2.5 py-0.5 text-white/70">
 				Not published
 			</span>
 		);
 	return (
-		<span className="border border-white/10 px-2.5 py-0.5 uppercase tracking-[0.18em] text-white/30 text-[0.55rem] font-black">
+		<span className="type-label border border-white/10 px-2.5 py-0.5 text-white/50">
 			Up to date
 		</span>
 	);
@@ -45,7 +45,7 @@ function Item({ row }: { row: PageDraft }) {
 						</span>
 						<StatusChip status={row.status} count={row.changes.length} />
 					</div>
-					<div className="mt-1 text-white/45 text-xs font-light tracking-wide">
+					<div className="mt-1 text-white/65 text-xs font-light tracking-wide">
 						{msg || when}
 					</div>
 				</div>
@@ -55,7 +55,7 @@ function Item({ row }: { row: PageDraft }) {
 							<button
 								type="button"
 								onClick={() => setOpen((v) => !v)}
-								className="uppercase tracking-[0.2em] text-accent-500 text-[0.6rem] font-black transition-opacity hover:opacity-70 cursor-pointer"
+								className="type-label text-accent-500 transition-opacity hover:opacity-70 cursor-pointer"
 							>
 								{open ? "Hide" : "Review"}
 							</button>
@@ -77,7 +77,7 @@ function Item({ row }: { row: PageDraft }) {
 										router.refresh();
 									});
 								}}
-								className="uppercase tracking-[0.2em] text-white/55 text-[0.6rem] font-black transition-colors hover:text-white disabled:opacity-50 cursor-pointer"
+								className="type-label text-white/70 transition-colors hover:text-white disabled:opacity-50 cursor-pointer"
 							>
 								Discard
 							</button>
@@ -88,7 +88,7 @@ function Item({ row }: { row: PageDraft }) {
 							href={`/preview?path=${encodeURIComponent(row.path)}`}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="uppercase tracking-[0.2em] text-accent-500 text-[0.6rem] font-black transition-opacity hover:opacity-70"
+							className="type-label text-accent-500 transition-opacity hover:opacity-70"
 						>
 							Preview draft ↗
 						</a>
@@ -97,7 +97,7 @@ function Item({ row }: { row: PageDraft }) {
 						href={row.path}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="uppercase tracking-[0.2em] text-white/55 text-[0.6rem] font-black transition-colors hover:text-white"
+						className="type-label text-white/70 transition-colors hover:text-white"
 					>
 						View live ↗
 					</a>
@@ -113,7 +113,7 @@ function Item({ row }: { row: PageDraft }) {
 								router.refresh();
 							})
 						}
-						className="bg-accent-500 px-6 py-2.5 uppercase tracking-[0.24em] text-black text-[0.6rem] font-black transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-30 cursor-pointer"
+						className="type-label bg-cta px-6 py-2.5 text-white transition-colors hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-30 cursor-pointer"
 					>
 						{pending ? "Publishing…" : "Publish"}
 					</button>
@@ -124,7 +124,7 @@ function Item({ row }: { row: PageDraft }) {
 					{row.changes.map((c, i) => (
 						<li
 							key={i}
-							className="text-white/55 text-[0.8rem] font-light leading-relaxed"
+							className="text-white/70 text-[0.8rem] font-light leading-relaxed"
 						>
 							{c}
 						</li>
@@ -158,11 +158,11 @@ export function PublishPanel({ pages }: { pages: PageDraft[] }) {
 							router.refresh();
 						})
 					}
-					className="border border-accent-500/40 px-6 py-2.5 uppercase tracking-[0.24em] text-accent-500 text-[0.6rem] font-black transition-colors hover:bg-accent-500/10 disabled:cursor-not-allowed disabled:opacity-30 cursor-pointer"
+					className="type-label border border-accent-500/40 px-6 py-2.5 text-accent-500 transition-colors hover:bg-accent-500/10 disabled:cursor-not-allowed disabled:opacity-30 cursor-pointer"
 				>
 					{pending ? "Publishing all…" : "Publish all"}
 				</button>
-				{msg && <span className="text-white/55 text-sm font-light">{msg}</span>}
+				{msg && <span className="text-white/70 text-sm font-light">{msg}</span>}
 			</div>
 		</div>
 	);

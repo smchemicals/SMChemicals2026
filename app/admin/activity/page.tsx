@@ -27,18 +27,18 @@ export default async function ActivityAdmin({
 	const entries = await getActivityLog(active === "all" ? undefined : active);
 
 	return (
-		<div className="mx-auto max-w-4xl px-6 py-16 md:px-10 md:py-20">
+		<div className="mx-auto max-w-6xl px-6 py-12 md:px-10 md:py-14">
 			<div className="mb-10">
 				<div className="mb-5 flex items-center gap-3">
 					<span className="h-px w-7 bg-accent-500" />
-					<span className="uppercase tracking-[0.5em] text-accent-500 text-[0.6rem] font-black">
+					<span className="type-label text-accent-500">
 						Activity
 					</span>
 				</div>
-				<h1 className="text-white text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9]">
-					Audit trail<span className="text-white/30 font-light italic">.</span>
+				<h1 className="text-white text-4xl md:text-5xl font-semibold tracking-tight leading-none">
+					Audit trail<span className="text-white/50 font-light">.</span>
 				</h1>
-				<p className="mt-6 text-white/45 text-sm font-light tracking-wide">
+				<p className="mt-6 text-white/65 text-sm font-light tracking-wide">
 					Every edit, publish and team change, most recent first.
 				</p>
 				{DEV_BYPASS && (
@@ -55,10 +55,10 @@ export default async function ActivityAdmin({
 						<Link
 							key={key}
 							href={key === "all" ? "/admin/activity" : `/admin/activity?filter=${key}`}
-							className={`border px-4 py-2 uppercase tracking-[0.2em] text-[0.58rem] font-black transition-colors ${
+							className={`type-label border px-4 py-2 transition-colors ${
 								isActive
 									? "border-accent-500/40 bg-accent-500/10 text-accent-500"
-									: "border-white/15 text-white/50 hover:text-white"
+									: "border-white/15 text-white/65 hover:text-white"
 							}`}
 						>
 							{label}
@@ -68,7 +68,7 @@ export default async function ActivityAdmin({
 			</div>
 
 			{entries.length === 0 ? (
-				<p className="border border-white/10 bg-white/[0.02] px-6 py-10 text-center text-white/35 text-sm font-light">
+				<p className="border border-white/10 bg-white/[0.02] px-6 py-10 text-center text-white/55 text-sm font-light">
 					{supabaseConfigured()
 						? "No activity recorded yet."
 						: "Activity appears here once Supabase is connected."}
@@ -85,15 +85,15 @@ export default async function ActivityAdmin({
 									{ACTION_LABELS[e.action] ?? e.action}
 								</span>
 								{e.target && (
-									<span className="text-white/55 text-sm font-light"> · {e.target}</span>
+									<span className="text-white/70 text-sm font-light"> · {e.target}</span>
 								)}
 								{e.detail && (
-									<span className="block text-white/35 text-xs font-light tracking-wide">
+									<span className="block text-white/55 text-xs font-light tracking-wide">
 										{e.detail}
 									</span>
 								)}
 							</div>
-							<div className="text-right text-white/35 text-xs font-light tracking-wide">
+							<div className="text-right text-white/55 text-xs font-light tracking-wide">
 								<span>{e.actor_name || e.actor_email || "—"}</span>
 								<span className="block">
 									{new Date(e.created_at).toLocaleString()}

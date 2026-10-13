@@ -26,55 +26,56 @@ export function CtaSection({
 
   return (
     <section className="relative overflow-hidden py-24 lg:py-32 bg-background text-foreground">
-      <BrandGlow />
-      <div ref={scope} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="max-w-4xl mb-16 lg:mb-24">
+      {/* Glow fades in and out vertically so it never meets the section edge. */}
+      <BrandGlow className="mask-[linear-gradient(to_bottom,transparent,black_30%,black_70%,transparent)]" />
+      <div
+        ref={scope}
+        className="relative z-10 mx-auto max-w-7xl px-6 sm:px-10 grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16 lg:items-end"
+      >
+        <div className="lg:col-span-7">
           <Eyebrow data-reveal className="mb-6">
             Direct Contact
           </Eyebrow>
           <h2
             data-reveal
-            className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tighter text-foreground leading-[0.95]"
+            className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-foreground leading-none"
           >
             Ready to transform <br />
-            <span className="text-muted font-light italic">
+            <span className="text-muted font-light">
               your supply chain?
             </span>
           </h2>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mb-20">
-          <div className="lg:col-span-7">
-            <p
-              data-reveal
-              className="text-base sm:text-lg md:text-xl text-foreground/75 font-light leading-relaxed max-w-2xl"
-            >
-              Partner with{" "}
-              <span className="text-foreground font-medium">SM Chemicals</span>{" "}
-              for reliable, high-purity industrial compounds tailored
-              specifically to your infrastructure requirements.
-            </p>
-          </div>
+          <p
+            data-reveal
+            className="mt-8 text-base sm:text-lg md:text-xl text-foreground/75 font-light leading-relaxed max-w-xl"
+          >
+            Partner with{" "}
+            <span className="text-foreground font-medium">SM Chemicals</span>{" "}
+            for reliable, high-purity industrial compounds tailored
+            specifically to your infrastructure requirements.
+          </p>
 
           <div
             data-reveal
-            className="lg:col-span-5 flex flex-col sm:flex-row gap-6 w-full justify-start lg:justify-end items-center"
+            className="mt-10 flex flex-col sm:flex-row gap-x-10 gap-y-6 items-center sm:items-center"
           >
-            <CtaButton href="/contact" className="h-16">
+            <CtaButton href="/contact" className="w-full sm:w-auto shrink-0">
               Request a Quote
             </CtaButton>
-
             <Link
               href="/products"
-              className="flex items-center gap-3 whitespace-nowrap text-[12px] font-bold uppercase tracking-[0.25em] text-foreground/75 hover:text-accent transition-colors duration-500"
+              className="type-label group flex items-center gap-3 whitespace-nowrap text-foreground/75 hover:text-accent-ink transition-colors duration-500"
             >
               Explore Catalogue
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-line border border-line overflow-hidden">
+        <div
+          data-reveal
+          className="lg:col-span-5 flex flex-col border border-line divide-y divide-line bg-surface"
+        >
           {[
             {
               href: `tel:${phone.replace(/\s+/g, "")}`,
@@ -92,18 +93,17 @@ export function CtaSection({
             <a
               key={item.href}
               href={item.href}
-              data-reveal
-              className="group bg-background/80 backdrop-blur-sm p-8 sm:p-12 flex items-center justify-between transition-colors duration-500 hover:bg-surface"
+              className="group p-7 sm:p-9 flex items-center justify-between gap-6 transition-colors duration-500 hover:bg-background"
             >
-              <div className="space-y-1">
-                <span className="text-[11px] font-bold text-muted uppercase tracking-[0.25em] block">
+              <div className="min-w-0 space-y-1.5">
+                <span className="type-label text-muted block">
                   {item.label}
                 </span>
-                <span className="text-base sm:text-lg text-foreground font-medium tracking-tight block">
+                <span className="text-base sm:text-lg text-foreground font-medium tracking-tight block break-all sm:break-normal">
                   {item.value}
                 </span>
               </div>
-              <div className="w-10 h-10 flex items-center justify-center bg-accent/10 rounded-md border border-accent/20 text-accent group-hover:bg-accent-strong group-hover:text-white group-hover:border-accent transition-all duration-500">
+              <div className="shrink-0 w-11 h-11 flex items-center justify-center bg-accent/10 rounded-md border border-accent/20 text-accent-ink group-hover:bg-accent-strong group-hover:text-white group-hover:border-accent transition-all duration-500">
                 <item.icon className="w-4 h-4" />
               </div>
             </a>

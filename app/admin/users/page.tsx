@@ -16,18 +16,18 @@ export default async function UsersRoute() {
 	]);
 
 	return (
-		<div className="mx-auto max-w-5xl px-6 py-16 md:px-10 md:py-20">
+		<div className="mx-auto max-w-6xl px-6 py-12 md:px-10 md:py-14">
 			<div className="mb-12">
 				<div className="mb-5 flex items-center gap-3">
 					<span className="h-px w-7 bg-accent-500" />
-					<span className="uppercase tracking-[0.5em] text-accent-500 text-[0.6rem] font-black">
+					<span className="type-label text-accent-500">
 						Users
 					</span>
 				</div>
-				<h1 className="text-white text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9]">
-					Team <span className="text-white/30 font-light italic">access.</span>
+				<h1 className="text-white text-4xl md:text-5xl font-semibold tracking-tight leading-none">
+					Team <span className="text-white/50 font-light">access.</span>
 				</h1>
-				<p className="mt-6 max-w-xl text-white/45 text-sm font-light leading-relaxed">
+				<p className="mt-6 max-w-xl text-white/65 text-sm font-light leading-relaxed">
 					Manage who can sign in. Change roles, reset passwords, or remove
 					accounts.
 				</p>
@@ -48,11 +48,11 @@ export default async function UsersRoute() {
 			<div className="mt-16 border-t border-white/10 pt-14">
 				<div className="mb-2 flex items-center gap-3">
 					<span className="h-px w-5 bg-accent-500/60" />
-					<span className="uppercase tracking-[0.3em] text-white/70 text-[0.66rem] font-black">
+					<span className="type-label text-white/70">
 						Add a team member
 					</span>
 				</div>
-				<p className="mb-8 text-white/45 text-sm font-light">
+				<p className="mb-8 text-white/65 text-sm font-light">
 					They sign in with the email and password you set here.
 				</p>
 				<AdminInvite roles={roles} />
@@ -61,11 +61,11 @@ export default async function UsersRoute() {
 			<div className="mt-16 border-t border-white/10 pt-14">
 				<div className="mb-2 flex items-center gap-3">
 					<span className="h-px w-5 bg-accent-500/60" />
-					<span className="uppercase tracking-[0.3em] text-white/70 text-[0.66rem] font-black">
+					<span className="type-label text-white/70">
 						Roles & permissions
 					</span>
 				</div>
-				<p className="mb-8 max-w-xl text-white/45 text-sm font-light leading-relaxed">
+				<p className="mb-8 max-w-xl text-white/65 text-sm font-light leading-relaxed">
 					Create roles and choose which sections each one can access. Founder
 					always has full access.
 				</p>

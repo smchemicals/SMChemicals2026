@@ -14,18 +14,18 @@ export default async function AboutAdmin() {
 	const about = await getSetting<AboutContent>("about", defaultAbout);
 
 	return (
-		<div className="mx-auto max-w-4xl px-6 py-16 md:px-10 md:py-20">
+		<div className="mx-auto max-w-6xl px-6 py-12 md:px-10 md:py-14">
 			<div className="mb-12">
 				<div className="mb-5 flex items-center gap-3">
 					<span className="h-px w-7 bg-accent-500" />
-					<span className="uppercase tracking-[0.5em] text-accent-500 text-[0.6rem] font-black">
+					<span className="type-label text-accent-500">
 						About
 					</span>
 				</div>
-				<h1 className="text-white text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9]">
-					About content<span className="text-white/30 font-light italic">.</span>
+				<h1 className="text-white text-4xl md:text-5xl font-semibold tracking-tight leading-none">
+					About content<span className="text-white/50 font-light">.</span>
 				</h1>
-				<p className="mt-6 text-white/45 text-sm font-light tracking-wide">
+				<p className="mt-6 text-white/65 text-sm font-light tracking-wide">
 					Edit the purpose cards, milestones timeline and certifications shown on
 					the About page. Each section saves on its own. Icons stay fixed by
 					position.

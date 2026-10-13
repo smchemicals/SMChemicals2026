@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState, useActionState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Plus, X, Pencil, Trash2, Upload } from "lucide-react";
+import { Search, Plus, X, Pencil, Trash2, Upload, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Product, ProductCategory, ProductSpec } from "@/data/products";
 import {
 	createCategory,
 	updateCategory,
 	deleteCategory,
+	setCategoryPopular,
 	saveProduct,
 	deleteProduct,
 	type ActionState,
@@ -28,13 +29,13 @@ const SPEC_FIELDS: { key: keyof ProductSpec; label: string }[] = [
 ];
 
 const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/20 focus:border-accent-500";
+	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
 const labelCls =
-	"uppercase tracking-[0.25em] text-white/40 text-[0.55rem] font-black";
+	"type-label text-white/60";
 const btnPrimary =
-	"inline-flex items-center gap-2 bg-accent-500 px-6 py-3 uppercase tracking-[0.25em] text-black text-[0.62rem] font-black transition-colors hover:bg-white disabled:opacity-50 cursor-pointer";
+	"type-label inline-flex items-center gap-2 bg-cta px-6 py-3 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
 const btnGhost =
-	"inline-flex items-center gap-1.5 uppercase tracking-[0.2em] text-white/55 text-[0.6rem] font-bold transition-colors hover:text-white cursor-pointer";
+	"type-label inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white cursor-pointer";
 
 type DrawerState = { categoryId: string; product: Product | null } | null;
 
@@ -83,13 +84,13 @@ export function ProductsManager({
 				<div className="relative flex-1 min-w-[12rem]">
 					<Search
 						size={15}
-						className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-white/30"
+						className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-white/50"
 					/>
 					<input
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
 						placeholder="Search catalog…"
-						className="w-full border-b border-white/15 bg-transparent py-2.5 pl-6 text-white text-sm font-light outline-none placeholder:text-white/25 focus:border-accent-500"
+						className="w-full border-b border-white/15 bg-transparent py-2.5 pl-6 text-white text-sm font-light outline-none placeholder:text-white/45 focus:border-accent-500"
 					/>
 				</div>
 				<button onClick={() => setNewCatOpen((v) => !v)} className={btnPrimary}>
@@ -128,14 +129,42 @@ export function ProductsManager({
 							) : (
 								<div className="flex items-center justify-between gap-4">
 									<div className="flex items-baseline gap-3">
-										<h2 className="uppercase tracking-[0.2em] text-white text-sm font-black">
+										<h2 className="font-heading text-lg font-semibold tracking-tight text-white">
 											{cat.name}
 										</h2>
-										<span className="text-white/30 text-[0.6rem] font-bold tabular-nums">
+										<span className="text-white/50 text-[0.6rem] font-bold tabular-nums">
 											{String(cat.products.length).padStart(2, "0")}
 										</span>
+										{cat.popular && (
+											<span className="type-label inline-flex items-center gap-1.5 self-center rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-0.5 text-amber-300">
+												<Star size={10} className="fill-amber-300" /> Popular
+											</span>
+										)}
 									</div>
 									<div className="flex items-center gap-4">
+										<button
+											disabled={pending}
+											aria-pressed={Boolean(cat.popular)}
+											title={
+												cat.popular
+													? "Remove the Popular badge on the homepage"
+													: "Show a Popular badge on the homepage"
+											}
+											onClick={() =>
+												remove(() => setCategoryPopular(cat.id, !cat.popular))
+											}
+											className={`type-label inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 ${
+												cat.popular
+													? "text-amber-300 hover:text-amber-200"
+													: "text-white/65 hover:text-amber-300"
+											}`}
+										>
+											<Star
+												size={12}
+												className={cat.popular ? "fill-amber-300" : ""}
+											/>
+											{cat.popular ? "Popular" : "Mark popular"}
+										</button>
 										<button
 											onClick={() => setDrawer({ categoryId: cat.id, product: null })}
 											className={btnGhost}
@@ -155,7 +184,7 @@ export function ProductsManager({
 												)
 													remove(() => deleteCategory(cat.id));
 											}}
-											className="inline-flex items-center gap-1.5 uppercase tracking-[0.2em] text-white/45 text-[0.6rem] font-bold transition-colors hover:text-red-400 cursor-pointer disabled:opacity-50"
+											className="type-label inline-flex items-center gap-1.5 text-white/65 transition-colors hover:text-red-400 cursor-pointer disabled:opacity-50"
 										>
 											<Trash2 size={12} /> Delete
 										</button>
@@ -171,10 +200,10 @@ export function ProductsManager({
 									className="group flex items-center justify-between gap-4 border-b border-r border-white/10 px-6 py-4"
 								>
 									<div className="min-w-0">
-										<span className="block uppercase tracking-[0.12em] text-white text-sm font-bold truncate">
+										<span className="block text-white text-[15px] font-medium truncate">
 											{product.name}
 										</span>
-										<span className="mt-0.5 flex flex-wrap gap-x-4 text-white/40 text-[0.68rem] font-light">
+										<span className="mt-0.5 flex flex-wrap gap-x-4 text-white/60 text-[0.68rem] font-light">
 											{product.spec.cas && (
 												<span>
 													CAS{" "}
@@ -204,7 +233,7 @@ export function ProductsManager({
 												if (window.confirm(`Delete “${product.name}”?`))
 													remove(() => deleteProduct(product.id));
 											}}
-											className="text-white/40 transition-colors hover:text-red-400 cursor-pointer disabled:opacity-50"
+											className="text-white/60 transition-colors hover:text-red-400 cursor-pointer disabled:opacity-50"
 											aria-label="Delete product"
 										>
 											<Trash2 size={14} />
@@ -213,7 +242,7 @@ export function ProductsManager({
 								</div>
 							))}
 							{cat.products.length === 0 && (
-								<p className="border-b border-r border-white/10 px-6 py-5 text-white/30 text-xs font-light">
+								<p className="border-b border-r border-white/10 px-6 py-5 text-white/50 text-xs font-light">
 									No products yet.
 								</p>
 							)}
@@ -281,6 +310,15 @@ function CategoryForm({
 					/>
 				</label>
 			</div>
+			<label className="mt-5 inline-flex cursor-pointer items-center gap-3 text-white/80 text-sm">
+				<input
+					type="checkbox"
+					name="popular"
+					defaultChecked={Boolean(category?.popular)}
+					className="h-4 w-4 cursor-pointer accent-amber-400"
+				/>
+				Show a “Popular” badge for this category on the homepage
+			</label>
 			<div className="mt-5 flex items-center gap-4">
 				<button type="submit" disabled={pending} className={btnPrimary}>
 					{pending ? "Saving…" : category ? "Save category" : "Add category"}
@@ -363,13 +401,13 @@ function ProductDrawer({
 				<div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-deep px-8 py-6">
 					<div className="flex items-center gap-3">
 						<span className="h-px w-5 bg-accent-500" />
-						<span className="uppercase tracking-[0.3em] text-accent-500 text-[0.6rem] font-black">
+						<span className="type-label text-accent-500">
 							{product ? "Edit product" : "New product"}
 						</span>
 					</div>
 					<button
 						onClick={onClose}
-						className="text-white/40 hover:text-white transition-colors cursor-pointer"
+						className="text-white/60 hover:text-white transition-colors cursor-pointer"
 						aria-label="Close"
 					>
 						<X size={20} />
@@ -435,7 +473,7 @@ function ProductDrawer({
 									</button>
 								</div>
 							) : (
-								<label className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-dashed border-white/15 py-6 text-white/50 text-xs transition-colors hover:border-accent-500 hover:text-accent-500">
+								<label className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-dashed border-white/15 py-6 text-white/65 text-xs transition-colors hover:border-accent-500 hover:text-accent-500">
 									<Upload size={14} />
 									{uploading ? "Uploading…" : "Upload image (PNG/JPG, ≤5MB)"}
 									<input
@@ -455,7 +493,7 @@ function ProductDrawer({
 
 					<div className="mt-8 mb-4 flex items-center gap-3">
 						<span className="h-px w-5 bg-accent-500/60" />
-						<span className="uppercase tracking-[0.3em] text-white/60 text-[0.6rem] font-black">
+						<span className="type-label text-white/75">
 							Specifications
 						</span>
 					</div>

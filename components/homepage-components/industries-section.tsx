@@ -20,11 +20,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useSection } from "@/hooks/use-section";
-import { productCategories } from "@/data/products";
+import type { ProductCategory } from "@/data/products";
 import { CtaButton } from "@/components/ui/cta-button";
 import { Eyebrow } from "@/components/ui/page-hero";
-
-const POPULAR_CATEGORIES = new Set(["water-boiler", "ro", "etp", "cooling"]);
 
 const META: Record<string, { icon: LucideIcon; tagline: string }> = {
   aquaculture: { icon: Fish, tagline: "Shrimp & Fish Farming" },
@@ -42,7 +40,11 @@ const META: Record<string, { icon: LucideIcon; tagline: string }> = {
   other: { icon: FlaskConical, tagline: "Specialty Chemicals" },
 };
 
-export function IndustriesSection() {
+export function IndustriesSection({
+  categories,
+}: {
+  categories: ProductCategory[];
+}) {
   const scope = useSection<HTMLDivElement>({
     y: 20,
     blur: 4,
@@ -54,18 +56,18 @@ export function IndustriesSection() {
   });
 
   const sortedCategories = useMemo(() => {
-    return [...productCategories].sort((a, b) => a.name.localeCompare(b.name));
-  }, []);
+    return [...categories].sort((a, b) => a.name.localeCompare(b.name));
+  }, [categories]);
 
   return (
     <section id="industries" className="py-24 bg-background text-foreground">
-      <div ref={scope} className="mx-auto max-w-7xl px-6 relative z-10">
+      <div ref={scope} className="mx-auto max-w-7xl px-6 sm:px-10 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
           <div data-reveal className="flex flex-col">
             <Eyebrow className="mb-5">Sector Expertise</Eyebrow>
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground leading-[0.9]">
+            <h2 className="text-5xl md:text-7xl font-semibold tracking-tight text-foreground leading-[0.9]">
               Industrial{" "}
-              <span className="text-muted font-light italic">Scopes.</span>
+              <span className="text-muted font-light">Scopes.</span>
             </h2>
           </div>
         </div>
@@ -77,12 +79,12 @@ export function IndustriesSection() {
               tagline: "Specialty Chemicals",
             };
             const Icon = meta.icon;
-            const isPopular = POPULAR_CATEGORIES.has(cat.id);
+            const isPopular = Boolean(cat.popular);
 
             return (
               <div
                 key={cat.id}
-                data-reveal
+                data-cell
                 className="bg-background group border-r border-b border-line"
               >
                 <Link
@@ -93,28 +95,28 @@ export function IndustriesSection() {
                       window.dispatchEvent(new Event("scroll-to-category"));
                     }
                   }}
-                  className="relative flex flex-col h-64 p-6 md:p-8 transition-all duration-500 overflow-hidden"
+                  className="relative flex flex-col h-64 p-6 md:p-8 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-accent-strong translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-[0.19,1,0.22,1] z-0" />
 
                   <div className="flex flex-col h-full relative z-10 justify-between">
-                    <div className="relative flex justify-center items-center">
+                    <div data-cell-part className="relative flex justify-center items-center">
                       {isPopular && (
-                        <span className="absolute left-0 top-0 text-[11px] font-black uppercase tracking-[0.2em] bg-cta text-cta-foreground px-2 py-0.5 rounded-sm">
+                        <span className="type-label absolute left-0 top-0 bg-brand-red text-white px-2 py-0.5 rounded-sm">
                           Popular
                         </span>
                       )}
                       <Icon
                         strokeWidth={1.5}
-                        className="h-17 w-17 text-accent mt-10 group-hover:text-white transition-all duration-500"
+                        className="h-17 w-17 text-accent-ink mt-10 group-hover:text-white transition-all duration-500"
                       />
                     </div>
 
-                    <div className="text-center">
-                      <span className="text-[11px] font-black uppercase tracking-[0.2em] text-muted group-hover:text-white/80 block mb-2">
+                    <div data-cell-part className="text-center">
+                      <span className="type-label text-muted group-hover:text-white/80 block mb-2">
                         {String(cat.products.length).padStart(2, "0")} Products
                       </span>
-                      <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-foreground group-hover:text-white leading-tight transition-colors duration-500">
+                      <h3 className="type-label text-foreground group-hover:text-white leading-tight transition-colors duration-500">
                         {cat.name}
                       </h3>
                     </div>

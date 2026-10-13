@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
+import { revealCells } from "@/lib/reveal-cells";
 import { getLenis } from "@/lib/smooth-scroll";
 import { X, ArrowUpRight, ArrowRight, ChevronDown } from "lucide-react";
 import type { Product, ProductSpec, ProductCategory } from "@/data/products";
@@ -114,21 +115,39 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
     return () => observer.disconnect();
   }, []);
 
+  // Desktop reveal: each category's count, name and blurb rise in and its
+  // rule draws across as the category arrives (one ScrollTrigger each, since
+  // batch mis-fires under Lenis). The cards use the shared card-grid reveal.
   useGSAP(
     () => {
-      gsap.set(".pg-card", { autoAlpha: 0, y: 24 });
-      ScrollTrigger.batch(".pg-card", {
-        start: "top 92%",
-        onEnter: (els) =>
-          gsap.to(els, {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.5,
-            stagger: 0.06,
-            ease: "expo",
-            overwrite: true,
-          }),
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.utils
+          .toArray<HTMLElement>("[data-cat]", rootRef.current)
+          .forEach((cat) => {
+            const head = cat.querySelectorAll("[data-cat-head]");
+            const rule = cat.querySelector("[data-cat-rule]");
+
+            gsap.set(head, { autoAlpha: 0, y: 20, filter: "blur(4px)" });
+            gsap.set(rule, { scaleX: 0, transformOrigin: "left center" });
+
+            gsap
+              .timeline({
+                defaults: { ease: "expo" },
+                scrollTrigger: { trigger: cat, start: "top 85%", once: true },
+              })
+              .to(head, {
+                autoAlpha: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.9,
+                stagger: 0.08,
+              })
+              .to(rule, { scaleX: 1, duration: 1.2 }, "<0.1");
+          });
       });
+
+      revealCells(rootRef.current);
     },
     { scope: rootRef },
   );
@@ -183,10 +202,10 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
   return (
     <section
       ref={rootRef}
-      className="py-20 lg:py-24 bg-background border-t border-line font-sans text-foreground"
+      className="pb-20 lg:pt-16 lg:pb-24 bg-background font-sans text-foreground"
     >
       {/* Mobile: accordion (no sticky / fixed) */}
-      <div className="lg:hidden border-t border-line">
+      <div className="lg:hidden">
         {sortedCategories.map((cat) => {
           const open = openCategory === cat.id;
           return (
@@ -201,10 +220,10 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
                 className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left active:bg-surface transition-colors cursor-pointer"
               >
                 <span className="flex flex-col min-w-0">
-                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-1.5">
+                  <span className="type-label text-muted mb-1.5">
                     {String(cat.products.length).padStart(2, "0")} Products
                   </span>
-                  <span className="text-base font-black uppercase tracking-wider text-foreground leading-tight">
+                  <span className="font-heading text-lg font-semibold tracking-tight text-foreground leading-tight">
                     {cat.name}
                   </span>
                 </span>
@@ -242,11 +261,11 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
         })}
       </div>
 
-      <div className="hidden lg:block mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="hidden lg:block mx-auto max-w-7xl px-6 sm:px-10">
         <div className="flex flex-row gap-16">
           <aside className="w-60 shrink-0">
             <div className="sticky top-32">
-              <span className="text-base font-black uppercase tracking-[0.3em] text-foreground block mb-6">
+              <span className="type-label text-muted block mb-5">
                 Portfolio
               </span>
               <ul className="space-y-1">
@@ -264,7 +283,7 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
                         }`}
                       />
                       <span
-                        className={`text-base font-black uppercase tracking-[0.2em] transition-colors duration-500 ${
+                        className={`text-[15px] font-medium transition-colors duration-500 ${
                           activeId === cat.id
                             ? "text-foreground"
                             : "text-muted group-hover:text-foreground"
@@ -281,26 +300,42 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
 
           <div className="flex-1 min-w-0 space-y-24">
             {sortedCategories.map((cat) => (
-              <section key={cat.id} id={`cat-${cat.id}`} className="scroll-mt-32">
-                <div className="flex items-end justify-between gap-6 border-b border-line pb-6 mb-8">
-                  <div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted block mb-3">
-                      {String(cat.products.length).padStart(2, "0")} Products
-                    </span>
-                    <h2 className="text-2xl lg:text-3xl font-black uppercase tracking-wider text-foreground">
-                      {cat.name}
-                    </h2>
-                  </div>
+              <section
+                key={cat.id}
+                id={`cat-${cat.id}`}
+                data-cat
+                className="scroll-mt-32"
+              >
+                <div className="pb-6">
+                  <span
+                    data-cat-head
+                    className="type-label text-muted block mb-3"
+                  >
+                    {String(cat.products.length).padStart(2, "0")} Products
+                  </span>
+                  <h2
+                    data-cat-head
+                    className="text-3xl lg:text-4xl font-semibold tracking-tight text-foreground"
+                  >
+                    {cat.name}
+                  </h2>
                 </div>
-                <p className="text-foreground/75 text-base font-light leading-relaxed max-w-2xl mb-10">
+                <div data-cat-rule className="h-px bg-line mb-8" />
+                <p
+                  data-cat-head
+                  className="text-foreground/75 text-base font-light leading-relaxed max-w-2xl mb-10"
+                >
                   {cat.blurb}
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 border-t border-l border-line overflow-hidden bg-background">
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 border-t border-l border-line overflow-hidden bg-background"
+                >
                   {cat.products.map((product) => (
                     <ProductCard
                       key={product.id}
                       product={product}
+                      reveal
                       onOpen={() => setOpenProduct(product)}
                     />
                   ))}
@@ -314,7 +349,7 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
       {openProduct && (
         <div ref={drawerRef} className="fixed inset-0 z-[1100] flex justify-end">
           <div
-            className="absolute inset-0 bg-deep/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-deep/50 backdrop-blur-sm"
             onClick={closeDrawer}
           />
           <div
@@ -325,11 +360,11 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
               <div>
                 {openProduct.spec.chemicalName &&
                   openProduct.spec.chemicalName !== openProduct.name && (
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-muted block mb-3">
+                    <span className="type-label text-muted block mb-3">
                       {openProduct.spec.chemicalName}
                     </span>
                   )}
-                <h3 className="text-xl lg:text-2xl font-black uppercase tracking-wider text-foreground leading-tight">
+                <h3 className="font-heading text-2xl lg:text-3xl font-semibold tracking-tight text-foreground leading-tight">
                   {openProduct.name}
                 </h3>
               </div>
@@ -364,7 +399,7 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
                 </div>
               )}
               <div className="space-y-4">
-                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground block">
+                <span className="type-label text-foreground block">
                   Overview
                 </span>
                 <p className="text-foreground/75 text-base font-light leading-relaxed">
@@ -374,13 +409,13 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
 
               {drawerSpecs.length > 0 && (
                 <div>
-                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground block mb-6">
+                  <span className="type-label text-foreground block mb-6">
                     Specifications
                   </span>
                   <dl className="divide-y divide-line border-y border-line">
                     {drawerSpecs.map(({ key, label }) => (
                       <div key={key} className="flex gap-6 py-4">
-                        <dt className="w-32 shrink-0 text-[11px] font-black uppercase tracking-[0.2em] text-muted pt-0.5">
+                        <dt className="type-label w-32 shrink-0 text-muted pt-0.5">
                           {label}
                         </dt>
                         <dd className="text-base font-light text-foreground break-words leading-relaxed">
@@ -420,7 +455,7 @@ export function ProductsGrid({ categories }: { categories: ProductCategory[] }) 
 function ProductCard({
   product,
   onOpen,
-  reveal = true,
+  reveal = false,
 }: {
   product: Product;
   onOpen: () => void;
@@ -434,30 +469,39 @@ function ProductCard({
   return (
     <button
       onClick={onOpen}
-      className={`${reveal ? "pg-card " : ""}group text-left flex flex-col h-full bg-background p-8 lg:p-10 border-b border-r border-line transition-all duration-500 hover:bg-surface relative overflow-hidden cursor-pointer`}
+      data-cell={reveal || undefined}
+      className={`group text-left flex flex-col h-full bg-surface p-8 lg:p-10 border-b border-r border-line transition-colors duration-500 hover:bg-background relative overflow-hidden cursor-pointer`}
     >
-      <div className="flex items-start justify-between gap-4 mb-4 relative z-10">
-        <h3 className="text-base font-bold uppercase tracking-wider text-foreground leading-snug transition-colors group-hover:text-accent">
+      <div
+        data-cell-part={reveal || undefined}
+        className="flex items-start justify-between gap-4 mb-4 relative z-10"
+      >
+        <h3 className="font-heading text-lg font-semibold tracking-tight text-foreground leading-snug transition-colors group-hover:text-accent-ink">
           {product.name}
         </h3>
         <ArrowUpRight
           size={16}
-          className="shrink-0 text-muted group-hover:text-accent group-hover:scale-110 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-500"
+          className="shrink-0 text-muted group-hover:text-accent-ink group-hover:scale-110 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-500"
         />
       </div>
 
-      <p className="text-base font-light leading-relaxed text-foreground/75 line-clamp-3 mb-8 relative z-10">
+      <p
+        data-cell-part={reveal || undefined}
+        className="text-base font-light leading-relaxed text-foreground/75 line-clamp-3 mb-8 relative z-10"
+      >
         {product.description}
       </p>
 
       {keySpecs.length > 0 && (
-        <dl className="mt-auto flex flex-wrap gap-x-6 gap-y-3 pt-5 border-t border-line relative z-10 w-full">
+        <dl
+          data-cell-part={reveal || undefined}
+          className="mt-auto flex flex-wrap gap-x-6 gap-y-3 pt-5 border-t border-line relative z-10 w-full">
           {keySpecs.map(({ key, label }) => (
             <div key={key} className="min-w-0">
-              <dt className="text-[11px] font-black uppercase tracking-[0.2em] text-muted mb-0.5">
+              <dt className="type-label text-muted mb-0.5">
                 {label}
               </dt>
-              <dd className="text-[12px] font-medium text-foreground/80 truncate">
+              <dd className="text-sm text-foreground/80 truncate">
                 {product.spec[key]}
               </dd>
             </div>

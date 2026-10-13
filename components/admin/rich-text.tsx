@@ -56,8 +56,8 @@ function Btn({
 			title={label}
 			className={`flex h-8 w-8 items-center justify-center rounded-sm transition-colors disabled:opacity-30 cursor-pointer ${
 				active
-					? "bg-accent-500 text-black"
-					: "text-white/60 hover:bg-white/10 hover:text-white"
+					? "bg-cta text-white"
+					: "text-white/75 hover:bg-white/10 hover:text-white"
 			}`}
 		>
 			{children}
@@ -192,8 +192,8 @@ function Toolbar({ editor }: { editor: Editor }) {
 			</div>
 
 			{inTable && (
-				<div className="flex flex-wrap items-center gap-2 border-t border-white/10 px-2 py-1.5 text-[0.6rem] font-black uppercase tracking-[0.15em]">
-					<span className="text-white/30">Table</span>
+				<div className="type-label flex flex-wrap items-center gap-2 border-t border-white/10 px-2 py-1.5">
+					<span className="text-white/50">Table</span>
 					{[
 						{ l: "+ Row", f: () => editor.chain().focus().addRowAfter().run() },
 						{ l: "+ Col", f: () => editor.chain().focus().addColumnAfter().run() },
@@ -207,7 +207,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 							type="button"
 							onMouseDown={(e) => e.preventDefault()}
 							onClick={b.f}
-							className="rounded-sm px-2 py-1 text-white/55 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
+							className="rounded-sm px-2 py-1 text-white/70 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
 						>
 							{b.l}
 						</button>
@@ -246,7 +246,7 @@ export function RichText({
 					"[&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-white " +
 					"[&_h3]:mt-3 [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-white " +
 					"[&_p]:mb-3 [&_strong]:font-bold [&_strong]:text-white [&_em]:italic " +
-					"[&_u]:underline [&_s]:line-through [&_s]:text-white/60 " +
+					"[&_u]:underline [&_s]:line-through [&_s]:text-white/75 " +
 					"[&_mark]:rounded [&_mark]:bg-accent-500/30 [&_mark]:px-0.5 [&_mark]:text-white " +
 					"[&_a]:text-accent-500 [&_a]:underline " +
 					"[&_code]:rounded [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.85em] " +

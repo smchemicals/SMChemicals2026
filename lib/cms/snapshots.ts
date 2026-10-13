@@ -2,7 +2,11 @@ import { draftMode } from "next/headers";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createClient } from "@/lib/supabase/server";
 import { getSetting } from "@/lib/cms/settings";
-import { getCatalog, supabaseConfigured } from "@/lib/cms/products";
+import {
+	getCatalog,
+	supabaseConfigured,
+	withPopularDefaults,
+} from "@/lib/cms/products";
 import { diffData } from "@/lib/cms/diff";
 import {
 	defaultHome,
@@ -115,7 +119,9 @@ export const getPublishedCareers = async (): Promise<CareersContent> =>
 export const getPublishedCatalog = async (): Promise<ProductCategory[]> =>
 	(await isDraft())
 		? getCatalog()
-		: ((await published<ProductCategory[]>("products")) ?? productCategories);
+		: withPopularDefaults(
+				(await published<ProductCategory[]>("products")) ?? productCategories,
+			);
 
 export type PageStatus = "unpublished" | "clean" | "dirty";
 
@@ -161,7 +167,13 @@ export async function getDrafts(): Promise<PageDraft[]> {
 			});
 			continue;
 		}
-		const changes = diffData(snap.data, draft);
+		// Catalog snapshots published before the `popular` flag existed get the
+		// same defaults the public site uses, so only real edits count.
+		const published =
+			key === "products" && Array.isArray(snap.data)
+				? withPopularDefaults(snap.data as ProductCategory[])
+				: snap.data;
+		const changes = diffData(published, draft);
 		rows.push({
 			key,
 			label: SNAPSHOT_LABELS[key],

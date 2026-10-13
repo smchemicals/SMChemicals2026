@@ -4,17 +4,17 @@ import { useActionState } from "react";
 import { updateProfile, updatePassword, type AccountState } from "./actions";
 
 const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-4 text-white text-lg font-light outline-none transition-colors placeholder:text-white/20 focus:border-accent-500";
+	"w-full border-b border-white/15 bg-transparent py-4 text-white text-lg font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
 const labelCls =
-	"uppercase tracking-[0.3em] text-white/40 text-[0.6rem] font-black block mb-1";
+	"type-label text-white/60 block mb-1";
 const btnCls =
-	"group mt-2 inline-flex w-fit cursor-pointer items-center gap-3 bg-accent-500 px-8 py-4 uppercase tracking-[0.3em] text-black text-[0.7rem] font-black transition-colors hover:bg-white disabled:opacity-50";
+	"type-label group mt-2 inline-flex w-fit cursor-pointer items-center gap-3 bg-cta px-8 py-4 text-white transition-colors hover:bg-cta-hover disabled:opacity-50";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
 	return (
 		<div className="flex items-center gap-3">
 			<span className="h-px w-5 bg-accent-500/60" />
-			<h2 className="uppercase tracking-[0.3em] text-white/70 text-[0.66rem] font-black">
+			<h2 className="type-label text-white/70">
 				{children}
 			</h2>
 		</div>
@@ -24,7 +24,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 function Status({ state }: { state: AccountState }) {
 	if (state.error) return <p className="text-sm text-accent-500">{state.error}</p>;
 	if (state.success)
-		return <p className="text-sm text-white/50">{state.success}</p>;
+		return <p className="text-sm text-white/65">{state.success}</p>;
 	return null;
 }
 

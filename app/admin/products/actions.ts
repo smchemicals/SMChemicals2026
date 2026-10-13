@@ -51,7 +51,14 @@ function revalidate() {
 const CategorySchema = z.object({
 	name: z.string().trim().min(1, "Category name is required.").max(120),
 	blurb: z.string().trim().max(400).optional(),
+	popular: z.boolean(),
 });
+
+/* Friendlier message when migration 0009 (the `popular` column) hasn't run. */
+const MISSING_POPULAR =
+	"The “popular” column is missing — run supabase/migrations/0009_category_popular.sql.";
+const popularError = (message: string) =>
+	/popular/i.test(message) ? MISSING_POPULAR : message;
 
 export async function createCategory(
 	_prev: ActionState,
@@ -63,6 +70,7 @@ export async function createCategory(
 	const parsed = CategorySchema.safeParse({
 		name: formData.get("name"),
 		blurb: formData.get("blurb") ?? undefined,
+		popular: formData.get("popular") === "on",
 	});
 	if (!parsed.success)
 		return { error: parsed.error.issues[0]?.message ?? "Invalid category." };
@@ -78,6 +86,7 @@ export async function createCategory(
 		id,
 		name: parsed.data.name,
 		blurb: parsed.data.blurb ?? "",
+		popular: parsed.data.popular,
 		sort_order: count ?? 0,
 	});
 	if (error)
@@ -85,7 +94,7 @@ export async function createCategory(
 			error:
 				error.code === "23505"
 					? `A category “${id}” already exists.`
-					: error.message,
+					: popularError(error.message),
 		};
 
 	revalidate();
@@ -104,6 +113,7 @@ export async function updateCategory(
 	const parsed = CategorySchema.safeParse({
 		name: formData.get("name"),
 		blurb: formData.get("blurb") ?? undefined,
+		popular: formData.get("popular") === "on",
 	});
 	if (!id) return { error: "Missing category id." };
 	if (!parsed.success)
@@ -112,13 +122,42 @@ export async function updateCategory(
 	const admin = createAdminClient();
 	const { error } = await admin
 		.from("product_categories")
-		.update({ name: parsed.data.name, blurb: parsed.data.blurb ?? "" })
+		.update({
+			name: parsed.data.name,
+			blurb: parsed.data.blurb ?? "",
+			popular: parsed.data.popular,
+		})
 		.eq("id", id);
-	if (error) return { error: error.message };
+	if (error) return { error: popularError(error.message) };
 
 	revalidate();
 	await logActivity("edit", "Products", `Updated category “${parsed.data.name}”`);
 	return { ok: "Category updated." };
+}
+
+/* One-click "Popular on homepage" toggle from the category row. */
+export async function setCategoryPopular(
+	id: string,
+	popular: boolean,
+): Promise<RowResult> {
+	await requirePermission("products");
+	if (DEV_BYPASS && !supabaseConfigured()) return { error: DEV_NOTICE };
+	if (!id) return { error: "Missing category id." };
+
+	const admin = createAdminClient();
+	const { error } = await admin
+		.from("product_categories")
+		.update({ popular })
+		.eq("id", id);
+	if (error) return { error: popularError(error.message) };
+
+	revalidate();
+	await logActivity(
+		"edit",
+		"Products",
+		`${popular ? "Marked" : "Unmarked"} “${id}” as popular`,
+	);
+	return { ok: true };
 }
 
 export async function deleteCategory(id: string): Promise<RowResult> {

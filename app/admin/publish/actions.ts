@@ -34,6 +34,8 @@ function revalidateForKey(key: SnapshotKey) {
 			break;
 		case "products":
 			revalidatePath("/products");
+			// The homepage's Industrial Scopes reads the published catalog too.
+			revalidatePath("/");
 			break;
 	}
 }

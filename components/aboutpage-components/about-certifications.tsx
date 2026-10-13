@@ -14,17 +14,17 @@ export function AboutCertifications({content}: {content: AboutCertsSection}) {
     return (
         <section
             data-header-theme="dark"
-            className="bg-background py-32 overflow-hidden border-t border-line"
+            className="bg-background py-24 lg:py-32 overflow-hidden"
         >
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-7xl mx-auto px-6 sm:px-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-stretch">
 
                     <div className="lg:sticky lg:top-32 h-fit flex flex-col justify-start">
                         <Eyebrow className="mb-6">{content.eyebrow}</Eyebrow>
 
-                        <h2 className="text-6xl font-bold tracking-tighter text-foreground mb-8 leading-[0.85]">
+                        <h2 className="text-6xl font-semibold tracking-tight text-foreground mb-8 leading-none">
                             {content.heading} <br/>
-                            <span className="italic font-light text-muted">{content.headingAccent}</span>
+                            <span className="font-light text-muted">{content.headingAccent}</span>
                         </h2>
 
                         <p className="text-lg text-foreground/75 max-w-sm leading-relaxed mb-8 font-light">
@@ -40,17 +40,17 @@ export function AboutCertifications({content}: {content: AboutCertsSection}) {
                             return (
                             <div
                                 key={i}
-                                data-reveal
+                                data-cell
                                 className="p-12 bg-background hover:bg-surface transition-colors duration-300 group relative overflow-hidden flex flex-col justify-between"
                             >
                                 <Icon
-                                    className="w-6 h-6 text-accent mb-12 group-hover:scale-110 transition-all duration-500"
+                                    className="w-6 h-6 text-accent-ink mb-12 group-hover:scale-110 transition-all duration-500"
                                 />
                                 <div className="space-y-1 relative z-10">
                                     <div className="font-bold text-foreground text-xl tracking-tight">
                                         {item.title}
                                     </div>
-                                    <div className="text-[11px] text-muted uppercase tracking-[0.2em] font-bold">
+                                    <div className="type-label text-muted">
                                         {item.detail}
                                     </div>
                                 </div>

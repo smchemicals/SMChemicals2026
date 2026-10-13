@@ -4,7 +4,9 @@ import { useReveal } from "@/hooks/use-reveal";
 
 /*
  * The intro band at the top of every inner page: eyebrow, a two-tone title
- * and a short lead, over a navy ground with a soft brand-blue glow.
+ * and a short lead over the ice ground with a soft brand-blue glow. On wide
+ * screens the lead sits in a right-hand column, aligned to the title's base.
+ * The title is the largest type on the page, above every section heading.
  */
 export function PageHero({
 	eyebrow,
@@ -22,42 +24,38 @@ export function PageHero({
 	const scope = useReveal<HTMLDivElement>({ y: 16, blur: 4, stagger: 0.08 });
 
 	return (
-		<Tag
-			data-header-theme="dark"
-			className="relative overflow-hidden border-b border-line bg-background pt-40 pb-16 md:pb-20"
-		>
-			<BrandGlow />
-			<div
-				ref={scope}
-				className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10"
-			>
-				<Eyebrow data-reveal className="mb-6">
+		<Tag className="relative overflow-hidden bg-background pt-36 pb-12 md:pt-44 md:pb-16">
+			<BrandGlow className="[mask-image:linear-gradient(to_bottom,black_55%,transparent)]" />
+			<div ref={scope} className="relative z-10 mx-auto max-w-7xl px-6 sm:px-10">
+				<Eyebrow data-reveal className="mb-8">
 					{eyebrow}
 				</Eyebrow>
 
-				<h1
-					data-reveal
-					className="text-4xl font-bold leading-[0.95] tracking-tighter text-foreground md:text-6xl lg:text-7xl"
-				>
-					{title}
-					{titleAccent && (
-						<>
-							{" "}
-							<span className="font-light italic text-muted">
-								{titleAccent}
-							</span>
-						</>
-					)}
-				</h1>
-
-				{children && (
-					<p
+				<div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
+					<h1
 						data-reveal
-						className="mt-6 max-w-2xl text-base font-light leading-relaxed text-foreground/75 md:text-lg"
+						className="text-5xl font-semibold leading-none tracking-tight text-foreground sm:text-6xl md:text-7xl lg:col-span-7 lg:text-8xl"
 					>
-						{children}
-					</p>
-				)}
+						{title}
+						{titleAccent && (
+							<>
+								{" "}
+								<span className="font-light text-muted">
+									{titleAccent}
+								</span>
+							</>
+						)}
+					</h1>
+
+					{children && (
+						<p
+							data-reveal
+							className="max-w-xl text-base font-light leading-relaxed text-foreground/75 md:text-lg lg:col-span-5 lg:pb-2"
+						>
+							{children}
+						</p>
+					)}
+				</div>
 			</div>
 		</Tag>
 	);
@@ -72,7 +70,7 @@ export function Eyebrow({
 	return (
 		<div className={`flex items-center gap-3 ${className}`} {...rest}>
 			<span className="h-px w-8 bg-accent" />
-			<span className="text-[11px] font-bold uppercase tracking-[0.4em] text-accent">
+			<span className="type-label text-accent-ink">
 				{children}
 			</span>
 		</div>

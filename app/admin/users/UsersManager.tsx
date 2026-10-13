@@ -42,12 +42,12 @@ function Row({
 							{member.full_name?.trim() || member.email.split("@")[0]}
 						</span>
 						{isSelf && (
-							<span className="uppercase tracking-[0.2em] text-white/30 text-[0.55rem] font-black">
+							<span className="type-label text-white/50">
 								You
 							</span>
 						)}
 					</div>
-					<div className="text-white/45 text-[0.82rem] font-light tracking-wide">
+					<div className="text-white/65 text-[0.82rem] font-light tracking-wide">
 						{member.email}
 					</div>
 				</div>
@@ -62,7 +62,7 @@ function Row({
 								router.refresh();
 							})
 						}
-						className="cursor-pointer border border-white/15 bg-transparent px-3 py-2 text-white text-[0.7rem] font-bold uppercase tracking-[0.18em] outline-none transition-colors focus:border-accent-500 disabled:cursor-not-allowed disabled:text-white/30"
+						className="type-label cursor-pointer border border-white/15 bg-transparent px-3 py-2 text-white outline-none transition-colors focus:border-accent-500 disabled:cursor-not-allowed disabled:text-white/50"
 					>
 						{roles.map((r) => (
 							<option
@@ -77,7 +77,7 @@ function Row({
 					<button
 						type="button"
 						onClick={() => setShowPw((v) => !v)}
-						className="cursor-pointer uppercase tracking-[0.2em] text-white/55 text-[0.62rem] font-bold transition-colors hover:text-accent-500"
+						className="type-label cursor-pointer text-white/70 transition-colors hover:text-accent-500"
 					>
 						Password
 					</button>
@@ -98,7 +98,7 @@ function Row({
 									router.refresh();
 								});
 							}}
-							className="cursor-pointer uppercase tracking-[0.2em] text-white/55 text-[0.62rem] font-bold transition-colors hover:text-red-400 disabled:opacity-50"
+							className="type-label cursor-pointer text-white/70 transition-colors hover:text-red-400 disabled:opacity-50"
 						>
 							Remove
 						</button>
@@ -113,7 +113,7 @@ function Row({
 						value={pw}
 						onChange={(e) => setPw(e.target.value)}
 						placeholder="New password (min 8 chars)"
-						className="w-64 border-b border-white/15 bg-transparent py-2 text-white text-sm font-light outline-none placeholder:text-white/20 focus:border-accent-500"
+						className="w-64 border-b border-white/15 bg-transparent py-2 text-white text-sm font-light outline-none placeholder:text-white/40 focus:border-accent-500"
 					/>
 					<button
 						type="button"
@@ -128,7 +128,7 @@ function Row({
 								}
 							})
 						}
-						className="cursor-pointer bg-accent-500 px-5 py-2 uppercase tracking-[0.2em] text-black text-[0.6rem] font-black transition-colors hover:bg-white disabled:opacity-50"
+						className="type-label cursor-pointer bg-cta px-5 py-2 text-white transition-colors hover:bg-cta-hover disabled:opacity-50"
 					>
 						Set password
 					</button>

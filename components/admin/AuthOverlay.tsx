@@ -33,7 +33,7 @@ export default function AuthOverlay({
 					<span className="text-accent-500 text-4xl font-bold tracking-[0.2em] leading-none">
 						SM
 					</span>
-					<span className="uppercase tracking-[0.4em] text-white/70 text-[0.62rem] font-bold">
+					<span className="type-label text-white/70">
 						Chemicals CMS
 					</span>
 				</div>
@@ -45,7 +45,7 @@ export default function AuthOverlay({
 					/>
 				</div>
 
-				<span className="uppercase tracking-[0.32em] text-accent-500 text-[0.66rem] font-bold">
+				<span className="type-label text-accent-500">
 					{label}…
 				</span>
 			</div>

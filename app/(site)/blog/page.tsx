@@ -29,8 +29,8 @@ export default async function BlogPage() {
 				team.
 			</PageHero>
 
-			<section className="flex-1 bg-background py-20 lg:py-28">
-				<div className="max-w-7xl mx-auto px-6 lg:px-10">
+			<section className="flex-1 bg-background pt-12 pb-24 lg:pt-16 lg:pb-32">
+				<div className="max-w-7xl mx-auto px-6 sm:px-10">
 					{posts.length === 0 ? (
 						<p className="text-foreground/75 text-lg font-light">
 							No posts yet — check back soon.
@@ -54,10 +54,10 @@ export default async function BlogPage() {
 										</div>
 									)}
 									<div className="flex flex-1 flex-col p-7 lg:p-8">
-										<span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent mb-3">
+										<span className="type-label text-accent-ink mb-3">
 											{fmtDate(p.publishedAt)}
 										</span>
-										<h2 className="text-xl lg:text-2xl font-bold tracking-tight text-foreground leading-tight mb-3 group-hover:text-accent transition-colors">
+										<h2 className="text-xl lg:text-2xl font-semibold tracking-tight text-foreground leading-tight mb-3 group-hover:text-accent-ink transition-colors">
 											{p.title}
 										</h2>
 										{p.excerpt && (
@@ -65,7 +65,7 @@ export default async function BlogPage() {
 												{p.excerpt}
 											</p>
 										)}
-										<span className="mt-5 inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.3em] text-foreground">
+										<span className="type-label mt-5 inline-flex items-center gap-2 text-foreground">
 											Read
 											<span className="transition-transform duration-300 group-hover:translate-x-1">
 												→

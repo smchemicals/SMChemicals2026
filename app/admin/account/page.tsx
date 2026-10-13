@@ -11,17 +11,17 @@ export default async function AccountPage() {
 			<div className="mb-12">
 				<div className="mb-5 flex items-center gap-3">
 					<span className="h-px w-7 bg-accent-500" />
-					<span className="uppercase tracking-[0.5em] text-accent-500 text-[0.6rem] font-black">
+					<span className="type-label text-accent-500">
 						Account
 					</span>
 				</div>
-				<h1 className="text-white text-5xl font-bold tracking-tighter leading-[0.9]">
+				<h1 className="text-white text-4xl md:text-5xl font-semibold tracking-tight leading-none">
 					Your account
 				</h1>
-				<p className="mt-5 text-white/45 text-sm font-light tracking-wide">
+				<p className="mt-5 text-white/65 text-sm font-light tracking-wide">
 					{profile.email}
-					<span className="mx-2 text-white/20">/</span>
-					<span className="uppercase tracking-[0.2em] text-accent-500 text-xs font-bold">
+					<span className="mx-2 text-white/40">/</span>
+					<span className="type-label text-accent-500">
 						{profile.role}
 					</span>
 				</p>
