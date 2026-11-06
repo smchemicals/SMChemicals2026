@@ -1,3 +1,10 @@
 {
-  "crons": [{ "path": "/api/keepalive", "schedule": "0 6 * * *" }]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "schedules": {
+    "supabase-keepalive": {
+      "schedule": "0 6 * * *",
+      "path": "/api/keepalive",
+      "requestMethod": "GET"
+    }
+  }
 }
