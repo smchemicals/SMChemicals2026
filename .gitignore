@@ -17,6 +17,7 @@ supabase/migrations/
 supabase/README.md
 supabase/dev-seed.sql
 scripts/bootstrap-admin.mjs
+scripts/reset-mfa.mjs
 
 # Design Lab: local dev tool, never committed. Sync with
 # `node scripts/design-lab.mjs`; instrumentation-client.ts mounts it in dev.
