@@ -11,10 +11,11 @@ import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, X, ArrowLeft, Eye } from "lucide-react";
 import { ImageField } from "@/components/admin/ImageField";
 import { RichText } from "@/components/admin/rich-text";
+import { ConfirmAction } from "@/components/admin/confirm-action";
 import { savePost, deletePost, type BlogState } from "./actions";
 import type { BlogPost } from "@/data/blog";
 import { formatDate } from "@/lib/format-date";
-import { Notice, BTN, FIELD, ICON_BTN, LABEL, LINK_BTN, LINK_DANGER, Panel, Status, SaveResult } from "@/components/admin/ui";
+import { Notice, BTN, FIELD, ICON_BTN, LABEL, LINK_BTN, ICON_DANGER, Panel, Status, SaveResult } from "@/components/admin/ui";
 
 // The editor is a page of its own, so its fields take the surface colour.
 const inputCls = FIELD;
@@ -36,13 +37,11 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 	const [editing, setEditing] = useState<BlogPost | "new" | null>(null);
 	const [pending, start] = useTransition();
 	const [msg, setMsg] = useState<string | null>(null);
-	const [confirmId, setConfirmId] = useState<string | null>(null);
 
 	const onDelete = (p: BlogPost) =>
 		start(async () => {
 			const res = await deletePost(p.id);
 			setMsg(res.error ? res.error : "Post deleted.");
-			setConfirmId(null);
 			router.refresh();
 		});
 
@@ -61,9 +60,9 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 				</Panel>
 			) : (
 				<Panel>
-					<ul className="divide-y divide-line">
+					<ul className="-mx-4">
 						{posts.map((p) => (
-							<li key={p.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 py-4 first:pt-0 last:pb-0">
+							<li key={p.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-lg px-4 py-4 transition-colors hover:bg-foreground/5">
 								<div className="min-w-0">
 									<div className="flex flex-wrap items-center gap-3">
 										<span className="truncate font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">{p.title}</span>
@@ -72,29 +71,22 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 									<span className="text-sm text-muted">/blog/{p.slug}, {fmt(p.publishedAt)}</span>
 								</div>
 								<div className="flex shrink-0 items-center gap-1">
-									{confirmId === p.id ? (
-										<span className="inline-flex items-center gap-3 text-sm text-muted">
-											Delete this post?
-											<button type="button" disabled={pending} onClick={() => onDelete(p)} className={`${LINK_DANGER} font-semibold text-danger-ink`}>
-												Yes, delete
-											</button>
-											<button type="button" onClick={() => setConfirmId(null)} className={LINK_BTN}>
-												Keep
-											</button>
-										</span>
-									) : (
-										<>
-											<a href={`/preview?path=/blog/${p.slug}`} target="_blank" rel="noopener noreferrer" className={ICON_BTN} aria-label={`Preview ${p.title}`} title="Preview">
-												<Eye size={18} aria-hidden />
-											</a>
-											<button type="button" onClick={() => setEditing(p)} className={ICON_BTN} aria-label={`Edit ${p.title}`} title="Edit">
-												<Pencil size={18} aria-hidden />
-											</button>
-											<button type="button" onClick={() => setConfirmId(p.id)} className={`${ICON_BTN} hover:text-danger-ink`} aria-label={`Delete ${p.title}`} title="Delete">
-												<Trash2 size={18} aria-hidden />
-											</button>
-										</>
-									)}
+									<a href={`/preview?path=/blog/${p.slug}`} target="_blank" rel="noopener noreferrer" className={ICON_BTN} aria-label={`Preview ${p.title}`} title="Preview">
+										<Eye size={18} aria-hidden />
+									</a>
+									<button type="button" onClick={() => setEditing(p)} className={ICON_BTN} aria-label={`Edit ${p.title}`} title="Edit">
+										<Pencil size={18} aria-hidden />
+									</button>
+									<ConfirmAction
+										disabled={pending}
+										prompt={`Delete "${p.title}"?`}
+										warning={p.published ? "It disappears from the live site, and this can't be undone." : "This can't be undone."}
+										ariaLabel={`Delete ${p.title}`}
+										className={ICON_DANGER}
+										onConfirm={() => onDelete(p)}
+									>
+										<Trash2 size={18} aria-hidden />
+									</ConfirmAction>
 								</div>
 							</li>
 						))}

@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
+import { ConfirmAction } from "@/components/admin/confirm-action";
 import { SECTIONS } from "@/lib/permissions";
 import type { RoleRow } from "@/lib/cms/roles";
 import {
@@ -11,9 +12,9 @@ import {
 	setRolePermissions,
 	type RoleState,
 } from "./role-actions";
-import { FIELD_IN_PANEL, LABEL, BTN, Status, SaveResult } from "@/components/admin/ui";
+import { FIELD_ON_SURFACE, LABEL, BTN, ICON_DANGER, Status, SaveResult } from "@/components/admin/ui";
 
-const inputCls = FIELD_IN_PANEL;
+const inputCls = FIELD_ON_SURFACE;
 const labelCls = LABEL;
 const btnCls = BTN;
 
@@ -36,32 +37,29 @@ function RoleCard({
 		);
 
 	return (
-		<div className="rounded-xl bg-background p-5 md:p-6">
+		<div className="rounded-lg bg-surface p-5 md:p-6">
 			<div className="mb-5 flex items-center justify-between gap-4">
 				<div className="flex items-center gap-3">
 					<span className="font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">{role.label}</span>
 					{role.is_system && <Status tone="info">Built-in</Status>}
 				</div>
 				{!role.is_system && (
-					<button
-						type="button"
+					<ConfirmAction
 						disabled={pending}
-						onClick={() => {
-							if (!window.confirm(`Delete the “${role.label}” role?`)) return;
+						prompt={`Delete the ${role.label} role?`}
+						warning="Anyone with it loses their access. This can't be undone."
+						ariaLabel={`Delete the ${role.label} role`}
+						className={ICON_DANGER}
+						onConfirm={() =>
 							start(async () => {
 								const res = await deleteRole(role.key);
-								setMsg({
-									text: res.error ?? "Role deleted",
-									error: Boolean(res.error),
-								});
+								setMsg({ text: res.error ?? "Role deleted", error: Boolean(res.error) });
 								router.refresh();
-							});
-						}}
-						className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted outline-none transition-colors hover:text-danger-ink focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50"
-						aria-label={`Delete the ${role.label} role`}
+							})
+						}
 					>
 						<Trash2 size={18} aria-hidden />
-					</button>
+					</ConfirmAction>
 				)}
 			</div>
 
@@ -138,7 +136,7 @@ export function RolesManager({
 
 			<form
 				action={action}
-				className="rounded-xl bg-background p-5 md:p-6"
+				className="rounded-lg bg-surface p-5 md:p-6"
 			>
 				<h3 className="mb-4 font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">New role</h3>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">

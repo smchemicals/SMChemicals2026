@@ -178,3 +178,28 @@ export async function resetUserPassword(
 	await logActivity("reset_password", target.email);
 	return { ok: true };
 }
+
+/*
+ * For a teammate who has lost their phone: removes their authenticator so that the next sign-in asks them to set up a new
+ * one. Their password still has to be right first, so this never lets anyone in; it only lets them re-enrol.
+ */
+export async function resetMemberMfa(id: string): Promise<TeamResult> {
+	const actor = await requirePermission("users");
+	if (DEV_BYPASS && !supabaseConfigured()) return { error: DEV_NOTICE };
+	if (id === actor.id) return { error: "Turn off your own on the Account page." };
+
+	const target = await loadTarget(id);
+	if (!target) return { error: "User not found." };
+	if (target.role === "founder" && actor.role !== "founder")
+		return { error: "Only a founder can reset a founder's two-step sign-in." };
+
+	const admin = createAdminClient();
+	const { data, error } = await admin.auth.admin.mfa.listFactors({ userId: id });
+	if (error) return { error: error.message };
+	for (const f of data?.factors ?? []) {
+		const res = await admin.auth.admin.mfa.deleteFactor({ id: f.id, userId: id });
+		if (res.error) return { error: res.error.message };
+	}
+	await logActivity("reset_password", target.email, "Reset two-step sign-in");
+	return { ok: true };
+}

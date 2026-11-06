@@ -2,10 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateUserRole, deleteUser, resetUserPassword } from "./actions";
+import { updateUserRole, deleteUser, resetUserPassword, resetMemberMfa } from "./actions";
 import type { Member } from "@/lib/cms/users";
 import type { RoleRow } from "@/lib/cms/roles";
-import { BTN, FIELD_IN_PANEL, LINK_BTN, LINK_DANGER, Status } from "@/components/admin/ui";
+import { BTN, FIELD_IN_PANEL, LINK_BTN, Status } from "@/components/admin/ui";
+import { ConfirmAction } from "@/components/admin/confirm-action";
+import { Trash2 } from "lucide-react";
 import { Select } from "@/components/ui/select";
 
 function Row({
@@ -24,7 +26,6 @@ function Row({
 	const [msg, setMsg] = useState<{ text: string; error: boolean } | null>(null);
 	const [pw, setPw] = useState("");
 	const [showPw, setShowPw] = useState(false);
-	const [confirming, setConfirming] = useState(false);
 
 	const isSelf = member.id === currentUserId;
 	const canEditFounder = currentRole === "founder";
@@ -32,21 +33,20 @@ function Row({
 	const note = (text: string, error: boolean) => setMsg({ text, error });
 
 	return (
-		<li className="flex flex-col gap-4 py-5 first:pt-0 last:pb-0">
+		<li className="flex flex-col gap-4 rounded-lg px-4 py-5 transition-colors hover:bg-foreground/5">
 			<div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
 				<div className="min-w-0">
 					<div className="flex items-center gap-3">
 						<span className="font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">
 							{member.full_name?.trim() || member.email.split("@")[0]}
 						</span>
-						{isSelf && <Status tone="info">You</Status>}
+						{isSelf && <span className="text-sm text-muted">You</span>}
 					</div>
 					<div className="text-sm text-muted">{member.email}</div>
 				</div>
 				<div className="flex flex-wrap items-center gap-x-5 gap-y-3">
 					<div className={lockedRole || pending ? "pointer-events-none opacity-60" : ""}>
 						<Select
-							inPanel
 							size="md"
 							label={`Role for ${member.email}`}
 							value={member.role}
@@ -64,34 +64,40 @@ function Row({
 					<button type="button" onClick={() => setShowPw((v) => !v)} aria-expanded={showPw} className={LINK_BTN}>
 						Password
 					</button>
-					{!isSelf &&
-						(confirming ? (
-							<span className="inline-flex items-center gap-3 text-sm text-muted">
-								Delete this account?
-								<button
-									type="button"
-									disabled={pending}
-									onClick={() =>
-										start(async () => {
-											const res = await deleteUser(member.id);
-											note(res.error ?? "Removed", Boolean(res.error));
-											setConfirming(false);
-											router.refresh();
-										})
-									}
-									className={LINK_DANGER + " font-semibold text-danger-ink"}
-								>
-									Yes, remove
-								</button>
-								<button type="button" onClick={() => setConfirming(false)} className={LINK_BTN}>
-									Keep
-								</button>
-							</span>
-						) : (
-							<button type="button" disabled={pending} onClick={() => setConfirming(true)} className={LINK_DANGER}>
-								Remove
-							</button>
-						))}
+					{!isSelf && (
+						<ConfirmAction
+							disabled={pending}
+							prompt={`Reset two-step sign-in for ${member.email}?`}
+							warning="Use this if they lost their phone. They'll set up a new authenticator the next time they sign in with their password."
+							confirmLabel="Yes, reset it"
+							className={LINK_BTN}
+							onConfirm={() =>
+								start(async () => {
+									const res = await resetMemberMfa(member.id);
+									note(res.error ?? "Two-step sign-in reset", Boolean(res.error));
+								})
+							}
+						>
+							Reset two-step
+						</ConfirmAction>
+					)}
+					{!isSelf && (
+						<ConfirmAction
+							disabled={pending}
+							prompt={`Remove ${member.email}?`}
+							warning="Their account is deleted for good and they can no longer sign in."
+							confirmLabel="Yes, remove"
+							onConfirm={() =>
+								start(async () => {
+									const res = await deleteUser(member.id);
+									note(res.error ?? "Removed", Boolean(res.error));
+									router.refresh();
+								})
+							}
+						>
+							<Trash2 size={16} aria-hidden /> Remove
+						</ConfirmAction>
+					)}
 				</div>
 			</div>
 
@@ -143,8 +149,8 @@ export function UsersManager({
 	roles: RoleRow[];
 }) {
 	return (
-		<section className="rounded-xl bg-surface p-6 md:p-8">
-			<ul className="divide-y divide-line">
+		<section>
+			<ul className="-mx-4">
 				{members.map((m) => (
 					<Row key={m.id} member={m} currentUserId={currentUserId} currentRole={currentRole} roles={roles} />
 				))}

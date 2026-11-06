@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { saveCareers, type CareersState } from "./actions";
 import type { CareersContent, CareersIntro, CareersValue, JobOpening } from "@/data/careers";
-import { BTN, BTN_QUIET, FIELD_IN_PANEL as FIELD, Field, ICON_BTN, Panel, SaveResult } from "@/components/admin/ui";
+import { ConfirmAction } from "@/components/admin/confirm-action";
+import { BTN, BTN_QUIET, FIELD_IN_PANEL as FIELD, FIELD_ON_SURFACE, Field, ICON_DANGER, Panel, SaveResult } from "@/components/admin/ui";
 
-const INNER = FIELD.replace("bg-background", "bg-surface");
+const INNER = FIELD_ON_SURFACE;
 
 const emptyValue: CareersValue = { title: "", detail: "" };
 const emptyOpening: JobOpening = { id: "", title: "", department: "", type: "Full-time", location: "", description: "" };
@@ -28,7 +29,7 @@ export function CareersForm({ careers }: { careers: CareersContent }) {
 		setOpenings((p) => p.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
 
 	return (
-		<form action={action} className="space-y-8">
+		<form action={action} className="space-y-16">
 			<input type="hidden" name="payload" value={JSON.stringify({ intro, openings })} />
 
 			<Panel title="Introduction">
@@ -39,7 +40,7 @@ export function CareersForm({ careers }: { careers: CareersContent }) {
 				<h3 className="mb-3 mt-8 font-heading text-base font-semibold tracking-[-0.01em] text-foreground">What it is like to work here</h3>
 				<ul className="space-y-4">
 					{intro.values.map((v, i) => (
-						<li key={i} className="flex items-start gap-3 rounded-lg bg-background p-4">
+						<li key={i} className="flex items-start gap-3 rounded-lg bg-surface p-4 md:p-5">
 							<div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3">
 								<Field label="Title">
 									<input value={v.title} onChange={(e) => setValue(i, "title", e.target.value)} className={INNER} />
@@ -49,15 +50,7 @@ export function CareersForm({ careers }: { careers: CareersContent }) {
 								</Field>
 							</div>
 							<div className="mt-7">
-								<button
-									type="button"
-									onClick={() => setIntro((p) => ({ ...p, values: p.values.filter((_, j) => j !== i) }))}
-									aria-label={`Remove ${v.title || "point"}`}
-									title="Remove"
-									className={`${ICON_BTN} hover:text-danger-ink`}
-								>
-									<Trash2 size={18} aria-hidden />
-								</button>
+								<ConfirmAction prompt={`Remove ${v.title || "point"}?`} warning="Gone from this form until you save." confirmLabel="Yes, remove" ariaLabel={`Remove ${v.title || "point"}`} className={ICON_DANGER} onConfirm={() => setIntro((p) => ({ ...p, values: p.values.filter((_, j) => j !== i) }))}><Trash2 size={18} aria-hidden /></ConfirmAction>
 							</div>
 						</li>
 					))}
@@ -70,17 +63,9 @@ export function CareersForm({ careers }: { careers: CareersContent }) {
 			<Panel title="Open positions">
 				<ul className="space-y-4">
 					{openings.map((o, i) => (
-						<li key={i} className="relative rounded-lg bg-background p-4 md:p-5">
+						<li key={i} className="relative rounded-lg bg-surface p-4 md:p-5">
 							<div className="absolute right-3 top-3">
-								<button
-									type="button"
-									onClick={() => setOpenings((p) => p.filter((_, j) => j !== i))}
-									aria-label={`Remove ${o.title || "role"}`}
-									title="Remove"
-									className={`${ICON_BTN} hover:text-danger-ink`}
-								>
-									<Trash2 size={18} aria-hidden />
-								</button>
+								<ConfirmAction prompt={`Remove ${o.title || "role"}?`} warning="Gone from this form until you save." confirmLabel="Yes, remove" ariaLabel={`Remove ${o.title || "role"}`} className={ICON_DANGER} onConfirm={() => setOpenings((p) => p.filter((_, j) => j !== i))}><Trash2 size={18} aria-hidden /></ConfirmAction>
 							</div>
 							<div className="grid grid-cols-1 gap-4 pr-12 sm:grid-cols-2">
 								<Field label="Role">

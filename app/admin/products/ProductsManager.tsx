@@ -14,7 +14,7 @@ import {
 	deleteProduct,
 	type ActionState,
 } from "./actions";
-import { BTN, BTN_QUIET, FIELD, FIELD_IN_PANEL, ICON_BTN, LABEL, LINK_BTN, Field, Notice, Status } from "@/components/admin/ui";
+import { BTN, BTN_QUIET, FIELD, FIELD_IN_PANEL, FIELD_ON_SURFACE, ICON_BTN, ICON_DANGER, LABEL, LINK_BTN, Field, Notice, Status } from "@/components/admin/ui";
 import { ConfirmAction } from "@/components/admin/confirm-action";
 import { Select } from "@/components/ui/select";
 
@@ -96,7 +96,7 @@ export function ProductsManager({ categories }: { categories: ProductCategory[] 
 
 			{msg && <Notice tone="danger" className="mb-6">{msg}</Notice>}
 
-			<div className="space-y-8">
+			<div className="space-y-16">
 				{filtered.map((cat) => (
 					<section key={cat.id} aria-label={cat.name}>
 						{editingCat === cat.id ? (
@@ -115,7 +115,7 @@ export function ProductsManager({ categories }: { categories: ProductCategory[] 
 									<span className="text-sm tabular-nums text-muted">{cat.products.length} {cat.products.length === 1 ? "product" : "products"}</span>
 									{cat.popular && (
 										<Status tone="warn">
-											<Star size={12} aria-hidden className="fill-current" /> Popular
+											<Star size={14} aria-hidden className="fill-current" /> Popular
 										</Status>
 									)}
 								</div>
@@ -140,6 +140,7 @@ export function ProductsManager({ categories }: { categories: ProductCategory[] 
 									<ConfirmAction
 										disabled={pending}
 										prompt={cat.products.length ? `Delete ${cat.name} and its ${cat.products.length === 1 ? "product" : `${cat.products.length} products`}?` : `Delete ${cat.name}?`}
+										warning="They are removed from the catalogue draft, and this can't be undone. The live site changes only when you publish."
 										onConfirm={() => run(() => deleteCategory(cat.id))}
 									>
 										<Trash2 size={16} aria-hidden /> Delete
@@ -148,21 +149,19 @@ export function ProductsManager({ categories }: { categories: ProductCategory[] 
 							</div>
 						)}
 
-						<div className="rounded-xl bg-surface p-2 md:p-3">
+						<div className="-mx-3">
 							{cat.products.length === 0 ? (
-								<p className="px-4 py-3 text-base text-muted">No products yet.</p>
+								<p className="px-3 py-3 text-base text-muted md:px-4">No products yet.</p>
 							) : (
-								<ul className="divide-y divide-line">
+								<ul>
 									{cat.products.map((product) => (
-										<li key={product.id} className="flex items-center justify-between gap-4 px-3 py-3 md:px-4">
+										<li key={product.id} className="flex items-center justify-between gap-4 rounded-lg px-3 py-3 transition-colors hover:bg-foreground/5 md:px-4">
 											<div className="flex min-w-0 items-center gap-4">
 												{product.image ? (
 													// eslint-disable-next-line @next/next/no-img-element
-													<img src={product.image} alt="" loading="lazy" className="h-12 w-16 shrink-0 rounded-md bg-background object-cover" />
+													<img src={product.image} alt="" loading="lazy" className="h-12 w-16 shrink-0 rounded-md bg-surface object-cover" />
 												) : (
-													<span aria-hidden className="flex h-12 w-16 shrink-0 items-center justify-center rounded-md bg-background text-xs text-muted">
-														No photo
-													</span>
+													<span aria-hidden title="No photo yet" className="h-12 w-16 shrink-0 rounded-md bg-surface" />
 												)}
 												<div className="min-w-0">
 													<span className="block truncate text-base font-medium text-foreground">{product.name}</span>
@@ -181,8 +180,9 @@ export function ProductsManager({ categories }: { categories: ProductCategory[] 
 												<ConfirmAction
 													disabled={pending}
 													prompt={`Delete ${product.name}?`}
+													warning="It is removed from the catalogue draft, and this can't be undone. The live site changes only when you publish."
 													ariaLabel={`Delete ${product.name}`}
-													className={`${ICON_BTN} hover:text-danger-ink`}
+													className={ICON_DANGER}
 													onConfirm={() => run(() => deleteProduct(product.id))}
 												>
 													<Trash2 size={18} aria-hidden />
@@ -231,14 +231,14 @@ function CategoryForm({
 	}, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
-		<form action={formAction} className="mb-6 rounded-xl bg-surface p-5 md:p-6">
+		<form action={formAction} className="mb-6 rounded-lg bg-surface p-5 md:p-6">
 			{category && <input type="hidden" name="id" value={category.id} />}
 			<div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
 				<Field label="Category name">
-					<input name="name" defaultValue={category?.name} required placeholder="e.g. Boiler chemicals" className={FIELD_IN_PANEL} />
+					<input name="name" defaultValue={category?.name} required placeholder="e.g. Boiler chemicals" className={FIELD_ON_SURFACE} />
 				</Field>
 				<Field label="Short description">
-					<input name="blurb" defaultValue={category?.blurb} className={FIELD_IN_PANEL} />
+					<input name="blurb" defaultValue={category?.blurb} className={FIELD_ON_SURFACE} />
 				</Field>
 			</div>
 			<label className="mt-5 inline-flex cursor-pointer items-center gap-3 text-base text-foreground">

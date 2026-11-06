@@ -33,7 +33,7 @@ export default async function ActivityAdmin({
 			<PageHeader title="Activity">Every edit, publish and team change, most recent first.</PageHeader>
 			{DEV_BYPASS && <Notice tone="warn" className="mb-8">Dev mode: no activity is recorded until Supabase is connected.</Notice>}
 
-			<nav aria-label="Filter" className="mb-8 flex flex-wrap gap-2">
+			<nav aria-label="Filter" className="mb-12 flex flex-wrap gap-x-7 gap-y-2">
 				{Object.entries(FILTER_LABELS).map(([key, label]) => {
 					const isActive = active === key;
 					return (
@@ -41,8 +41,8 @@ export default async function ActivityAdmin({
 							key={key}
 							href={key === "all" ? "/admin/activity" : `/admin/activity?filter=${key}`}
 							aria-current={isActive ? "page" : undefined}
-							className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-								isActive ? "bg-foreground text-background" : "bg-surface text-muted hover:text-foreground"
+							className={`rounded py-1 font-heading text-lg tracking-[-0.02em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent ${
+								isActive ? "font-semibold text-foreground underline decoration-2 underline-offset-8" : "font-medium text-muted hover:text-foreground"
 							}`}
 						>
 							{label}
@@ -52,16 +52,14 @@ export default async function ActivityAdmin({
 			</nav>
 
 			{entries.length === 0 ? (
-				<Panel>
-					<p className="text-base text-muted">
-						{supabaseConfigured() ? "No activity recorded yet." : "Activity appears here once Supabase is connected."}
-					</p>
-				</Panel>
+				<p className="text-lg text-muted">
+					{supabaseConfigured() ? "No activity recorded yet." : "Activity appears here once Supabase is connected."}
+				</p>
 			) : (
-				<Panel>
-					<ul className="divide-y divide-line">
+				<section>
+					<ul className="-mx-4">
 						{entries.map((e) => (
-							<li key={e.id} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4 first:pt-0 last:pb-0">
+							<li key={e.id} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 rounded-lg px-4 py-4 transition-colors hover:bg-foreground/5">
 								<div className="min-w-0">
 									<span className="text-base font-medium text-foreground">{ACTION_LABELS[e.action] ?? e.action}</span>
 									{e.target && <span className="text-base text-muted">, {e.target}</span>}
@@ -74,7 +72,7 @@ export default async function ActivityAdmin({
 							</li>
 						))}
 					</ul>
-				</Panel>
+				</section>
 			)}
 		</div>
 	);

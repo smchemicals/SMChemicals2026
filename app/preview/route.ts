@@ -6,7 +6,7 @@ import { getProfile } from "@/lib/auth";
 // unpublished draft content is shown.
 export async function GET(request: Request) {
 	const profile = await getProfile();
-	if (!profile)
+	if (!profile || profile.mfa !== "ok")
 		return NextResponse.redirect(new URL("/admin/login", request.url));
 
 	const { searchParams } = new URL(request.url);

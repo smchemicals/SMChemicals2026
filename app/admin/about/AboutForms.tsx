@@ -12,15 +12,23 @@ import type {
 	TimelineItem,
 	CertSpec,
 } from "@/data/about";
-import { BTN, BTN_QUIET, FIELD_IN_PANEL as FIELD, Field, ICON_BTN, Panel, SaveResult } from "@/components/admin/ui";
+import { ConfirmAction } from "@/components/admin/confirm-action";
+import { BTN, BTN_QUIET, FIELD_IN_PANEL as FIELD, FIELD_ON_SURFACE, Field, ICON_DANGER, Panel, SaveResult } from "@/components/admin/ui";
 
 /* Every form here edits what the About page shows; a section saves on its own. */
 
 function Remove({ onClick, what }: { onClick: () => void; what: string }) {
 	return (
-		<button type="button" onClick={onClick} aria-label={`Remove ${what}`} title="Remove" className={`${ICON_BTN} hover:text-danger-ink`}>
+		<ConfirmAction
+			prompt={`Remove ${what}?`}
+			warning="It is gone from this form; nothing changes on the site until you save and publish."
+			confirmLabel="Yes, remove"
+			ariaLabel={`Remove ${what}`}
+			className={ICON_DANGER}
+			onConfirm={onClick}
+		>
 			<Trash2 size={18} aria-hidden />
-		</button>
+		</ConfirmAction>
 	);
 }
 
@@ -65,13 +73,13 @@ export function AboutValuesForm({ section }: { section: AboutValuesSection }) {
 
 				<ul className="mt-8 space-y-4">
 					{data.cards.map((c, i) => (
-						<li key={i} className="flex items-start gap-3 rounded-lg bg-background p-4">
+						<li key={i} className="flex items-start gap-3 rounded-lg bg-surface p-4 md:p-5">
 							<div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3">
 								<Field label="Title">
-									<input value={c.title} onChange={(e) => setCards(edit(data.cards, i, { title: e.target.value }))} className={FIELD.replace("bg-background", "bg-surface")} />
+									<input value={c.title} onChange={(e) => setCards(edit(data.cards, i, { title: e.target.value }))} className={FIELD_ON_SURFACE} />
 								</Field>
 								<Field label="Text" className="sm:col-span-2">
-									<input value={c.body} onChange={(e) => setCards(edit(data.cards, i, { body: e.target.value }))} className={FIELD.replace("bg-background", "bg-surface")} />
+									<input value={c.body} onChange={(e) => setCards(edit(data.cards, i, { body: e.target.value }))} className={FIELD_ON_SURFACE} />
 								</Field>
 							</div>
 							<div className="mt-7">
@@ -97,7 +105,7 @@ export function AboutTimelineForm({ section }: { section: AboutTimelineSection }
 	const [data, setData] = useState<AboutTimelineSection>(section);
 	useSavedRefresh(state);
 	const setItems = (items: TimelineItem[]) => setData((p) => ({ ...p, items }));
-	const inner = FIELD.replace("bg-background", "bg-surface");
+	const inner = FIELD_ON_SURFACE;
 
 	return (
 		<form action={action}>
@@ -114,7 +122,7 @@ export function AboutTimelineForm({ section }: { section: AboutTimelineSection }
 
 				<ul className="mt-8 space-y-4">
 					{data.items.map((it, i) => (
-						<li key={i} className="relative rounded-lg bg-background p-4 md:p-5">
+						<li key={i} className="relative rounded-lg bg-surface p-4 md:p-5">
 							<div className="absolute right-3 top-3">
 								<Remove what={it.title || "milestone"} onClick={() => setItems(data.items.filter((_, j) => j !== i))} />
 							</div>
@@ -149,7 +157,7 @@ export function AboutCertsForm({ section }: { section: AboutCertsSection }) {
 	const [data, setData] = useState<AboutCertsSection>(section);
 	useSavedRefresh(state);
 	const setSpecs = (specs: CertSpec[]) => setData((p) => ({ ...p, specs }));
-	const inner = FIELD.replace("bg-background", "bg-surface");
+	const inner = FIELD_ON_SURFACE;
 
 	return (
 		<form action={action}>
@@ -170,7 +178,7 @@ export function AboutCertsForm({ section }: { section: AboutCertsSection }) {
 
 				<ul className="mt-8 space-y-4">
 					{data.specs.map((sp, i) => (
-						<li key={i} className="flex items-start gap-3 rounded-lg bg-background p-4">
+						<li key={i} className="flex items-start gap-3 rounded-lg bg-surface p-4 md:p-5">
 							<div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
 								<Field label="Standard">
 									<input value={sp.title} onChange={(e) => setSpecs(edit(data.specs, i, { title: e.target.value }))} className={inner} />

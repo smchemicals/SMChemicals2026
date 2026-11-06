@@ -23,8 +23,7 @@ export default async function AnalyticsAdmin({ searchParams }: { searchParams: P
 			</PageHeader>
 
 			{!stats.available ? (
-				<Panel>
-					<div className="space-y-3 text-base text-muted">
+				<div className="max-w-2xl space-y-3 text-lg text-muted">
 						{stats.reason === "not-configured" ? (
 							<p>Views are counted once Supabase is connected.</p>
 						) : (
@@ -37,18 +36,17 @@ export default async function AnalyticsAdmin({ searchParams }: { searchParams: P
 							</>
 						)}
 						<p>The visit counts from Vercel Analytics are in your Vercel project, under Analytics. They are separate from this page.</p>
-					</div>
-				</Panel>
+				</div>
 			) : (
 				<>
-					<nav aria-label="Range" className="mb-8 flex flex-wrap gap-2">
+					<nav aria-label="Range" className="mb-14 flex flex-wrap gap-x-7 gap-y-2">
 						{RANGES.map((r) => (
 							<Link
 								key={r}
 								href={r === 30 ? "/admin/analytics" : `/admin/analytics?range=${r}`}
 								aria-current={days === r ? "page" : undefined}
-								className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-									days === r ? "bg-foreground text-background" : "bg-surface text-muted hover:text-foreground"
+								className={`rounded py-1 font-heading text-lg tracking-[-0.02em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent ${
+									days === r ? "font-semibold text-foreground underline decoration-2 underline-offset-8" : "font-medium text-muted hover:text-foreground"
 								}`}
 							>
 								Last {r} days
@@ -56,20 +54,20 @@ export default async function AnalyticsAdmin({ searchParams }: { searchParams: P
 						))}
 					</nav>
 
-					<dl className="grid gap-4 sm:grid-cols-3">
+					<dl className="grid gap-x-12 gap-y-10 sm:grid-cols-3">
 						{[
 							["Views", stats.total.toLocaleString("en-IN")],
 							["Today", stats.today.toLocaleString("en-IN")],
 							["Daily average", stats.average.toLocaleString("en-IN")],
 						].map(([k, v]) => (
-							<div key={k} className="rounded-xl bg-surface px-6 py-6">
-								<dt className="text-sm font-medium text-muted">{k}</dt>
-								<dd className="mt-3 font-heading text-4xl font-semibold tracking-[-0.04em] tabular-nums text-foreground">{v}</dd>
+							<div key={k}>
+								<dd className="font-heading text-[clamp(3rem,6vw,5rem)] font-semibold leading-none tracking-[-0.05em] tabular-nums text-foreground">{v}</dd>
+								<dt className="mt-3 text-lg text-muted">{k}</dt>
 							</div>
 						))}
 					</dl>
 
-					<Panel title="Per day" className="mt-8">
+					<Panel title="Per day" className="mt-20">
 						<div className="flex h-44 items-end gap-[3px]" role="img" aria-label={`Views per day over the last ${days} days`}>
 							{(() => {
 								const max = Math.max(1, ...stats.perDay.map((d) => d.views));
@@ -86,13 +84,13 @@ export default async function AnalyticsAdmin({ searchParams }: { searchParams: P
 						</div>
 					</Panel>
 
-					<Panel title="Most viewed pages" className="mt-8">
+					<Panel title="Most viewed pages" className="mt-20">
 						{stats.pages.length === 0 ? (
 							<p className="text-base text-muted">No views yet. They appear here once the live site has visitors.</p>
 						) : (
-							<ul className="divide-y divide-line">
+							<ul className="-mx-4">
 								{stats.pages.map((p) => (
-									<li key={p.path} className="flex items-baseline justify-between gap-6 py-3">
+									<li key={p.path} className="flex items-baseline justify-between gap-6 rounded-lg px-4 py-3 transition-colors hover:bg-foreground/5">
 										<span className="min-w-0 truncate text-base text-foreground">{label(p.path)}</span>
 										<span className="shrink-0 text-base tabular-nums text-foreground">
 											{p.views.toLocaleString("en-IN")}

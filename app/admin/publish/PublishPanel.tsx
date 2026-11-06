@@ -6,7 +6,8 @@ import { ArrowUpRight } from "lucide-react";
 import { publishPage, publishAll, discardPage } from "./actions";
 import type { PageDraft, PageStatus } from "@/lib/cms/snapshots";
 import { formatDateTime } from "@/lib/format-date";
-import { BTN, BTN_QUIET, LINK_BTN, LINK_DANGER, Panel, Status } from "@/components/admin/ui";
+import { BTN, BTN_QUIET, LINK_BTN, Panel, Status } from "@/components/admin/ui";
+import { ConfirmAction } from "@/components/admin/confirm-action";
 
 function StatusChip({ status, count }: { status: PageStatus; count: number }) {
 	if (status === "dirty") return <Status tone="warn">{count} unpublished change{count === 1 ? "" : "s"}</Status>;
@@ -19,12 +20,11 @@ function Item({ row }: { row: PageDraft }) {
 	const [pending, start] = useTransition();
 	const [msg, setMsg] = useState("");
 	const [open, setOpen] = useState(false);
-	const [confirming, setConfirming] = useState(false);
 
 	const when = row.publishedAt ? `Published ${formatDateTime(row.publishedAt)}` : "Not published yet, nothing live";
 
 	return (
-		<li className="py-5 first:pt-0 last:pb-0">
+		<li className="rounded-lg px-4 py-5 transition-colors hover:bg-foreground/5">
 			<div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
 				<div className="min-w-0">
 					<div className="flex flex-wrap items-center gap-3">
@@ -39,35 +39,23 @@ function Item({ row }: { row: PageDraft }) {
 							<button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} className={LINK_BTN}>
 								{open ? "Hide changes" : "Review changes"}
 							</button>
-							{confirming ? (
-								<span className="inline-flex items-center gap-3 text-sm text-muted">
-									Restore the live version?
-									<button
-										type="button"
-										disabled={pending}
-										className={`${LINK_DANGER} font-semibold text-danger-ink`}
-										onClick={() =>
-											start(async () => {
-												setMsg("");
-												const res = await discardPage(row.key);
-												setMsg(res.error ? res.error : "Draft discarded");
-												setOpen(false);
-												setConfirming(false);
-												router.refresh();
-											})
-										}
-									>
-										Yes, discard
-									</button>
-									<button type="button" onClick={() => setConfirming(false)} className={LINK_BTN}>
-										Keep
-									</button>
-								</span>
-							) : (
-								<button type="button" disabled={pending} onClick={() => setConfirming(true)} className={LINK_DANGER}>
-									Discard
-								</button>
-							)}
+							<ConfirmAction
+								disabled={pending}
+								prompt={`Discard your changes to ${row.label}?`}
+								warning="The live version comes back and your unpublished edits are lost."
+								confirmLabel="Yes, discard"
+								onConfirm={() =>
+									start(async () => {
+										setMsg("");
+										const res = await discardPage(row.key);
+										setMsg(res.error ? res.error : "Draft discarded");
+										setOpen(false);
+										router.refresh();
+									})
+								}
+							>
+								Discard changes
+							</ConfirmAction>
 						</>
 					)}
 					{row.status !== "clean" && (
@@ -97,7 +85,7 @@ function Item({ row }: { row: PageDraft }) {
 				</div>
 			</div>
 			{open && row.changes.length > 0 && (
-				<ul className="mt-4 space-y-1.5 rounded-lg bg-background px-4 py-3">
+				<ul className="mt-4 space-y-1.5 rounded-lg bg-surface px-4 py-3">
 					{row.changes.map((c, i) => (
 						<li key={i} className="text-sm leading-relaxed text-muted">
 							{c}
@@ -117,12 +105,12 @@ export function PublishPanel({ pages }: { pages: PageDraft[] }) {
 
 	return (
 		<Panel>
-			<ul className="divide-y divide-line">
+			<ul className="-mx-4">
 				{pages.map((row) => (
 					<Item key={row.key} row={row} />
 				))}
 			</ul>
-			<div className="mt-8 flex flex-wrap items-center gap-4">
+			<div className="mt-10 flex flex-wrap items-center gap-4">
 				<button
 					type="button"
 					disabled={pending || dirty === 0}

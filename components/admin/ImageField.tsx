@@ -228,7 +228,7 @@ export function ImageField({
 						>
 							<Crop size={16} aria-hidden /> Crop
 						</button>
-						<button type="button" onClick={() => onChange("")} className={overlayBtn}>
+						<button type="button" onClick={() => onChange("")} className={`${overlayBtn} !text-danger`}>
 							<X size={16} aria-hidden /> Remove
 						</button>
 					</div>

@@ -5,10 +5,8 @@ import Script from "next/script";
 import { login } from "./actions";
 import AuthOverlay from "@/components/admin/AuthOverlay";
 import { BTN, Field, Notice } from "@/components/admin/ui";
+import { AuthScreen, AUTH_FIELD, AUTH_LABEL } from "@/components/admin/AuthScreen";
 
-// On the page itself the field is the surface colour.
-const FIELD =
-	"w-full rounded-lg bg-surface px-4 py-3 text-[0.9375rem] text-foreground outline-none ring-2 ring-transparent transition-shadow placeholder:text-muted/70 hover:ring-foreground/15 focus:ring-accent";
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
@@ -88,33 +86,34 @@ export default function AdminLoginPage() {
 	}, [state]);
 
 	return (
-		<div className="flex min-h-dvh items-center justify-center bg-background px-6 py-16 selection:bg-accent selection:text-background">
+		<AuthScreen title="Sign in">
 			<AuthOverlay show={pending} label="Signing you in" />
 			{SITE_KEY && (
 				<Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" />
 			)}
-			<div className="w-full max-w-sm">
-				<h1 className="mb-2 font-heading text-5xl font-semibold leading-none tracking-[-0.04em] text-foreground">Sign in</h1>
-				<p className="mb-10 text-base text-muted">SM Chemicals team</p>
-
-				<form action={formAction} className="flex flex-col gap-6">
-					<input type="hidden" name="next" value={next} />
-					{SITE_KEY && <input type="hidden" name="cf-turnstile-response" value={token} />}
-					<Field label="Email">
-						<input type="email" name="email" required autoFocus autoComplete="username" placeholder="you@smchemicals.co.in" className={FIELD} />
+			<form action={formAction} className="flex flex-col gap-6">
+				<input type="hidden" name="next" value={next} />
+				{SITE_KEY && <input type="hidden" name="cf-turnstile-response" value={token} />}
+				<div data-in>
+					<Field label="Email" className={AUTH_LABEL}>
+						<input type="email" name="email" required autoFocus autoComplete="username" placeholder="you@smchemicals.co.in" className={AUTH_FIELD} />
 					</Field>
-					<Field label="Password">
-						<input type="password" name="password" required autoComplete="current-password" className={FIELD} />
+				</div>
+				<div data-in>
+					<Field label="Password" className={AUTH_LABEL}>
+						<input type="password" name="password" required autoComplete="current-password" className={AUTH_FIELD} />
 					</Field>
+				</div>
 
-					{SITE_KEY && <div ref={boxRef} className="min-h-16.25" />}
+				{SITE_KEY && <div ref={boxRef} data-in className="min-h-16.25" />}
 
-					<button type="submit" disabled={pending} className={`${BTN} h-12 w-full`}>
+				<div data-in>
+					<button type="submit" disabled={pending} className={`${BTN} !h-14 w-full !text-lg sm:w-auto sm:!px-10`}>
 						{pending ? "Signing in…" : "Sign in"}
 					</button>
-					{state.error && <Notice tone="danger">{state.error}</Notice>}
-				</form>
-			</div>
-		</div>
+				</div>
+				{state.error && <Notice tone="danger">{state.error}</Notice>}
+			</form>
+		</AuthScreen>
 	);
 }

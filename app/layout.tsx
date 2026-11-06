@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Sora, Instrument_Serif } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
+import { SiteAnalytics } from '@/components/site-analytics'
 import './globals.css'
 import { SITE } from '@/lib/site'
 
@@ -79,7 +79,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         {children}
-        <Analytics />
+        <SiteAnalytics />
       </body>
     </html>
   )

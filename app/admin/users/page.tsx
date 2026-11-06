@@ -23,13 +23,13 @@ export default async function UsersRoute() {
 
 			<UsersManager members={members} currentUserId={profile.id} currentRole={profile.role} roles={roles} />
 
-			<Panel title="Add a team member" className="mt-8">
-				<p className="-mt-3 mb-6 text-base text-muted">They sign in with the email and password you set here.</p>
+			<Panel title="Add a team member" className="mt-20">
+				<p className="-mt-3 mb-8 text-lg text-muted">They sign in with the email and password you set here.</p>
 				<AdminInvite roles={roles} />
 			</Panel>
 
-			<Panel title="Roles and permissions" className="mt-8">
-				<p className="-mt-3 mb-6 max-w-xl text-base text-muted">Create roles and choose which sections each one can open. Founder always has full access.</p>
+			<Panel title="Roles and permissions" className="mt-20">
+				<p className="-mt-3 mb-8 max-w-xl text-lg text-muted">Create roles and choose which sections each one can open. Founder always has full access.</p>
 				<RolesManager roles={roles} permsByRole={permsByRole} />
 			</Panel>
 		</div>

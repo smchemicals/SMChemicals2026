@@ -21,7 +21,7 @@ export default async function AboutAdmin() {
 			</PageHeader>
 			{DEV_BYPASS && <Notice tone="warn" className="mb-8">Dev mode: showing the built-in content. Connect Supabase to save edits.</Notice>}
 
-			<div className="space-y-8">
+			<div className="space-y-16">
 				<AboutValuesForm section={about.values} />
 				<AboutTimelineForm section={about.timeline} />
 				<AboutCertsForm section={about.certifications} />

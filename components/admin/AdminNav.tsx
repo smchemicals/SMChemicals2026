@@ -2,26 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-	LayoutGrid,
-	FlaskConical,
-	FileText,
-	Info,
-	Briefcase,
-	Newspaper,
-	Send,
-	Activity,
-	BarChart3,
-	Users,
-	UserRound,
-	type LucideIcon,
-} from "lucide-react";
 
-type NavLink = { href: string; label: string; icon: LucideIcon };
+type NavLink = { href: string; label: string };
 type NavGroup = { title: string | null; links: NavLink[] };
 
 /* Every admin section, grouped, filtered by the user's permissions. */
-function useGroups(permissions: string[]): NavGroup[] {
+export function useGroups(permissions: string[]): NavGroup[] {
 	const can = (section: string) => permissions.includes(section);
 	const pick = (links: (NavLink & { needs?: string })[]) =>
 		links.filter((l) => !l.needs || can(l.needs));
@@ -29,69 +15,70 @@ function useGroups(permissions: string[]): NavGroup[] {
 	return [
 		{
 			title: null,
-			links: [{ href: "/admin", label: "Overview", icon: LayoutGrid }],
+			links: [{ href: "/admin", label: "Overview" }],
 		},
 		{
 			title: "Content",
 			links: pick([
-				{ href: "/admin/products", label: "Products", icon: FlaskConical, needs: "products" },
-				{ href: "/admin/content", label: "Home & Contact", icon: FileText, needs: "content" },
-				{ href: "/admin/about", label: "About", icon: Info, needs: "about" },
-				{ href: "/admin/careers", label: "Careers", icon: Briefcase, needs: "careers" },
-				{ href: "/admin/blog", label: "Blog", icon: Newspaper, needs: "blog" },
+				{ href: "/admin/products", label: "Products", needs: "products" },
+				{ href: "/admin/content", label: "Home and contact", needs: "content" },
+				{ href: "/admin/about", label: "About", needs: "about" },
+				{ href: "/admin/careers", label: "Careers", needs: "careers" },
+				{ href: "/admin/blog", label: "Blog", needs: "blog" },
 			]),
 		},
 		{
 			title: "Workflow",
 			links: pick([
-				{ href: "/admin/publish", label: "Publish", icon: Send, needs: "publish" },
-				{ href: "/admin/analytics", label: "Analytics", icon: BarChart3, needs: "activity" },
-				{ href: "/admin/activity", label: "Activity", icon: Activity, needs: "activity" },
+				{ href: "/admin/publish", label: "Publish", needs: "publish" },
+				{ href: "/admin/analytics", label: "Analytics", needs: "activity" },
+				{ href: "/admin/activity", label: "Activity", needs: "activity" },
 			]),
 		},
 		{
 			title: "Team",
 			links: pick([
-				{ href: "/admin/users", label: "Users", icon: Users, needs: "users" },
-				{ href: "/admin/account", label: "Account", icon: UserRound },
+				{ href: "/admin/users", label: "Team", needs: "users" },
+				{ href: "/admin/account", label: "Account" },
 			]),
 		},
 	].filter((g) => g.links.length > 0);
 }
 
-function useActive() {
+export function useActive() {
 	const path = usePathname();
 	return (href: string) =>
 		href === "/admin" ? path === "/admin" : path.startsWith(href);
 }
 
-/* Desktop: a fixed left rail with grouped sections. */
+/*
+ * The rail. A solid column fixed to the left edge, full height, so it reads as part of the frame and not something floating
+ * on the page. Every entry is a full-width row you can see is a target; the page you are on is filled in solid (the
+ * colours swapped, like the site's own buttons), the others tint on hover. Short labels name the three groups.
+ */
 export function AdminSidebar({ permissions }: { permissions: string[] }) {
 	const groups = useGroups(permissions);
 	const active = useActive();
 
 	return (
-		<nav aria-label="Admin" className="flex flex-col gap-7 px-4 py-8">
-			{groups.map((g) => (
-				<div key={g.title ?? "main"}>
-					{g.title && (
-						<p className="mb-2 px-3 text-sm font-medium text-muted/80">{g.title}</p>
-					)}
-					<ul className="space-y-0.5">
-						{g.links.map(({ href, label, icon: Icon }) => {
+		<nav aria-label="Admin" className="flex flex-col gap-5 px-3 pb-4 pt-1">
+			{groups.map((g, gi) => (
+				<div key={gi}>
+					{g.title && <p className="mb-1.5 px-3 text-sm font-medium text-muted/80">{g.title}</p>}
+					<ul className="space-y-1">
+						{g.links.map(({ href, label }) => {
 							const on = active(href);
 							return (
 								<li key={href}>
 									<Link
 										href={href}
 										aria-current={on ? "page" : undefined}
-										className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.9375rem] transition-colors ${
-											on ? "bg-foreground/8 text-foreground" : "text-muted hover:bg-foreground/5 hover:text-foreground"
+										className={`flex h-10 items-center rounded-md px-3 font-heading text-base tracking-[-0.02em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
+											on
+												? "bg-foreground font-semibold text-background"
+												: "font-medium text-foreground/80 hover:bg-foreground/10 hover:text-foreground"
 										}`}
 									>
-										<Icon
-											className={`h-4 w-4 shrink-0 ${on ? "text-accent-ink" : "text-muted group-hover:text-foreground"}`}
-										/>
 										{label}
 									</Link>
 								</li>
@@ -100,36 +87,6 @@ export function AdminSidebar({ permissions }: { permissions: string[] }) {
 					</ul>
 				</div>
 			))}
-		</nav>
-	);
-}
-
-/* Mobile and tablet: the same sections as one scrollable row. */
-export function AdminNav({ permissions }: { permissions: string[] }) {
-	const links = useGroups(permissions).flatMap((g) => g.links);
-	const active = useActive();
-
-	return (
-		<nav
-			aria-label="Admin"
-			className="flex items-center gap-1 overflow-x-auto px-4 py-2 scrollbar-none"
-		>
-			{links.map(({ href, label, icon: Icon }) => {
-				const on = active(href);
-				return (
-					<Link
-						key={href}
-						href={href}
-						aria-current={on ? "page" : undefined}
-						className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
-							on ? "bg-foreground/8 text-foreground" : "text-muted hover:text-foreground"
-						}`}
-					>
-						<Icon className={`h-3.5 w-3.5 ${on ? "text-accent-ink" : "text-muted"}`} />
-						{label}
-					</Link>
-				);
-			})}
 		</nav>
 	);
 }

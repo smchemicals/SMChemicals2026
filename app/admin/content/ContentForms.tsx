@@ -23,7 +23,7 @@ export function HomeForm({ home }: { home: HomeContent }) {
 				: `${list.slice(0, -1).join(", ")}, and ${list[list.length - 1]}`;
 
 	return (
-		<form action={action} className="space-y-8">
+		<form action={action} className="space-y-16">
 			<Panel title="Hero and sectors">
 				<div className="grid gap-6 lg:grid-cols-2">
 					<Field
@@ -38,7 +38,7 @@ export function HomeForm({ home }: { home: HomeContent }) {
 				</div>
 
 				<div className="mt-6 space-y-3">
-					<p className="rounded-lg bg-background px-4 py-3 text-base text-foreground">
+					<p className="text-base text-foreground">
 						<span className="text-muted">In the hero: High-precision chemistry for </span>
 						{list.map((w, i) => (
 							<span key={i}>
@@ -47,7 +47,7 @@ export function HomeForm({ home }: { home: HomeContent }) {
 						))}
 					</p>
 					{sentence && (
-						<p className="rounded-lg bg-background px-4 py-3 text-base text-foreground">
+						<p className="text-base text-foreground">
 							<span className="text-muted">Under the hero: We supply </span>chemicals<span className="text-muted"> for </span>
 							{sentence}.
 						</p>

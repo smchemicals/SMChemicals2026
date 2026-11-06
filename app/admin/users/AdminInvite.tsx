@@ -41,7 +41,7 @@ export function AdminInvite({ roles }: { roles: RoleRow[] }) {
 				<div className="flex flex-col gap-2">
 					<span className={labelCls} id="invite-role">Role</span>
 					<input type="hidden" name="role" value={role} />
-					<Select inPanel size="md" label="Role" value={role} onChange={setRole} options={assignable.map((r) => ({ value: r.key, label: r.label }))} />
+					<Select size="md" label="Role" value={role} onChange={setRole} options={assignable.map((r) => ({ value: r.key, label: r.label }))} />
 				</div>
 				<label className="flex flex-col gap-2">
 					<span className={labelCls}>Temporary password</span>
