@@ -21,7 +21,7 @@ export default async function AdminLayout({
 	const permissions = profile?.permissions ?? [];
 
 	return (
-		<div data-surface="inverse" className="relative min-h-dvh bg-deep text-white antialiased [color-scheme:dark] selection:bg-accent-500 selection:text-black">
+		<div data-surface="inverse" className="relative min-h-dvh bg-deep text-white antialiased scheme-dark selection:bg-accent-500 selection:text-black">
 			<div
 				className="pointer-events-none fixed inset-0 z-0 opacity-[0.06]"
 				style={{

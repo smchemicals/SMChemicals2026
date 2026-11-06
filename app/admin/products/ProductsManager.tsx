@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState, useActionState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Plus, X, Pencil, Trash2, Upload, Star } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { Search, Plus, X, Pencil, Trash2, Star } from "lucide-react";
+import { ImageField } from "@/components/admin/ImageField";
 import type { Product, ProductCategory, ProductSpec } from "@/data/products";
 import {
 	createCategory,
@@ -81,7 +81,7 @@ export function ProductsManager({
 	return (
 		<div>
 			<div className="mb-8 flex flex-wrap items-center gap-4">
-				<div className="relative flex-1 min-w-[12rem]">
+				<div className="relative flex-1 min-w-48">
 					<Search
 						size={15}
 						className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-white/50"
@@ -286,7 +286,7 @@ function CategoryForm({
 	return (
 		<form
 			action={formAction}
-			className="mb-8 border border-white/10 bg-white/[0.02] p-6"
+			className="mb-8 border border-white/10 bg-white/2 p-6"
 		>
 			{category && <input type="hidden" name="id" value={category.id} />}
 			<div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -348,38 +348,7 @@ function ProductDrawer({
 	onSaved: () => void;
 }) {
 	const [state, formAction, pending] = useActionState(saveProduct, {} as ActionState);
-	const supabase = useMemo(() => createClient(), []);
 	const [imageUrl, setImageUrl] = useState(product?.image ?? "");
-	const [uploading, setUploading] = useState(false);
-	const [imgErr, setImgErr] = useState<string | null>(null);
-
-	const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (!file) return;
-		if (!file.type.startsWith("image/")) {
-			setImgErr("Choose an image file.");
-			return;
-		}
-		if (file.size > 5 * 1024 * 1024) {
-			setImgErr("Image must be under 5 MB.");
-			return;
-		}
-		setImgErr(null);
-		setUploading(true);
-		const ext = file.name.split(".").pop() || "jpg";
-		const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-		const { error } = await supabase.storage
-			.from("product-images")
-			.upload(path, file, { cacheControl: "3600", upsert: false });
-		if (error) {
-			setImgErr(error.message);
-			setUploading(false);
-			return;
-		}
-		const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-		setImageUrl(data.publicUrl);
-		setUploading(false);
-	};
 
 	useEffect(() => {
 		if (state.ok) onSaved();
@@ -392,7 +361,7 @@ function ProductDrawer({
 	}, [onClose]);
 
 	return (
-		<div className="fixed inset-0 z-[1100] flex justify-end">
+		<div className="fixed inset-0 z-1100 flex justify-end">
 			<div
 				className="absolute inset-0 bg-black/60 backdrop-blur-sm"
 				onClick={onClose}
@@ -455,37 +424,14 @@ function ProductDrawer({
 
 						<div className="flex flex-col gap-1.5">
 							<span className={labelCls}>Image</span>
-							{imageUrl ? (
-								<div className="relative overflow-hidden rounded-sm border border-white/10">
-									{/* eslint-disable-next-line @next/next/no-img-element */}
-									<img
-										src={imageUrl}
-										alt=""
-										className="h-40 w-full object-cover"
-									/>
-									<button
-										type="button"
-										onClick={() => setImageUrl("")}
-										className="absolute right-2 top-2 rounded-sm bg-black/70 p-1 text-white/80 transition-colors hover:text-white cursor-pointer"
-										aria-label="Remove image"
-									>
-										<X size={14} />
-									</button>
-								</div>
-							) : (
-								<label className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-dashed border-white/15 py-6 text-white/65 text-xs transition-colors hover:border-accent-500 hover:text-accent-500">
-									<Upload size={14} />
-									{uploading ? "Uploading…" : "Upload image (PNG/JPG, ≤5MB)"}
-									<input
-										type="file"
-										accept="image/*"
-										onChange={onUpload}
-										disabled={uploading}
-										className="hidden"
-									/>
-								</label>
-							)}
-							{imgErr && <span className="text-red-400 text-xs">{imgErr}</span>}
+							<ImageField
+								value={imageUrl}
+								onChange={setImageUrl}
+								bucket="product-images"
+								aspect={4 / 3}
+								variant="product"
+								hint="JPG, PNG or WebP, max 5 MB. You'll fit it to the product panel before it uploads."
+							/>
 						</div>
 					</div>
 

@@ -1,94 +1,129 @@
 "use client";
 
-import React from "react";
-import {Shield, Microscope, Truck, Zap} from "lucide-react";
-import {useSection} from "@/hooks/use-section";
-import {Eyebrow} from "@/components/ui/page-hero";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
 
-const features = [
-    {
-        name: "QC Compliance",
-        stat: "99.9%",
-        description: "Standardized purity across all batches.",
-        icon: Shield,
-    },
-    {
-        name: "Rapid Prototyping",
-        stat: "12d",
-        description: "Agile R&D for bespoke formulations.",
-        icon: Microscope,
-    },
-    {
-        name: "On-Time Delivery",
-        stat: "100%",
-        description: "Reliable logistics across industrial hubs.",
-        icon: Truck,
-    },
-    {
-        name: "Expert Lead Time",
-        stat: "24h",
-        description: "Direct engineering support and dispatch.",
-        icon: Zap,
-    },
+const steps = [
+  {
+    verb: "Make",
+    title: "Blended for your process",
+    body: "Need a different concentration or a custom blend? We develop it around your plant.",
+  },
+  {
+    verb: "Test",
+    title: "Checked before it ships",
+    body: "Every batch is tested against its specification, so what arrives is what you ordered.",
+  },
+  {
+    verb: "Ship",
+    title: "Supply you can plan around",
+    body: "Regular dispatch to industrial customers, scheduled to fit your production.",
+  },
+  {
+    verb: "Call",
+    title: "Engineers on the phone",
+    body: "Ask the people who make it about dosing, handling and troubleshooting.",
+  },
 ];
 
+/*
+ * The claim is a sequence, so it is shown as one: the statement holds the left
+ * while four stages light up in turn on the right, joined by a line that draws
+ * as you read down.
+ */
 export function FeaturesSection() {
-    const scope = useSection<HTMLDivElement>({y: 22, blur: 0, stagger: 0.08, duration: 0.6, start: "top 85%", exitY: -50, exitFade: 1});
+  const root = useRef<HTMLElement>(null);
 
-    return (
-        <section className="py-24 lg:py-32 bg-surface text-foreground border-y border-line">
-            <div ref={scope} className="mx-auto max-w-7xl px-6 sm:px-10">
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.utils.toArray<HTMLElement>("[data-step]", root.current).forEach((step) => {
+          const body = step.querySelectorAll("[data-body]");
+          const node = step.querySelector("[data-node]");
+          const seg = step.querySelector("[data-seg]");
 
-                <div className="flex flex-col lg:flex-row items-end justify-between gap-8 mb-6">
-                    <div data-reveal className="flex flex-col">
-                        <Eyebrow className="mb-6">Technical Core</Eyebrow>
-                        <h2 className="text-6xl md:text-8xl font-semibold tracking-tight leading-[0.85] text-foreground">
-                            Precision <span className="text-muted font-light ml-2">Refined.</span>
-                        </h2>
-                    </div>
+          gsap.set(body, { opacity: 0.22 });
+          gsap.set(node, { scale: 0.6, backgroundColor: "rgba(230,241,248,0.18)" });
+          gsap.set(seg, { scaleY: 0, transformOrigin: "top center" });
 
-                    <div data-reveal className="max-w-[320px] lg:text-right pb-2">
-                        <p className="type-label leading-relaxed text-muted">
-                            Advanced molecular consistency delivering measurable industrial advantage.
-                        </p>
-                    </div>
-                </div>
+          // The dot lights when it reaches the reading line...
+          gsap
+            .timeline({
+              scrollTrigger: { trigger: step, start: "top 65%", toggleActions: "play none none reverse" },
+              defaults: { ease: "expoOut" },
+            })
+            .to(body, { opacity: 1, duration: 0.8 }, 0)
+            .to(node, { scale: 1, backgroundColor: "#0087cb", duration: 0.6 }, 0);
 
-                <div data-reveal className="h-px w-full bg-line mb-16"/>
+          // ...and its line runs down to the next dot, arriving exactly as the next one lights.
+          if (seg) {
+            gsap.to(seg, {
+              scaleY: 1,
+              ease: "none",
+              scrollTrigger: { trigger: step, start: "top 65%", end: "bottom 65%", scrub: true },
+            });
+          }
+        });
+      });
+    },
+    { scope: root },
+  );
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line">
-                    {features.map((feat) => (
-                        <div
-                            key={feat.name}
-                            data-cell
-                            className="group bg-surface p-8 gap-12 md:h-80 flex flex-col justify-between transition-colors hover:bg-background"
-                        >
-                            <div className="flex justify-between items-start">
-                                <div
-                                    className="p-2 rounded-sm bg-accent/10 border border-accent/20 group-hover:border-accent/60 transition-colors">
-                                    <feat.icon strokeWidth={1}
-                                               className="h-10 w-10 text-accent-ink"/>
-                                </div>
-                                <div className="text-right">
-                                    <span className="block font-heading text-4xl font-light tracking-tight text-foreground">
-                                        {feat.stat}
-                                    </span>
-                                    <span
-                                        className="type-label block text-accent-ink mt-1">
-                                        {feat.name}
-                                    </span>
-                                </div>
-                            </div>
+  return (
+    <section ref={root} data-motion="off" data-surface="inverse" className="bg-background py-24 text-foreground lg:py-40">
+      <div className="mx-auto grid max-w-7xl gap-16 px-6 sm:px-10 lg:grid-cols-12 lg:gap-x-16">
+        <div className="lg:col-span-5">
+          <div className="lg:sticky lg:top-32">
+            <h2 className="font-heading text-[clamp(2.5rem,5.4vw,5rem)] font-semibold leading-none tracking-[-0.03em]">
+              We make it, test it and ship it ourselves.
+            </h2>
+            <p className="mt-8 max-w-md text-xl leading-[1.55] text-muted">
+              So when you call, you are talking to the people who made your product.
+            </p>
+          </div>
+        </div>
 
-                            <div>
-                                <p className="text-xl md:text-lg text-muted font-light leading-snug group-hover:text-foreground/85 transition-colors">
-                                    {feat.description}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
+        <ol data-steps className="lg:col-span-7">
+          {steps.map((st, i) => (
+            <li
+              key={st.verb}
+              data-step
+              className="relative grid grid-cols-[2.25rem_1fr] gap-x-6 pb-20 [--c:1.875rem] [--w:2.25rem] last:pb-0 sm:grid-cols-[2.75rem_1fr] sm:gap-x-8 sm:[--c:2.375rem] sm:[--w:2.75rem] lg:pb-28"
+            >
+              {/* The line from this dot to the next: its centre is the dot's centre. */}
+              {i < steps.length - 1 && (
+                <span
+                  aria-hidden
+                  className="absolute -bottom-(--c) left-[calc(var(--w)/2)] top-(--c) w-0.75 -translate-x-1/2 rounded-full bg-foreground/15"
+                >
+                  <span data-seg className="absolute inset-0 rounded-full bg-accent" />
+                </span>
+              )}
+              <span
+                data-node
+                aria-hidden
+                className="relative z-10 mt-3 block h-9 w-9 rounded-full ring-8 ring-background sm:mt-4 sm:h-11 sm:w-11"
+              />
+              <div>
+                <h3
+                  data-body
+                  className="font-heading text-[clamp(2.75rem,7vw,6.5rem)] font-semibold leading-none tracking-[-0.055em]"
+                >
+                  {st.verb}
+                </h3>
+                <p data-body className="mt-3 font-heading text-xl font-semibold tracking-tight text-accent lg:text-2xl">
+                  {st.title}
+                </p>
+                <p data-body className="mt-3 max-w-md text-lg leading-[1.6] text-muted">
+                  {st.body}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
 }

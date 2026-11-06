@@ -43,7 +43,7 @@ export default async function ActivityAdmin({
 				</p>
 				{DEV_BYPASS && (
 					<p className="mt-4 inline-block border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-amber-300 text-xs font-medium tracking-wide">
-						Dev mode — no activity is recorded until Supabase is connected.
+						Dev mode, no activity is recorded until Supabase is connected.
 					</p>
 				)}
 			</div>
@@ -68,7 +68,7 @@ export default async function ActivityAdmin({
 			</div>
 
 			{entries.length === 0 ? (
-				<p className="border border-white/10 bg-white/[0.02] px-6 py-10 text-center text-white/55 text-sm font-light">
+				<p className="border border-white/10 bg-white/2 px-6 py-10 text-center text-white/55 text-sm font-light">
 					{supabaseConfigured()
 						? "No activity recorded yet."
 						: "Activity appears here once Supabase is connected."}
@@ -94,7 +94,7 @@ export default async function ActivityAdmin({
 								)}
 							</div>
 							<div className="text-right text-white/55 text-xs font-light tracking-wide">
-								<span>{e.actor_name || e.actor_email || "—"}</span>
+								<span>{e.actor_name || e.actor_email || "Unknown"}</span>
 								<span className="block">
 									{new Date(e.created_at).toLocaleString()}
 								</span>

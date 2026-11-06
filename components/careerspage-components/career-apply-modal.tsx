@@ -1,85 +1,81 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
+import { ArrowLeft, Check, RefreshCw, Upload } from "lucide-react";
 import { gsap } from "@/lib/gsap";
 import { getLenis } from "@/lib/smooth-scroll";
-import { X, Upload, Send, CheckCircle2, RefreshCw, Check } from "lucide-react";
-import { CtaSubmit } from "@/components/ui/cta-button";
-import { FieldError, ValidTick, fieldState } from "@/components/ui/form-field";
-import { useFormValidation } from "@/hooks/use-form-validation";
 import { rules, resumeError } from "@/lib/validators";
+import { Button } from "@/components/ui/button";
+import { FieldMessage, stepFieldState } from "@/components/ui/form-field";
+import { TURNSTILE_KEY, TurnstileBox } from "@/components/turnstile-box";
 import { cn } from "@/lib/utils";
 
-const inputCls =
-	"w-full bg-transparent border-b border-line py-3 text-foreground placeholder:text-muted/80 focus:outline-none focus:border-accent transition-colors font-light";
-const labelCls =
-	"type-label text-muted block mb-1";
+type Field = "name" | "email" | "phone" | "message";
+type Step =
+	| { id: "intro" }
+	| { id: Field; kind: "text" | "long"; question: string; hint?: string; placeholder: string; type?: string; autoComplete?: string; inputMode?: "email" | "tel" | "text"; optional?: boolean; rule: (v: string) => string | null }
+	| { id: "resume" };
 
-const formRules = {
-	name: rules.name,
-	email: rules.email,
-	phone: rules.phone({ required: false }),
-	message: rules.message({}),
-};
-type FieldName = keyof typeof formRules;
+const steps: Step[] = [
+	{ id: "intro" },
+	{ id: "name", kind: "text", question: "What is your full name?", placeholder: "Full name", autoComplete: "name", rule: rules.name },
+	{ id: "email", kind: "text", question: "What is your email address?", placeholder: "name@email.com", type: "email", autoComplete: "email", inputMode: "email", rule: rules.email },
+	{ id: "phone", kind: "text", question: "What is the best number to reach you on?", hint: "Optional. You may leave this blank.", placeholder: "+91 00000 00000", type: "tel", autoComplete: "tel", inputMode: "tel", optional: true, rule: rules.phone({ required: false }) },
+	{ id: "resume" },
+	{ id: "message", kind: "long", question: "Would you like to add a cover note?", hint: "Optional. A few lines on why you would be a good fit.", placeholder: "Your cover note", optional: true, rule: rules.message({}) },
+];
 
 function toBase64(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
-		reader.onload = () =>
-			resolve(String(reader.result).split(",")[1] ?? "");
+		reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
 		reader.onerror = reject;
 		reader.readAsDataURL(file);
 	});
 }
 
+/*
+ * The application, one question at a time on full-screen navy, the same flow
+ * as the contact page. Enter continues; Escape closes.
+ */
 export function CareerApplyModal({
 	roleTitle,
+	roleDescription,
 	onClose,
 }: {
 	roleTitle: string | null;
+	roleDescription: string | null;
 	onClose: () => void;
 }) {
-	const [isLoading, setIsLoading] = useState(false);
-	const [done, setDone] = useState(false);
+	const [i, setI] = useState(0);
+	const [values, setValues] = useState<Record<Field, string>>({ name: "", email: "", phone: "", message: "" });
+	const [file, setFile] = useState<File | null>(null);
 	const [error, setError] = useState<string | null>(null);
-	const [fileName, setFileName] = useState<string | null>(null);
-	const [resumeErr, setResumeErr] = useState<string | null>(null);
-	const v = useFormValidation(formRules, { idPrefix: "apply" });
-
+	// Once an answer has been left (or sent) with a problem, it is checked as it is edited, so the message clears the moment it is fixed.
+	const [live, setLive] = useState(false);
+	const [token, setToken] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [done, setDone] = useState(false);
+	const overlay = useRef<HTMLDivElement>(null);
+	const stage = useRef<HTMLDivElement>(null);
+	const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
 	const fileRef = useRef<HTMLInputElement>(null);
-	const backdropRef = useRef<HTMLDivElement>(null);
-	const panelRef = useRef<HTMLDivElement>(null);
+	const dir = useRef(1);
+
+	const step = steps[i];
+	const last = i === steps.length - 1;
+	const progress = done ? 1 : i / steps.length;
 
 	useGSAP(() => {
 		getLenis()?.stop();
-		gsap.fromTo(
-			backdropRef.current,
-			{ autoAlpha: 0 },
-			{ autoAlpha: 1, duration: 0.3, ease: "power2.out" },
-		);
-		gsap.fromTo(
-			panelRef.current,
-			{ y: 28, autoAlpha: 0 },
-			{ y: 0, autoAlpha: 1, duration: 0.45, ease: "expo" },
-		);
+		gsap.fromTo(overlay.current, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35, ease: "power2.out" });
+		return () => getLenis()?.start();
 	}, []);
 
 	const close = () => {
 		getLenis()?.start();
-		gsap.to(panelRef.current, {
-			y: 18,
-			autoAlpha: 0,
-			duration: 0.25,
-			ease: "power2.in",
-		});
-		gsap.to(backdropRef.current, {
-			autoAlpha: 0,
-			duration: 0.25,
-			ease: "power2.in",
-			onComplete: onClose,
-		});
+		gsap.to(overlay.current, { autoAlpha: 0, duration: 0.25, ease: "power2.in", onComplete: onClose });
 	};
 
 	useEffect(() => {
@@ -89,50 +85,46 @@ export function CareerApplyModal({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	// Checked the moment a file is picked, before anything is uploaded.
-	const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setError(null);
-		const f = e.target.files?.[0];
-		const problem = resumeError(f);
-		setResumeErr(problem);
-		if (problem) {
-			setFileName(null);
-			e.target.value = "";
-			return;
-		}
-		setFileName(f!.name);
-	};
+	useGSAP(
+		() => {
+			const mm = gsap.matchMedia();
+			mm.add("(prefers-reduced-motion: no-preference)", () => {
+				gsap.fromTo(
+					"[data-q]",
+					{ autoAlpha: 0, x: 48 * dir.current },
+					{ autoAlpha: 1, x: 0, duration: 0.7, stagger: 0.07, ease: "expoOut" },
+				);
+			});
+		},
+		{ scope: stage, dependencies: [i, done] },
+	);
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setError(null);
-		const file = fileRef.current?.files?.[0];
-		const fieldsOk = v.validateAll();
-		const fileProblem = resumeError(file);
-		setResumeErr(fileProblem);
-		if (!fieldsOk) return;
-		if (fileProblem || !file) {
-			document.getElementById("resume-trigger")?.focus();
+	useEffect(() => {
+		if (step.id !== "intro" && step.id !== "resume") {
+			const t = setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 350);
+			return () => clearTimeout(t);
+		}
+	}, [i, step.id]);
+
+	const submit = async (final: Record<Field, string>) => {
+		if (!file) return;
+		if (TURNSTILE_KEY && !token) {
+			setError("Please complete the check first.");
 			return;
 		}
-		const fd = new FormData(e.currentTarget);
-		setIsLoading(true);
+		setLoading(true);
+		setError(null);
 		try {
 			const content = await toBase64(file);
 			const payload = {
-				name: String(fd.get("name") || "").trim(),
-				email: String(fd.get("email") || "").trim(),
-				message:
-					String(fd.get("message") || "").trim() ||
-					`Application for ${roleTitle ?? "a general role"}.`,
-				label: roleTitle
-					? `Career Application — ${roleTitle}`
-					: "Career Application — General",
-				fields: {
-					Phone: String(fd.get("phone") || "").trim(),
-					Role: roleTitle ?? "General application",
-				},
+				name: final.name.trim(),
+				email: final.email.trim(),
+				message: final.message.trim() || `Application for ${roleTitle ?? "a general role"}.`,
+				label: roleTitle ? `Career Application: ${roleTitle}` : "Career Application: General",
+				fields: { Phone: final.phone.trim(), Role: roleTitle ?? "General application" },
 				attachment: { filename: file.name, content },
+				token,
+				website: "",
 			};
 			const res = await fetch("/api/contact", {
 				method: "POST",
@@ -140,153 +132,245 @@ export function CareerApplyModal({
 				body: JSON.stringify(payload),
 			});
 			const data = await res.json().catch(() => ({}));
-			if (!res.ok || data.ok === false)
-				throw new Error(data.error || "Something went wrong. Please try again.");
-			v.reset();
+			if (!res.ok || data.ok === false) throw new Error(data.error || "Something went wrong. Please try again.");
 			setDone(true);
 		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : "Could not send. Please try again.",
-			);
+			setError(err instanceof Error ? err.message : "Could not send. Please try again.");
 		} finally {
-			setIsLoading(false);
+			setLoading(false);
 		}
 	};
 
-	const text = (
-		name: FieldName,
-		label: string,
-		props: React.InputHTMLAttributes<HTMLInputElement>,
-	) => (
-		<div>
-			<label htmlFor={`apply-${name}`} className={labelCls}>
-				{label}
-			</label>
-			<div className="relative">
-				<input
-					{...props}
-					{...v.register(name)}
-					className={cn(inputCls, "pr-6", fieldState(Boolean(v.error(name))))}
-				/>
-				<ValidTick show={v.isValid(name)} />
-			</div>
-			<FieldError id={v.errorId(name)} message={v.error(name)} />
-		</div>
-	);
+	useEffect(() => setLive(false), [i]);
 
+	const check = (v: string) => (step.id !== "intro" && step.id !== "resume" && step.optional && !v.trim() ? null : step.id !== "intro" && step.id !== "resume" ? step.rule(v) : null);
+	const onField = (id: Field, v: string) => {
+		setValues((cur) => ({ ...cur, [id]: v }));
+		setError(live || error ? check(v) : null);
+	};
+	const onBlur = () => {
+		if (step.id === "intro" || step.id === "resume") return;
+		const v = values[step.id];
+		if (!v.trim()) return;
+		setLive(true);
+		setError(check(v));
+	};
+
+	const next = () => {
+		let msg: string | null = null;
+		if (step.id === "resume") msg = resumeError(file) ?? (file ? null : "Please attach your resume as a PDF.");
+		else if (step.id !== "intro") {
+			const v = values[step.id];
+			msg = step.optional && !v.trim() ? null : step.rule(v);
+		}
+		if (msg) {
+			setLive(true);
+			setError(msg);
+			inputRef.current?.focus();
+			return;
+		}
+		setError(null);
+		if (last) {
+			void submit(values);
+			return;
+		}
+		dir.current = 1;
+		setI((n) => n + 1);
+	};
+
+	const back = () => {
+		if (i === 0) return;
+		dir.current = -1;
+		setError(null);
+		setI((n) => n - 1);
+	};
+
+	const onKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === "Enter" && !(step.id === "message" && e.shiftKey)) {
+			e.preventDefault();
+			next();
+		}
+	};
+
+	const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const f = e.target.files?.[0] ?? null;
+		const problem = resumeError(f);
+		if (problem) {
+			setFile(null);
+			setError(problem);
+			e.target.value = "";
+			return;
+		}
+		setFile(f);
+		setError(null);
+	};
+
+	const current = step.id !== "intro" && step.id !== "resume" ? values[step.id] : "";
+	const state: "error" | "ok" | null = error ? "error" : step.id !== "intro" && step.id !== "resume" && !!current.trim() && !check(current) ? "ok" : null;
+	const title = roleTitle ?? "General application";
+	const inputClass =
+		"w-full border-0 border-b-2 border-foreground/25 bg-transparent pb-3 pt-2 font-heading text-[clamp(1.25rem,2.4vw,1.875rem)] font-medium tracking-[-0.02em] text-foreground outline-none transition-colors placeholder:text-foreground/30 focus:border-accent";
 	return (
-		<div className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
-			<div
-				ref={backdropRef}
+		<div
+			ref={overlay}
+			role="dialog"
+			aria-modal="true"
+			aria-label={`Apply: ${title}`}
+			data-surface="inverse"
+			data-lenis-prevent
+			className="fixed inset-0 z-1100 overflow-y-auto bg-background text-foreground"
+		>
+			<Button
+				variant="light"
+				size="md"
 				onClick={close}
-				className="absolute inset-0 bg-deep/50 backdrop-blur-sm"
-			/>
-			<div
-				ref={panelRef}
-				data-lenis-prevent
-				className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain bg-surface border border-line shadow-2xl"
+				className="fixed right-6 top-4 z-10 sm:right-[max(2.5rem,calc((100vw-48rem)/2+2.5rem))]"
 			>
-				<div className="flex items-start justify-between gap-6 p-8 border-b border-line">
-					<div>
-						<span className="type-label text-accent-ink block mb-2">
-							Apply
-						</span>
-						<h3 className="font-heading text-2xl font-semibold tracking-tight text-foreground leading-tight">
-							{roleTitle ?? "General Application"}
-						</h3>
-					</div>
-					<button
-						onClick={close}
-						className="shrink-0 p-2 -mr-2 text-muted hover:text-foreground transition-colors cursor-pointer"
-						aria-label="Close"
+				Close
+			</Button>
+
+			<div className="mx-auto flex min-h-full max-w-3xl flex-col justify-center px-6 py-28 sm:px-10">
+				<div ref={stage}>
+					<div
+						role="progressbar"
+						aria-label="Application progress"
+						aria-valuemin={0}
+						aria-valuemax={steps.length}
+						aria-valuenow={i}
+						className="mb-14 h-1 w-full overflow-hidden rounded-full bg-foreground/15 md:mb-20"
 					>
-						<X size={22} />
-					</button>
-				</div>
-
-				{done ? (
-					<div className="p-12 text-center">
-						<CheckCircle2 className="h-14 w-14 text-accent-ink mx-auto mb-5" />
-						<h4 className="text-2xl font-bold text-foreground tracking-tight">
-							Application sent
-						</h4>
-						<p className="mt-3 text-muted text-base font-light">
-							Thanks — we&apos;ll review it and be in touch.
-						</p>
-						<CtaSubmit variant="outline" onClick={close} className="mt-8">
-							Close
-						</CtaSubmit>
+						<div
+							className="h-full rounded-full bg-accent transition-[width] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+							style={{ width: `${Math.max(progress, 0.04) * 100}%` }}
+						/>
 					</div>
-				) : (
-					<form onSubmit={handleSubmit} noValidate className="p-8 space-y-4">
-						<div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-2">
-							{text("name", "Full Name", { placeholder: "Your name", autoComplete: "name" })}
-							{text("email", "Email", { type: "email", placeholder: "you@email.com", autoComplete: "email" })}
-							{text("phone", "Phone (optional)", { type: "tel", placeholder: "+91 00000 00000", autoComplete: "tel" })}
-							<div>
-								<span className={labelCls}>Resume (PDF, max 5 MB)</span>
-								<input
-									ref={fileRef}
-									type="file"
-									accept="application/pdf,.pdf"
-									onChange={onFile}
-									className="sr-only"
-									id="resume-input"
-									aria-describedby="resume-error"
-									aria-invalid={resumeErr ? true : undefined}
-								/>
-								<label
-									id="resume-trigger"
-									htmlFor="resume-input"
-									tabIndex={0}
-									onKeyDown={(e) => {
-										if (e.key === "Enter" || e.key === " ") {
-											e.preventDefault();
-											fileRef.current?.click();
-										}
-									}}
-									className={cn(
-										"relative flex items-center gap-2 py-3 pr-6 border-b border-line text-muted cursor-pointer hover:border-accent transition-colors outline-none focus-visible:border-accent",
-										fieldState(Boolean(resumeErr)),
-									)}
-								>
-									<Upload size={15} className="shrink-0 text-muted" />
-									<span className={cn("truncate text-base font-light", fileName && "text-foreground")}>
-										{fileName ?? "Choose PDF…"}
-									</span>
-									{fileName && (
-										<Check aria-hidden className="absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-accent-ink" />
-									)}
-								</label>
-								<FieldError id="resume-error" message={resumeErr} />
-							</div>
-						</div>
 
+					{done ? (
 						<div>
-							<label htmlFor="apply-message" className={labelCls}>Cover Note (optional)</label>
-							<textarea
-								{...v.register("message")}
-								rows={3}
-								placeholder="Tell us why you'd be a great fit…"
-								className={cn(inputCls, fieldState(Boolean(v.error("message"))), "resize-none")}
-							/>
-							<FieldError id={v.errorId("message")} message={v.error("message")} />
+							<span data-q className="flex h-16 w-16 items-center justify-center rounded-full bg-cta text-cta-foreground">
+								<Check aria-hidden className="h-8 w-8" strokeWidth={2.5} />
+							</span>
+							<h3 data-q className="mt-10 font-heading text-[clamp(1.875rem,4vw,3.25rem)] font-semibold leading-[1.1] tracking-[-0.03em]">
+								Thank you. Your application has been received.
+							</h3>
+							<p data-q className="mt-6 max-w-lg text-xl leading-[1.55] text-muted">
+								Our team will review it and be in touch.
+							</p>
+							<Button data-q variant="outline" size="md" className="mt-10" onClick={close}>
+								Close
+							</Button>
 						</div>
-
-						{error && <p role="alert" className="text-base text-danger font-medium">{error}</p>}
-
-						<CtaSubmit type="submit" disabled={isLoading} className="w-full">
-							{isLoading ? (
-								<RefreshCw className="h-4 w-4 animate-spin" />
+					) : (
+						<div key={i} className="min-h-80">
+							{step.id === "intro" ? (
+								<>
+									<h3 data-q className="font-heading text-[clamp(2rem,5vw,4rem)] font-semibold leading-[1.05] tracking-[-0.03em]">
+										{title}
+									</h3>
+									<p data-q className="mt-6 max-w-xl text-xl leading-[1.55] text-muted">
+										{roleDescription ??
+											"Tell us a little about yourself and attach your resume. We will keep your details on file."}
+									</p>
+									<div data-q className="mt-10">
+										<Button variant="primary" size="lg" arrow="right" onClick={next}>
+											Begin application
+										</Button>
+									</div>
+								</>
+							) : step.id === "resume" ? (
+								<>
+									<h3 data-q className="font-heading text-[clamp(1.75rem,3.8vw,3rem)] font-semibold leading-[1.1] tracking-[-0.03em]">
+										Please attach your resume.
+									</h3>
+									<p data-q className="mt-4 text-lg text-muted">PDF only, up to 5 MB.</p>
+									<div data-q className="mt-10">
+										<input ref={fileRef} type="file" accept="application/pdf,.pdf" onChange={onFile} className="sr-only" id="resume-input" />
+										<button
+											type="button"
+											onClick={() => fileRef.current?.click()}
+											className={cn(
+												"flex w-full cursor-pointer items-center gap-4 rounded-md bg-foreground/5 px-6 py-6 text-left font-heading text-xl font-medium tracking-[-0.02em] outline-none ring-1 ring-foreground/20 transition-colors hover:bg-foreground/10 hover:ring-accent focus-visible:ring-2 focus-visible:ring-accent",
+												file && "ring-accent",
+											)}
+										>
+											{file ? <Check aria-hidden className="h-6 w-6 shrink-0 text-accent" /> : <Upload aria-hidden className="h-6 w-6 shrink-0 text-muted" />}
+											<span className="truncate">{file ? file.name : "Choose a PDF"}</span>
+										</button>
+										<FieldMessage kind={error ? "error" : file ? "ok" : null}>{error ?? (file ? "Resume attached." : "")}</FieldMessage>
+									</div>
+									<div data-q className="mt-6">
+										<Button variant="primary" size="lg" arrow="right" onClick={next}>
+											Continue
+										</Button>
+									</div>
+								</>
 							) : (
 								<>
-									Submit Application
-									<Send className="h-4 w-4" />
+									<h3 data-q className="font-heading text-[clamp(1.75rem,3.8vw,3rem)] font-semibold leading-[1.1] tracking-[-0.03em]" aria-live="polite">
+										{step.question}
+									</h3>
+									{step.hint && (
+										<p data-q className="mt-4 text-lg text-muted">{step.hint}</p>
+									)}
+									<div data-q className="mt-10 md:mt-12">
+										{step.kind === "long" ? (
+											<textarea
+												ref={inputRef}
+												value={values[step.id]}
+												onChange={(e) => onField(step.id as Field, e.target.value)}
+												onBlur={onBlur}
+												onKeyDown={onKeyDown}
+												rows={3}
+												aria-label={step.question}
+												placeholder={step.placeholder}
+												className={cn(inputClass, stepFieldState(state), "resize-none")}
+											/>
+										) : (
+											<input
+												ref={inputRef}
+												type={step.type ?? "text"}
+												inputMode={step.inputMode}
+												autoComplete={step.autoComplete}
+												value={values[step.id]}
+												onChange={(e) => onField(step.id as Field, e.target.value)}
+												onBlur={onBlur}
+												onKeyDown={onKeyDown}
+												aria-label={step.question}
+												placeholder={step.placeholder}
+												className={cn(inputClass, stepFieldState(state))}
+											/>
+										)}
+										<FieldMessage kind={state === "ok" ? "ok" : error ? "error" : null}>{error ?? (state === "ok" ? "Looks good." : "")}</FieldMessage>
+										{last && <TurnstileBox onToken={setToken} className="mt-4" />}
+									</div>
+									<div data-q className="mt-6 flex flex-wrap items-center gap-4">
+										<Button variant="primary" size="lg" arrow={loading ? undefined : "right"} onClick={next} disabled={loading}>
+											{loading ? (
+												<RefreshCw aria-hidden className="h-5 w-5 animate-spin" />
+											) : last ? (
+												"Submit application"
+											) : step.optional && !values[step.id].trim() ? (
+												"Skip"
+											) : (
+												"Continue"
+											)}
+										</Button>
+										<span className="hidden text-sm text-muted sm:inline">
+											Press <kbd className="rounded bg-foreground/10 px-1.5 py-0.5 font-sans text-xs font-semibold">Enter</kbd> to continue
+										</span>
+									</div>
 								</>
 							)}
-						</CtaSubmit>
-					</form>
-				)}
+						</div>
+					)}
+
+					{i > 0 && !done && (
+						<button type="button" onClick={back} className="mt-12 inline-flex h-11 cursor-pointer items-center gap-2 text-base font-medium text-muted outline-none transition-colors hover:text-foreground focus-visible:text-foreground">
+							<ArrowLeft aria-hidden className="h-4 w-4" />
+							Back
+						</button>
+					)}
+				</div>
 			</div>
 		</div>
 	);

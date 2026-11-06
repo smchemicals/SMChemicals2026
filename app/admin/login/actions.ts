@@ -42,7 +42,7 @@ export async function login(
 	const ip = await getClientIp();
 
 	const lockMessage = (min: number) =>
-		`Account temporarily locked — too many failed sign-in attempts from your network. Try again in ${min} minute${
+		`Account temporarily locked, too many failed sign-in attempts from your network. Try again in ${min} minute${
 			min === 1 ? "" : "s"
 		}.`;
 
@@ -66,7 +66,7 @@ export async function login(
 		});
 		return {
 			error:
-				"Couldn't sign you in — bot verification failed. Please reload and try again.",
+				"Couldn't sign you in, bot verification failed. Please reload and try again.",
 		};
 	}
 

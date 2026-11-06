@@ -38,7 +38,7 @@ export function HomeForm({ home }: { home: HomeContent }) {
 	}, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
-		<form action={action} className="border border-white/10 bg-white/[0.02] p-8">
+		<form action={action} className="border border-white/10 bg-white/2 p-8">
 			<Eyebrow>Home</Eyebrow>
 
 			<label className="mb-6 flex flex-col gap-1.5">
@@ -124,7 +124,7 @@ export function ContactForm({ contact }: { contact: ContactContent }) {
 	}, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
-		<form action={action} className="border border-white/10 bg-white/[0.02] p-8">
+		<form action={action} className="border border-white/10 bg-white/2 p-8">
 			<Eyebrow>Contact</Eyebrow>
 
 			<label className="mb-6 flex flex-col gap-1.5">

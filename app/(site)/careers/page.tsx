@@ -14,9 +14,9 @@ export default async function CareersPage() {
 	const careers = await getPublishedCareers();
 
 	return (
-		<div data-header-theme="light">
+		<>
 			<CareersHero />
 			<CareersOpenings content={careers} />
-		</div>
+		</>
 	);
 }

@@ -82,7 +82,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 		const href =
 			/^(https?:\/\/|mailto:|tel:|\/)/i.test(url) ? url : `https://${url}`;
 		if (editor.state.selection.empty && !editor.isActive("link")) {
-			// No text selected — insert the URL itself as the linked text.
+			// No text selected, insert the URL itself as the linked text.
 			editor
 				.chain()
 				.focus()
@@ -100,7 +100,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 	const inTable = editor.isActive("table");
 
 	return (
-		<div className="border-b border-white/10 bg-white/[0.02]">
+		<div className="border-b border-white/10 bg-white/2">
 			<div className="flex flex-wrap items-center gap-1 p-2">
 				<Btn label="Bold" on={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
 					<Bold size={15} />
@@ -262,7 +262,7 @@ export function RichText({
 
 	if (!editor) {
 		return (
-			<div className="min-h-[320px] rounded-sm border border-white/15 bg-transparent" />
+			<div className="min-h-80 rounded-sm border border-white/15 bg-transparent" />
 		);
 	}
 

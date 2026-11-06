@@ -14,6 +14,8 @@ interface RevealOptions {
     ease?: string;
     scroll?: boolean;
     start?: string;
+    /** Re-run (and reset) the reveal when these change, e.g. the route, for parts of the layout that outlive a page. */
+    dependencies?: unknown[];
 }
 
 export function useReveal<T extends HTMLElement = HTMLDivElement>(options: RevealOptions = {}) {
@@ -27,6 +29,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(options: Revea
         ease = "expo",
         scroll = false,
         start = "top 85%",
+        dependencies,
     } = options;
 
     const scope = useRef<T>(null);
@@ -47,7 +50,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(options: Revea
                 ? {trigger: scope.current, start, once: true}
                 : undefined,
         });
-    }, {scope});
+    }, dependencies ? {scope, dependencies, revertOnUpdate: true} : {scope});
 
     return scope;
 }

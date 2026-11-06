@@ -146,7 +146,7 @@ export default function AdminLoginPage() {
 						/>
 					</label>
 
-					{SITE_KEY && <div ref={boxRef} className="min-h-[65px]" />}
+					{SITE_KEY && <div ref={boxRef} className="min-h-16.25" />}
 
 					<button
 						type="submit"

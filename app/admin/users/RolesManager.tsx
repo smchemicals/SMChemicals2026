@@ -38,7 +38,7 @@ function RoleCard({
 		);
 
 	return (
-		<div className="border border-white/10 bg-white/[0.02] p-6">
+		<div className="border border-white/10 bg-white/2 p-6">
 			<div className="mb-5 flex items-center justify-between gap-4">
 				<div className="flex items-center gap-3">
 					<span className="text-white text-lg font-bold tracking-tight">
@@ -157,7 +157,7 @@ export function RolesManager({
 
 			<form
 				action={action}
-				className="border border-white/10 bg-white/[0.02] p-6"
+				className="border border-white/10 bg-white/2 p-6"
 			>
 				<div className="mb-4 flex items-center gap-3">
 					<span className="h-px w-5 bg-accent-500/60" />
@@ -171,7 +171,7 @@ export function RolesManager({
 						<input name="label" placeholder="e.g. Author" className={inputCls} />
 					</label>
 					<label className="flex flex-col gap-1.5">
-						<span className={labelCls}>Key (optional — from name)</span>
+						<span className={labelCls}>Key (optional, from name)</span>
 						<input name="key" placeholder="author" className={inputCls} />
 					</label>
 				</div>

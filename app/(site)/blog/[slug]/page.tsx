@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { BrandGlow } from "@/components/ui/page-hero";
+import { PostView } from "@/components/blogpage-components/post-view";
 import { notFound } from "next/navigation";
 import { getPostBySlug } from "@/lib/cms/blog";
+import { SITE } from "@/lib/site";
 
 function fmtDate(iso: string | null) {
 	if (!iso) return "";
@@ -25,9 +25,16 @@ export async function generateMetadata({
 		title: post.title,
 		description: post.excerpt,
 		alternates: { canonical: `/blog/${post.slug}` },
-		openGraph: post.coverImage
-			? { title: post.title, description: post.excerpt, images: [post.coverImage] }
-			: { title: post.title, description: post.excerpt },
+		openGraph: {
+			type: "article",
+			title: post.title,
+			description: post.excerpt,
+			url: `/blog/${post.slug}`,
+			publishedTime: post.publishedAt ?? undefined,
+			// Without a cover image, the generated card (opengraph-image) is used.
+			...(post.coverImage ? { images: [post.coverImage] } : {}),
+		},
+		twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
 	};
 }
 
@@ -40,60 +47,22 @@ export default async function PostPage({
 	const post = await getPostBySlug(slug);
 	if (!post) notFound();
 
+	const jsonLd = {
+		"@context": "https://schema.org",
+		"@type": "BlogPosting",
+		headline: post.title,
+		description: post.excerpt,
+		datePublished: post.publishedAt ?? undefined,
+		mainEntityOfPage: `${SITE.url}/blog/${post.slug}`,
+		image: post.coverImage ?? `${SITE.url}/blog/${post.slug}/opengraph-image`,
+		author: { "@type": "Organization", name: SITE.name },
+		publisher: { "@type": "Organization", name: SITE.name, logo: { "@type": "ImageObject", url: `${SITE.url}/smc_logo.png` } },
+	};
+
 	return (
-		<div data-header-theme="dark">
-			<article>
-				<header className="relative bg-background text-foreground overflow-hidden pt-36 pb-12 md:pt-44 md:pb-16">
-					<BrandGlow className="[mask-image:linear-gradient(to_bottom,black_55%,transparent)]" />
-					<div className="relative z-10 max-w-3xl mx-auto px-6 sm:px-10">
-						<Link
-							href="/blog"
-							className="type-label inline-flex items-center gap-2 text-muted hover:text-accent-ink transition-colors mb-8"
-						>
-							<span>←</span> Blog
-						</Link>
-						<span className="type-label block text-accent-ink mb-4">
-							{fmtDate(post.publishedAt)}
-						</span>
-						<h1 className="text-4xl md:text-5xl font-semibold tracking-tight leading-[1.05] text-foreground">
-							{post.title}
-						</h1>
-						{post.excerpt && (
-							<p className="mt-6 max-w-2xl text-foreground/75 text-lg font-light leading-relaxed">
-								{post.excerpt}
-							</p>
-						)}
-					</div>
-				</header>
-
-				<div className="bg-background pt-12 pb-16 lg:pt-16 lg:pb-20">
-					<div className="max-w-3xl mx-auto px-6 sm:px-10">
-						{post.coverImage && (
-							<div className="mb-12 overflow-hidden rounded-sm border border-line">
-								{/* eslint-disable-next-line @next/next/no-img-element */}
-								<img
-									src={post.coverImage}
-									alt={post.title}
-									className="w-full object-cover"
-								/>
-							</div>
-						)}
-						<div
-							className="max-w-none text-foreground/80 text-lg font-light leading-relaxed [&_h1]:mt-10 [&_h1]:mb-4 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:tracking-tight [&_h1]:text-foreground [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-foreground [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-foreground [&_p]:mb-5 [&_u]:underline [&_s]:line-through [&_mark]:rounded [&_mark]:bg-accent/30 [&_mark]:px-0.5 [&_a]:text-accent-ink [&_a]:underline [&_code]:rounded [&_code]:bg-foreground/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.85em] [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:border [&_pre]:border-line [&_pre]:bg-surface [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-sm [&_pre]:text-foreground [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-foreground [&_hr]:my-8 [&_hr]:border-line [&_ul]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mb-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2 [&_strong]:font-bold [&_strong]:text-foreground [&_img]:my-6 [&_img]:max-w-full [&_img]:rounded-sm [&_blockquote]:my-6 [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_th]:border [&_th]:border-line [&_th]:bg-surface [&_th]:p-2.5 [&_th]:text-left [&_th]:font-bold [&_th]:text-foreground [&_td]:border [&_td]:border-line [&_td]:p-2.5"
-							dangerouslySetInnerHTML={{ __html: post.body }}
-						/>
-
-						<div className="mt-16 border-t border-line pt-10">
-							<Link
-								href="/blog"
-								className="type-label inline-flex items-center gap-2 text-foreground hover:text-accent-ink transition-colors"
-							>
-								<span>←</span> Back to Blogs
-							</Link>
-						</div>
-					</div>
-				</div>
-			</article>
-		</div>
+		<>
+			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+			<PostView post={post} date={fmtDate(post.publishedAt)} />
+		</>
 	);
 }

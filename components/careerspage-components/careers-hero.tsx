@@ -1,12 +1,27 @@
+"use client";
+
+import { getLenis } from "@/lib/smooth-scroll";
 import { PageHero } from "@/components/ui/page-hero";
+import { CtaButton } from "@/components/ui/cta-button";
 
 export function CareersHero() {
+	const toRoles = (e: React.MouseEvent) => {
+		const el = document.getElementById("roles");
+		if (!el) return;
+		e.preventDefault();
+		const lenis = getLenis();
+		if (lenis) lenis.scrollTo(el, { offset: -40 });
+		else el.scrollIntoView({ behavior: "smooth" });
+	};
+
 	return (
-		<PageHero eyebrow="Careers" title="Join the" titleAccent="team.">
-			Build the chemistry behind India&apos;s industry. We&apos;re always
-			looking for{" "}
-			<span className="font-normal text-accent-ink">curious, rigorous people</span>{" "}
-			to grow with us.
+		<PageHero
+			lines={["Join the", "team."]}
+			lede="Build the chemistry behind India&apos;s industry. We are always looking for curious, rigorous people to grow with us."
+		>
+			<CtaButton href="#roles" onClick={toRoles} arrow="down">
+				View open roles
+			</CtaButton>
 		</PageHero>
 	);
 }

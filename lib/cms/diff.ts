@@ -19,7 +19,7 @@ function labelOf(o: Record<string, J>): string {
 }
 
 function shortVal(v: J): string {
-	if (v === null || v === undefined) return "—";
+	if (v === null || v === undefined) return "None";
 	if (typeof v === "string")
 		return v.length > 60 ? `“${v.slice(0, 57)}…”` : `“${v}”`;
 	if (Array.isArray(v)) return `${v.length} item${v.length === 1 ? "" : "s"}`;

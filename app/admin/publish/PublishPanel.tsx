@@ -33,7 +33,7 @@ function Item({ row }: { row: PageDraft }) {
 
 	const when = row.publishedAt
 		? `Published ${new Date(row.publishedAt).toLocaleString()}`
-		: "Not published yet — nothing live";
+		: "Not published yet, nothing live";
 
 	return (
 		<div className="border-b border-white/10 py-5 last:border-b-0">
@@ -117,10 +117,10 @@ function Item({ row }: { row: PageDraft }) {
 					>
 						{pending ? "Publishing…" : "Publish"}
 					</button>
-				</div>
+				</div> 
 			</div>
 			{open && row.changes.length > 0 && (
-				<ul className="mt-4 space-y-1 border border-white/10 bg-white/[0.02] px-4 py-3">
+				<ul className="mt-4 space-y-1 border border-white/10 bg-white/2 px-4 py-3">
 					{row.changes.map((c, i) => (
 						<li
 							key={i}

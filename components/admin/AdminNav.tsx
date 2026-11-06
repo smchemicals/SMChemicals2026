@@ -11,6 +11,7 @@ import {
 	Newspaper,
 	Send,
 	Activity,
+	BarChart3,
 	Users,
 	UserRound,
 	type LucideIcon,
@@ -44,6 +45,7 @@ function useGroups(permissions: string[]): NavGroup[] {
 			title: "Workflow",
 			links: pick([
 				{ href: "/admin/publish", label: "Publish", icon: Send, needs: "publish" },
+				{ href: "/admin/analytics", label: "Analytics", icon: BarChart3, needs: "activity" },
 				{ href: "/admin/activity", label: "Activity", icon: Activity, needs: "activity" },
 			]),
 		},
@@ -86,7 +88,7 @@ export function AdminSidebar({ permissions }: { permissions: string[] }) {
 										className={`group relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
 											on
 												? "bg-white/[0.07] text-white"
-												: "text-white/65 hover:bg-white/[0.04] hover:text-white"
+												: "text-white/65 hover:bg-white/4 hover:text-white"
 										}`}
 									>
 										<span
@@ -118,7 +120,7 @@ export function AdminNav({ permissions }: { permissions: string[] }) {
 	return (
 		<nav
 			aria-label="Admin"
-			className="flex items-center gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none]"
+			className="flex items-center gap-1 overflow-x-auto px-4 py-2 scrollbar-none"
 		>
 			{links.map(({ href, label, icon: Icon }) => {
 				const on = active(href);

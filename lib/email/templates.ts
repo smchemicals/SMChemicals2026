@@ -73,7 +73,7 @@ export function acknowledgement(name: string, label: string): string {
       We&rsquo;ve received your ${esc(kind)} and our team will be in touch within two working days.
     </p>
     <p style="margin:0;font-family:${SANS};color:${C.creamMuted};font-size:12px;letter-spacing:0.04em;">
-      &mdash; ${SITE.name} &middot; ${SITE.phone}
+      ${SITE.name} &middot; ${SITE.phone}
     </p>`,
 	);
 }

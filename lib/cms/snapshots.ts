@@ -81,7 +81,10 @@ async function published<T>(key: SnapshotKey): Promise<T | null> {
 			.from("page_snapshots")
 			.select("data")
 			.eq("page", key)
-			.maybeSingle();
+			.maybeSingle()
+			// supabase-js retries network failures with 1s+2s+4s backoff; when the
+			// database is unreachable that stalls every page ~7s. Fall back at once.
+			.retry(false);
 		return (data?.data as T) ?? null;
 	} catch {
 		return null;

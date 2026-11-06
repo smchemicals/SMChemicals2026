@@ -10,7 +10,7 @@ import { ALL_SECTIONS } from "@/lib/permissions";
 export type RoleState = { ok?: string; error?: string };
 export type RowResult = { ok?: boolean; error?: string };
 
-const DEV_NOTICE = "Dev mode — connect Supabase to manage roles.";
+const DEV_NOTICE = "Dev mode, connect Supabase to manage roles.";
 const RESERVED = ["founder", "admin", "editor"];
 
 function slugify(s: string): string {

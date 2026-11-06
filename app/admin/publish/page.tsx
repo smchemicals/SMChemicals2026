@@ -25,7 +25,7 @@ export default async function PublishAdmin() {
 				</h1>
 				<p className="mt-6 max-w-xl text-white/65 text-sm font-light leading-relaxed">
 					Your edits stay as drafts until you publish. Review what changed, then
-					push each section — or everything — live.{" "}
+					push each section, or everything, live.{" "}
 					{dirty > 0 ? (
 						<span className="text-accent-500">
 							{dirty} section{dirty === 1 ? "" : "s"} with unpublished changes.
@@ -36,12 +36,12 @@ export default async function PublishAdmin() {
 				</p>
 				{DEV_BYPASS && (
 					<p className="mt-4 inline-block border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-amber-300 text-xs font-medium tracking-wide">
-						Dev mode — publishing is disabled. Connect Supabase to go live.
+						Dev mode, publishing is disabled. Connect Supabase to go live.
 					</p>
 				)}
 				{!DEV_BYPASS && !supabaseConfigured() && (
 					<p className="mt-4 inline-block border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-amber-300 text-xs font-medium tracking-wide">
-						Supabase isn’t configured — set the env vars to enable publishing.
+						Supabase isn't configured, set the env vars to enable publishing.
 					</p>
 				)}
 			</div>

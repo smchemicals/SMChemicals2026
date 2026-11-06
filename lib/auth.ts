@@ -13,9 +13,9 @@ export interface Profile {
 	permissions: Section[];
 }
 
-// DEV BYPASS — when ADMIN_DEV=true the admin is open without Supabase auth.
-// Local development only. Never set ADMIN_DEV in a production environment.
-export const DEV_BYPASS = process.env.ADMIN_DEV === "true";
+// DEV BYPASS: when ADMIN_DEV=true the admin is open without Supabase auth. Local development only.
+// It cannot be switched on in a production build, so a stray ADMIN_DEV in a deployment's settings opens nothing.
+export const DEV_BYPASS = process.env.ADMIN_DEV === "true" && process.env.NODE_ENV !== "production";
 
 const DEV_PROFILE: Profile = {
 	id: "dev",

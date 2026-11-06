@@ -14,7 +14,7 @@ import type {
 
 export type CareersState = { ok?: string; error?: string };
 
-const DEV_NOTICE = "Dev mode — connect Supabase to save content.";
+const DEV_NOTICE = "Dev mode, connect Supabase to save content.";
 
 function slugify(s: string): string {
 	return s

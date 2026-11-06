@@ -30,7 +30,7 @@ export const defaultCareers: CareersContent = {
 		eyebrow: "Life at SM Chemicals",
 		heading: "Engineer a career",
 		headingAccent: "with us.",
-		body: "We build the high-precision formulations that keep India's industry running. Our people work across the lab bench, the plant floor and the field — solving real problems for real customers, with the autonomy to do it well.",
+		body: "We build the high-precision formulations that keep India's industry running. Our people work across the lab bench, the plant floor and the field, solving real problems for real customers, with the autonomy to do it well.",
 		values: [
 			{
 				title: "Hands-on Growth",

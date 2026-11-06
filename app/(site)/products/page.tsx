@@ -5,16 +5,16 @@ import { getPublishedCatalog } from "@/lib/cms/snapshots";
 
 export const metadata: Metadata = {
   title: "Products",
-  description: "Browse SM Chemicals' full catalogue of industrial chemicals — water treatment, ETP/STP, cooling tower, boiler, textile and construction chemicals.",
+  description: "Browse SM Chemicals' full catalogue of industrial chemicals: water treatment, ETP/STP, cooling tower, boiler, textile and construction chemicals.",
   alternates: { canonical: "/products" },
 }
 
 export default async function ProductsPage() {
 	const categories = await getPublishedCatalog();
 	return (
-		<div data-header-theme="light">
+		<>
 			<ProductsHero />
 			<ProductsGrid categories={categories} />
-		</div>
+		</>
 	);
 }

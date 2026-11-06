@@ -9,7 +9,7 @@ import { logActivity } from "@/lib/cms/activity";
 export type BlogState = { ok?: string; error?: string };
 export type RowResult = { ok?: boolean; error?: string };
 
-const DEV_NOTICE = "Dev mode — connect Supabase to save posts.";
+const DEV_NOTICE = "Dev mode, connect Supabase to save posts.";
 
 function slugify(s: string): string {
 	return s

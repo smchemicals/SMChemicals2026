@@ -1,8 +1,8 @@
 import HeroSection from "@/components/homepage-components/hero-section"
+import { ProofBand } from "@/components/homepage-components/proof-band"
 import { IndustriesSection } from "@/components/homepage-components/industries-section"
 import { FeaturesSection } from "@/components/homepage-components/features-section"
-import { CtaSection } from "@/components/homepage-components/cta-section"
-import { getPublishedHome, getPublishedContact, getPublishedCatalog } from "@/lib/cms/snapshots"
+import { getPublishedHome, getPublishedCatalog } from "@/lib/cms/snapshots"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -10,18 +10,17 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const [home, contact, catalog] = await Promise.all([
+  const [home, catalog] = await Promise.all([
     getPublishedHome(),
-    getPublishedContact(),
     getPublishedCatalog(),
   ])
 
   return (
     <>
       <HeroSection sectors={home.sectors} stats={home.stats} tagline={home.tagline} />
+      <ProofBand sectors={home.sectors} stats={home.stats} />
       <IndustriesSection categories={catalog} />
       <FeaturesSection />
-      <CtaSection phone={contact.phone} email={contact.email} />
     </>
   )
 }

@@ -33,7 +33,7 @@ export default async function UsersRoute() {
 				</p>
 				{DEV_BYPASS && (
 					<p className="mt-4 inline-block border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-amber-300 text-xs font-medium tracking-wide">
-						Dev mode — sample data. Connect Supabase to manage real users.
+						Dev mode, sample data. Connect Supabase to manage real users.
 					</p>
 				)}
 			</div>

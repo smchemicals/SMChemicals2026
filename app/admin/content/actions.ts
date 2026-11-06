@@ -9,7 +9,7 @@ import type { ContactContent, HomeContent, StatItem } from "@/data/content";
 
 export type ContentState = { ok?: string; error?: string };
 
-const DEV_NOTICE = "Dev mode — connect Supabase to save content.";
+const DEV_NOTICE = "Dev mode, connect Supabase to save content.";
 
 async function writeSetting(key: string, value: unknown): Promise<ContentState> {
 	const admin = createAdminClient();

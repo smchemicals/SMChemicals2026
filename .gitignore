@@ -24,3 +24,6 @@ scripts/bootstrap-admin.mjs
 /scripts/design-lab.mjs
 /instrumentation-client.ts
 /app/tokens.css
+
+# Local placeholder product photos (dev only; see lib/test-images.ts)
+/public/test-products/

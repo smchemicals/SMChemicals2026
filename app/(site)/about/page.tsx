@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { AboutHero } from "@/components/aboutpage-components/about-hero";
-import { AboutValues } from "@/components/aboutpage-components/about-values";
-import { AboutTimeline } from "@/components/aboutpage-components/about-timeline";
+import { AboutStack } from "@/components/aboutpage-components/about-stack";
+import { AboutCta } from "@/components/aboutpage-components/about-cta";
 import { AboutCertifications } from "@/components/aboutpage-components/about-certifications";
 import { getPublishedAbout } from "@/lib/cms/snapshots";
 
@@ -17,9 +17,9 @@ export default async function AboutPage() {
     return (
         <>
             <AboutHero />
-            <AboutValues content={about.values} />
-            <AboutTimeline content={about.timeline} />
+            <AboutStack values={about.values} timeline={about.timeline} />
             <AboutCertifications content={about.certifications} />
+            <AboutCta />
         </>
     );
 }

@@ -1,137 +1,88 @@
 "use client";
 
-import React, { useMemo } from "react";
-import {
-  Fish,
-  Building2,
-  Wind,
-  Recycle,
-  WashingMachine,
-  Atom,
-  Newspaper,
-  Zap,
-  Filter,
-  Shirt,
-  Flame,
-  Car,
-  FlaskConical,
-  ArrowUpRight,
-  type LucideIcon,
-} from "lucide-react";
+import { useMemo } from "react";
 import Link from "next/link";
-import { useSection } from "@/hooks/use-section";
+import { ArrowUpRight } from "lucide-react";
 import type { ProductCategory } from "@/data/products";
-import { CtaButton } from "@/components/ui/cta-button";
-import { Eyebrow } from "@/components/ui/page-hero";
+import { ButtonLink } from "@/components/ui/button";
+import { PopularTag } from "@/components/ui/popular-tag";
+import { setScrollCategory } from "@/lib/handoff";
+import { useReveal } from "@/hooks/use-reveal";
 
-const META: Record<string, { icon: LucideIcon; tagline: string }> = {
-  aquaculture: { icon: Fish, tagline: "Shrimp & Fish Farming" },
-  construction: { icon: Building2, tagline: "Concrete Admixtures" },
-  cooling: { icon: Wind, tagline: "Cooling Water Circuits" },
-  etp: { icon: Recycle, tagline: "Effluent & Sewage" },
-  laundry: { icon: WashingMachine, tagline: "Industrial Laundry" },
-  polymer: { icon: Atom, tagline: "Coagulants & Dispersants" },
-  "pulp-paper": { icon: Newspaper, tagline: "Paper Manufacturing" },
-  "power-plant": { icon: Zap, tagline: "Power Generation" },
-  ro: { icon: Filter, tagline: "Reverse Osmosis" },
-  textile: { icon: Shirt, tagline: "Textile Processing" },
-  "water-boiler": { icon: Flame, tagline: "Boiler Water Treatment" },
-  automobile: { icon: Car, tagline: "Automotive Care" },
-  other: { icon: FlaskConical, tagline: "Specialty Chemicals" },
-};
+function goTo(id: string) {
+  setScrollCategory(id);
+  if (window.location.pathname === "/products") {
+    window.dispatchEvent(new Event("scroll-to-category"));
+  }
+}
 
-export function IndustriesSection({
-  categories,
-}: {
-  categories: ProductCategory[];
-}) {
-  const scope = useSection<HTMLDivElement>({
-    y: 20,
-    blur: 4,
-    stagger: 0.05,
-    duration: 0.8,
-    start: "top 88%",
-    exitY: -50,
-    exitFade: 1,
-  });
-
-  const sortedCategories = useMemo(() => {
-    return [...categories].sort((a, b) => a.name.localeCompare(b.name));
-  }, [categories]);
+/*
+ * An index, not a grid of boxes: each industry is a line of large type with the
+ * chemicals we make for it running alongside, set on the page itself with only
+ * space between lines. The arrow is always there, so a line reads as a link
+ * without being pointed at.
+ */
+export function IndustriesSection({ categories }: { categories: ProductCategory[] }) {
+  const scope = useReveal<HTMLDivElement>({ y: 20, blur: 0, duration: 0.9, stagger: 0.04, scroll: true, start: "top 85%" });
+  const sorted = useMemo(
+    // The popular industries lead (as marked in the admin), then the rest, each group alphabetical.
+    () => [...categories].sort((a, b) => Number(Boolean(b.popular)) - Number(Boolean(a.popular)) || a.name.localeCompare(b.name)),
+    [categories],
+  );
 
   return (
-    <section id="industries" className="py-24 bg-background text-foreground">
-      <div ref={scope} className="mx-auto max-w-7xl px-6 sm:px-10 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
-          <div data-reveal className="flex flex-col">
-            <Eyebrow className="mb-5">Sector Expertise</Eyebrow>
-            <h2 className="text-5xl md:text-7xl font-semibold tracking-tight text-foreground leading-[0.9]">
-              Industrial{" "}
-              <span className="text-muted font-light">Scopes.</span>
-            </h2>
+    <section id="industries" className="bg-background py-24 text-foreground lg:py-36">
+      <div ref={scope} className="mx-auto max-w-7xl px-6 sm:px-10">
+        <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+          <h2
+            data-reveal
+            className="max-w-4xl font-heading text-[clamp(2.5rem,6.2vw,5.75rem)] font-semibold leading-none tracking-[-0.03em]"
+          >
+            Find the right chemical for <span className="text-accent-ink">your industry.</span>
+          </h2>
+          <div data-reveal>
+            <ButtonLink href="/products" variant="outline" arrow="right">
+              View full catalogue
+            </ButtonLink>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-l border-t border-line">
-          {sortedCategories.map((cat) => {
-            const meta = META[cat.id] ?? {
-              icon: FlaskConical,
-              tagline: "Specialty Chemicals",
-            };
-            const Icon = meta.icon;
-            const isPopular = Boolean(cat.popular);
-
+        <ul className="mt-16 lg:mt-24">
+          {sorted.map((c) => {
+            const sample = c.products.slice(0, 5).map((p) => p.name);
+            const more = c.products.length - sample.length;
             return (
-              <div
-                key={cat.id}
-                data-cell
-                className="bg-background group border-r border-b border-line"
-              >
+              <li key={c.id} data-reveal>
                 <Link
                   href="/products"
-                  onClick={() => {
-                    sessionStorage.setItem("smc:scrollCategory", cat.id);
-                    if (window.location.pathname === "/products") {
-                      window.dispatchEvent(new Event("scroll-to-category"));
-                    }
-                  }}
-                  className="relative flex flex-col h-64 p-6 md:p-8 overflow-hidden"
+                  onClick={() => goTo(c.id)}
+                  className="group/i grid items-center gap-x-10 gap-y-2 py-5 outline-none focus-visible:text-accent-ink lg:grid-cols-12 lg:py-6"
                 >
-                  <div className="absolute inset-0 bg-accent-strong translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-[0.19,1,0.22,1] z-0" />
-
-                  <div className="flex flex-col h-full relative z-10 justify-between">
-                    <div data-cell-part className="relative flex justify-center items-center">
-                      {isPopular && (
-                        <span className="type-label absolute left-0 top-0 bg-brand-red text-white px-2 py-0.5 rounded-sm">
-                          Popular
-                        </span>
-                      )}
-                      <Icon
-                        strokeWidth={1.5}
-                        className="h-17 w-17 text-accent-ink mt-10 group-hover:text-white transition-all duration-500"
-                      />
-                    </div>
-
-                    <div data-cell-part className="text-center">
-                      <span className="type-label text-muted group-hover:text-white/80 block mb-2">
-                        {String(cat.products.length).padStart(2, "0")} Products
-                      </span>
-                      <h3 className="type-label text-foreground group-hover:text-white leading-tight transition-colors duration-500">
-                        {cat.name}
-                      </h3>
-                    </div>
-
-                    <ArrowUpRight className="hidden md:block absolute top-0 right-0 h-4 w-4 text-muted group-hover:text-white transition-all duration-500" />
-                  </div>
+                  {/* The tag rides with the name's last word, so it sits in the same place on every line: after the name, on the
+                      last line of it, and wraps with that word on a narrow screen. */}
+                  <span className="font-heading text-[clamp(1.75rem,3.6vw,3.25rem)] font-semibold leading-[1.08] tracking-[-0.03em] transition-colors duration-300 group-hover/i:text-accent-ink group-focus-visible/i:text-accent-ink lg:col-span-7">
+                    {c.name.split(" ").slice(0, -1).join(" ")}{c.name.includes(" ") ? " " : ""}
+                    <span className="whitespace-nowrap">
+                      {c.name.split(" ").slice(-1)}
+                      {c.popular && <PopularTag className="ml-3 -translate-y-[0.35em] align-middle tracking-normal" />}
+                    </span>
+                  </span>
+                  <span className="flex items-center justify-between gap-6 lg:col-span-5">
+                    <span className="text-base leading-[1.6] text-muted lg:text-lg">
+                      {sample.join(", ")}
+                      {more > 0 ? ` and ${more} more` : ""}
+                    </span>
+                    <ArrowUpRight
+                      aria-hidden
+                      strokeWidth={2}
+                      className="h-6 w-6 shrink-0 text-accent-ink transition-transform duration-300 group-hover/i:translate-x-1 group-hover/i:-translate-y-0.5 group-focus-visible/i:translate-x-1"
+                    />
+                  </span>
                 </Link>
-              </div>
+              </li>
             );
           })}
-        </div>
-
-        <div data-reveal className="mt-16 flex flex-col items-center gap-8">
-          <CtaButton href="/products">Explore Full Catalogue</CtaButton>
-        </div>
+        </ul>
       </div>
     </section>
   );

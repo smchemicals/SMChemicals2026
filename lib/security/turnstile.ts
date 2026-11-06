@@ -18,7 +18,7 @@ export async function verifyTurnstile(
 	if (!secret) return { ok: true };
 	if (!token) {
 		console.error(
-			"[turnstile] no token submitted — widget likely did not render. " +
+			"[turnstile] no token submitted, widget likely did not render. " +
 				"Check NEXT_PUBLIC_TURNSTILE_SITE_KEY is in the deployed build.",
 		);
 		return { ok: false, reason: "no-token" };

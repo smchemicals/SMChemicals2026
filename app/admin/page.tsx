@@ -168,7 +168,7 @@ export default async function AdminHome() {
 					<span className="text-white/50 font-light">{firstName}.</span>
 				</h1>
 				<p className="mt-4 max-w-xl text-white/65 text-base leading-relaxed">
-					Edits are saved as drafts. When you’re ready, head to Publish to review
+					Edits are saved as drafts. When you're ready, head to Publish to review
 					what changed and push it live.
 				</p>
 			</div>
@@ -181,8 +181,8 @@ export default async function AdminHome() {
 						href={st.href}
 						className={`group rounded-lg border p-5 transition-colors ${
 							st.warn
-								? "border-amber-400/30 bg-amber-400/[0.06] hover:border-amber-400/50"
-								: "border-white/10 bg-white/[0.03] hover:border-white/20"
+								? "border-amber-400/30 bg-amber-400/6 hover:border-amber-400/50"
+								: "border-white/10 bg-white/3 hover:border-white/20"
 						}`}
 					>
 						<span className={`type-label ${st.warn ? "text-amber-300" : "text-white/55"}`}>
@@ -198,12 +198,12 @@ export default async function AdminHome() {
 
 			{/* Ready to publish */}
 			{pending.length > 0 && can("publish") && (
-				<div className="mt-6 flex flex-col gap-4 rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-5 sm:flex-row sm:items-center sm:justify-between">
+				<div className="mt-6 flex flex-col gap-4 rounded-lg border border-amber-400/30 bg-amber-400/6 p-5 sm:flex-row sm:items-center sm:justify-between">
 					<div>
 						<p className="text-white font-medium">
 							{pending.length === 1
-								? "1 section has changes that aren’t live yet"
-								: `${pending.length} sections have changes that aren’t live yet`}
+								? "1 section has changes that aren't live yet"
+								: `${pending.length} sections have changes that aren't live yet`}
 						</p>
 						<p className="mt-1 text-white/65 text-sm">
 							{pending.map((d) => d.label).join(", ")}
@@ -243,10 +243,10 @@ export default async function AdminHome() {
 							return (
 								<div
 									key={s.label}
-									className="group relative flex flex-col gap-5 rounded-lg border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-accent-500/40 hover:bg-white/[0.05]"
+									className="group relative flex flex-col gap-5 rounded-lg border border-white/10 bg-white/3 p-5 transition-colors hover:border-accent-500/40 hover:bg-white/5"
 								>
 									<div className="flex items-start gap-4">
-										<span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.04] text-accent-500">
+										<span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/4 text-accent-500">
 											<Icon size={18} />
 										</span>
 										<div className="min-w-0 flex-1">
@@ -305,7 +305,7 @@ export default async function AdminHome() {
 								All →
 							</Link>
 						</div>
-						<div className="rounded-lg border border-white/10 bg-white/[0.03]">
+						<div className="rounded-lg border border-white/10 bg-white/3">
 							{activity.length === 0 ? (
 								<p className="p-5 text-white/55 text-sm">
 									Edits, publishes and team changes will show up here.
@@ -330,7 +330,7 @@ export default async function AdminHome() {
 						{popularCount === 0 && can("products") && (
 							<Link
 								href="/admin/products"
-								className="mt-3 flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-4 text-white/65 text-sm transition-colors hover:border-amber-400/40"
+								className="mt-3 flex items-center gap-2 rounded-lg border border-white/10 bg-white/3 p-4 text-white/65 text-sm transition-colors hover:border-amber-400/40"
 							>
 								<Star size={14} className="text-amber-300" />
 								No categories are marked Popular yet.

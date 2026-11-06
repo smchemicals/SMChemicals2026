@@ -10,7 +10,7 @@ import { logActivity } from "@/lib/cms/activity";
 export type TeamResult = { ok?: boolean; error?: string };
 export type CreateUserState = { error?: string; ok?: string };
 
-const DEV_NOTICE = "Dev mode — connect Supabase to manage real users.";
+const DEV_NOTICE = "Dev mode, connect Supabase to manage real users.";
 
 const CreateUserSchema = z.object({
 	email: z.string().email(),

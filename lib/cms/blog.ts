@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { supabaseConfigured } from "@/lib/cms/products";
 import type { BlogPost } from "@/data/blog";
+import { sanitizeBody } from "@/lib/security/sanitize";
 
 async function isDraft(): Promise<boolean> {
 	try {
@@ -37,11 +38,14 @@ function map(r: Row): BlogPost {
 	};
 }
 
+/* What visitors get: the same post with its body cleaned. (The admin reads posts through map() and edits the original.) */
+const mapPublic = (r: Row): BlogPost => ({ ...map(r), body: sanitizeBody(r.body ?? "") });
+
 // Public: published posts only, newest first.
 export async function getPublishedPosts(): Promise<BlogPost[]> {
 	if (!supabaseConfigured()) return [];
 	try {
-		// Draft mode (staff preview) — read via the authed client so RLS lets
+		// Draft mode (staff preview): read via the authed client so RLS lets
 		// unpublished posts through, and show every post.
 		if (await isDraft()) {
 			const db = await createClient();
@@ -49,15 +53,16 @@ export async function getPublishedPosts(): Promise<BlogPost[]> {
 				.from("blog_posts")
 				.select("*")
 				.order("created_at", { ascending: false });
-			return (data ?? []).map((r) => map(r as Row));
+			return (data ?? []).map((r) => mapPublic(r as Row));
 		}
 		const db = createPublicClient();
 		const { data } = await db
 			.from("blog_posts")
 			.select("*")
 			.eq("published", true)
-			.order("published_at", { ascending: false });
-		return (data ?? []).map((r) => map(r as Row));
+			.order("published_at", { ascending: false })
+			.retry(false);
+		return (data ?? []).map((r) => mapPublic(r as Row));
 	} catch {
 		return [];
 	}
@@ -73,7 +78,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 				.select("*")
 				.eq("slug", slug)
 				.maybeSingle();
-			return data ? map(data as Row) : null;
+			return data ? mapPublic(data as Row) : null;
 		}
 		const db = createPublicClient();
 		const { data } = await db
@@ -81,8 +86,9 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 			.select("*")
 			.eq("slug", slug)
 			.eq("published", true)
-			.maybeSingle();
-		return data ? map(data as Row) : null;
+			.maybeSingle()
+			.retry(false);
+		return data ? mapPublic(data as Row) : null;
 	} catch {
 		return null;
 	}

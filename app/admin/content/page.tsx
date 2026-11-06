@@ -35,7 +35,7 @@ export default async function ContentAdmin() {
 				</p>
 				{DEV_BYPASS && (
 					<p className="mt-4 inline-block border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-amber-300 text-xs font-medium tracking-wide">
-						Dev mode — showing defaults. Connect Supabase to save edits.
+						Dev mode, showing defaults. Connect Supabase to save edits.
 					</p>
 				)}
 			</div>

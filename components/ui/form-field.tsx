@@ -1,46 +1,42 @@
-import { Check } from "lucide-react";
+import { CircleAlert, CircleCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /*
- * The message line under a field. It always reserves its height, so errors
- * appearing or clearing while someone types never shift the form.
+ * What a field has to say about itself: a soft pastel block with an icon, rose for something to fix and mint for
+ * "that works". The tint sits quietly on the ground and the ink on it is dark enough to read (both follow the
+ * theme through the surface tokens). It always reserves its height, so a message appearing or clearing while someone
+ * types never shifts the form.
  */
-export function FieldError({
+export function FieldMessage({
 	id,
-	message,
+	kind,
+	children,
+	className,
 }: {
-	id: string;
-	message: string | null;
+	id?: string;
+	kind: "error" | "ok" | null;
+	children?: React.ReactNode;
+	className?: string;
 }) {
+	const error = kind === "error";
+	const Icon = error ? CircleAlert : CircleCheck;
 	return (
-		<p
-			id={id}
-			aria-live="polite"
-			className={cn(
-				"mt-2 min-h-5 text-sm leading-5 text-danger transition-opacity duration-200",
-				message ? "opacity-100" : "opacity-0",
+		<div id={id} role={error ? "alert" : "status"} aria-live={error ? "assertive" : "polite"} className={cn("mt-4 min-h-11", className)}>
+			{kind && (
+				<p
+					className={cn(
+						"inline-flex max-w-full items-start gap-2.5 rounded-md px-3.5 py-2.5 text-base font-medium leading-snug",
+						error ? "bg-danger-soft text-danger-ink" : "bg-ok-soft text-ok-ink",
+					)}
+				>
+					<Icon aria-hidden className="mt-0.5 h-[1.125em] w-[1.125em] shrink-0" strokeWidth={2.25} />
+					<span>{children}</span>
+				</p>
 			)}
-		>
-			{message ?? ""}
-		</p>
+		</div>
 	);
 }
 
-/* Small tick at the right of a text field once its value is valid. */
-export function ValidTick({ show }: { show: boolean }) {
-	return (
-		<Check
-			aria-hidden
-			className={cn(
-				"pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-accent-ink transition-all duration-300",
-				show ? "scale-100 opacity-100" : "scale-50 opacity-0",
-			)}
-		/>
-	);
-}
-
-/* Border colour for an underline input: red when it has an error. */
-export const fieldState = (hasError: boolean) =>
-	hasError
-		? "border-danger focus:border-danger hover:border-danger"
-		: "";
+/* Underline colour for the step forms' big inputs: rose with an error, mint once the answer is valid. */
+export const stepFieldState = (state: "error" | "ok" | null) =>
+	state === "error" ? "!border-danger" : state === "ok" ? "!border-ok" : "";

@@ -59,6 +59,12 @@
   }
 
   [data-surface="inverse"] {
+    --color-danger: #ff9a9d;
+    --color-danger-soft: rgb(255 154 157 / 0.24);
+    --color-danger-ink: #ffc9cb;
+    --color-ok: #8fe0b8;
+    --color-ok-soft: rgb(143 224 184 / 0.22);
+    --color-ok-ink: #bff1d6;
     --color-background: var(--tune-inverse-background, var(--palette-foreground));
     --color-foreground: var(--tune-inverse-foreground, var(--palette-background));
     --color-muted: var(--tune-inverse-muted, color-mix(in oklab, var(--palette-background) 72%, var(--palette-foreground)));
@@ -66,6 +72,57 @@
     --color-accent-ink: var(--color-accent);
     --color-surface: var(--tune-inverse-surface, color-mix(in oklab, var(--color-foreground) 7%, var(--color-background)));
     --color-line: var(--tune-inverse-line, color-mix(in oklab, var(--color-foreground) 22%, transparent));
+  }
+
+  /* The hero surface: the page's opening mood. Dark theme: navy like "inverse". Light theme: the light ground,
+     so the liquid, the menu ink and the page transition all flip with the theme. */
+  [data-surface="hero"] {
+    --color-danger: #ff9a9d;
+    --color-danger-soft: rgb(255 154 157 / 0.24);
+    --color-danger-ink: #ffc9cb;
+    --color-ok: #8fe0b8;
+    --color-ok-soft: rgb(143 224 184 / 0.22);
+    --color-ok-ink: #bff1d6;
+    --color-background: var(--tune-inverse-background, var(--palette-foreground));
+    --color-foreground: var(--tune-inverse-foreground, var(--palette-background));
+    --color-muted: var(--tune-inverse-muted, color-mix(in oklab, var(--palette-background) 72%, var(--palette-foreground)));
+    --color-accent: var(--tune-inverse-accent, var(--palette-accent));
+    --color-accent-ink: var(--color-accent);
+    --color-surface: var(--tune-inverse-surface, color-mix(in oklab, var(--color-foreground) 7%, var(--color-background)));
+    --color-line: var(--tune-inverse-line, color-mix(in oklab, var(--color-foreground) 22%, transparent));
+  }
+
+  html:not([data-theme="dark"]) [data-surface="hero"] {
+    --color-danger: #c4242a;
+    --color-danger-soft: #fde7e7;
+    --color-danger-ink: #8f1d24;
+    --color-ok: #2f9e6b;
+    --color-ok-soft: #dff5e9;
+    --color-ok-ink: #145c3a;
+    --color-background: var(--tune-base-background, var(--palette-background));
+    --color-foreground: var(--tune-base-foreground, var(--palette-foreground));
+    --color-muted: var(--tune-base-muted, var(--palette-muted));
+    --color-accent: var(--tune-base-accent, var(--palette-accent));
+    --color-accent-ink: color-mix(in srgb, var(--color-accent) 78%, black);
+    --color-surface: var(--tune-base-surface, color-mix(in oklab, var(--color-foreground) 5%, var(--color-background)));
+    --color-line: var(--tune-base-line, color-mix(in oklab, var(--color-foreground) 16%, transparent));
+  }
+
+  /* "inverse" sections follow the theme too: navy in the dark theme, the light ground in the light theme. */
+  html:not([data-theme="dark"]) [data-surface="inverse"] {
+    --color-danger: #c4242a;
+    --color-danger-soft: #fde7e7;
+    --color-danger-ink: #8f1d24;
+    --color-ok: #2f9e6b;
+    --color-ok-soft: #dff5e9;
+    --color-ok-ink: #145c3a;
+    --color-background: var(--tune-base-background, var(--palette-background));
+    --color-foreground: var(--tune-base-foreground, var(--palette-foreground));
+    --color-muted: var(--tune-base-muted, var(--palette-muted));
+    --color-accent: var(--tune-base-accent, var(--palette-accent));
+    --color-accent-ink: color-mix(in srgb, var(--color-accent) 78%, black);
+    --color-surface: var(--tune-base-surface, color-mix(in oklab, var(--color-foreground) 5%, var(--color-background)));
+    --color-line: var(--tune-base-line, color-mix(in oklab, var(--color-foreground) 16%, transparent));
   }
 
   [data-surface="accent"] {
@@ -129,6 +186,13 @@
   }
 }
 
+/*
+ * Themes. Light: the whole site on the light ground. Dark: the original two-tone design, where the opening
+ * moments (heroes, menu, page transition, stats, footers: everything marked data-surface="hero" or "inverse")
+ * are navy and the content sections between them stay light. See the surface rules above and the script in
+ * app/layout.tsx; components/theme-toggle.tsx switches it.
+ */
+
 /* Brand extras the roles don't cover. */
 @theme {
   /* Primary call to action: logo blue, deepened so white text passes 4.5:1. */
@@ -138,9 +202,16 @@
   /* Logo red: small brand marks only (badges), and errors. */
   --color-brand-red: #d8262c;
   --color-danger: #c4242a;
+  /* Form states are pastels: a soft tint to sit on, a deeper ink to read on it. Surfaces override them. */
+  --color-danger-soft: #fde7e7;
+  --color-danger-ink: #8f1d24;
+  --color-ok: #2f9e6b;
+  --color-ok-soft: #dff5e9;
+  --color-ok-ink: #145c3a;
   /* Navy for overlays and scrims over the light ground. */
   --color-deep: #071722;
   --color-sky: #65b6df;
+  --font-serif: var(--font-instrument), Georgia, serif;
 }
 
 /*
@@ -187,37 +258,29 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+  body {
+    font-kerning: normal;
+    font-feature-settings: "kern", "liga", "calt";
+    text-rendering: optimizeLegibility;
+  }
   h1,
   h2 {
     font-family: var(--font-heading);
   }
+  /* Even line lengths: balanced headings, no one-word last lines in paragraphs. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p,
+  li,
+  address {
+    text-wrap: pretty;
+  }
   ::selection {
     background: var(--color-accent);
     color: #fff;
-  }
-}
-
-/*
- * Card-grid reveal (lib/reveal-cells.ts): a 1px accent line that sweeps the
- * top edge of each [data-cell] as it enters. GSAP drives the two variables;
- * without them (reduced motion, no JS) the line simply isn't there.
- */
-@layer components {
-  :where([data-cell]) {
-    position: relative;
-  }
-  [data-cell]::before {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    top: 0;
-    z-index: 20;
-    height: 1px;
-    pointer-events: none;
-    background: var(--color-accent);
-    transform-origin: left center;
-    transform: scaleX(var(--cell-sweep, 0));
-    opacity: var(--cell-sweep-o, 0);
   }
 }
 
@@ -228,9 +291,61 @@
  */
 @utility type-label {
   font-family: var(--font-label);
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
+
+/* Loading screen: a short line sweeping across its track. */
+@keyframes load-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+.load-sweep {
+  animation: load-sweep 1.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .load-sweep { animation: none; width: 100%; opacity: 0.6; }
+}
+
+/*
+ * While the preloader runs, hero text waits out of sight so its entrance can play after.
+ * Visibility only: GSAP reads an element's transform when its animation starts, so a CSS
+ * transform here would become the animation's starting point and leave the text displaced.
+ */
+html.intro-hold [data-line],
+html.intro-hold [data-in] { visibility: hidden; }
+
+/* The header waits too, so its buttons don't show through the loader's hole, then fades in. */
+[data-site-header] { transition: opacity 0.7s ease; }
+
+/* While the theme switches, colours change in a single step (see theme-toggle.tsx); the reveal is the only motion. */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
+html.intro-hold [data-site-header] { opacity: 0; }
+
+/* Theme change: the new theme is revealed through a blob mask that components/theme-toggle.tsx grows from the toggle. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  mask-image: var(--smc-blob, none);
+  -webkit-mask-image: var(--smc-blob, none);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 0 0;
+  -webkit-mask-size: 0 0;
+}
+
+/* A shared link to a chemical: the page waits, unseen, until the chemical has opened over it (see the script in app/layout.tsx). */
+/* (The chemical sits directly inside #catalogue, so everything else is hidden by name rather than hiding <main>, whose
+   visibility the chemical's own fade would otherwise inherit.) */
+html.deep-link main > :not(#catalogue),
+html.deep-link #catalogue > :not([role="dialog"]),
+html.deep-link footer { visibility: hidden; }

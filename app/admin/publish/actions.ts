@@ -15,7 +15,7 @@ import {
 
 export type PublishState = { ok?: boolean; error?: string; at?: string };
 
-const DEV_NOTICE = "Dev mode — connect Supabase to publish.";
+const DEV_NOTICE = "Dev mode, connect Supabase to publish.";
 
 function revalidateForKey(key: SnapshotKey) {
 	switch (key) {
@@ -90,7 +90,7 @@ export async function discardPage(key: SnapshotKey): Promise<PublishState> {
 		.maybeSingle();
 	const raw = snap?.raw;
 	if (raw === null || raw === undefined)
-		return { error: "No restore point yet — publish this section once first." };
+		return { error: "No restore point yet, publish this section once first." };
 
 	if (key === "products") {
 		const { product_categories = [], products = [] } = raw as {

@@ -3,14 +3,13 @@
 import {
 	useActionState,
 	useEffect,
-	useMemo,
 	useState,
 	useTransition,
 } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, X, Upload, ArrowLeft, Eye } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { Plus, Pencil, Trash2, X, ArrowLeft, Eye } from "lucide-react";
+import { ImageField } from "@/components/admin/ImageField";
 import { RichText } from "@/components/admin/rich-text";
 import { savePost, deletePost, type BlogState } from "./actions";
 import type { BlogPost } from "@/data/blog";
@@ -23,7 +22,7 @@ const btnPrimary =
 	"type-label inline-flex items-center gap-2 bg-cta px-7 py-3.5 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
 
 function fmt(iso: string | null) {
-	return iso ? new Date(iso).toLocaleDateString() : "—";
+	return iso ? new Date(iso).toLocaleDateString() : "Not set";
 }
 
 function slugify(s: string): string {
@@ -63,7 +62,7 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 			</div>
 
 			{posts.length === 0 ? (
-				<p className="border border-white/10 bg-white/[0.02] px-6 py-10 text-center text-white/55 text-sm font-light">
+				<p className="border border-white/10 bg-white/2 px-6 py-10 text-center text-white/55 text-sm font-light">
 					No posts yet. Create your first one.
 				</p>
 			) : (
@@ -153,11 +152,8 @@ function PostEditor({
 		savePost,
 		{} as BlogState,
 	);
-	const supabase = useMemo(() => createClient(), []);
 	const [coverUrl, setCoverUrl] = useState(post?.coverImage ?? "");
 	const [body, setBody] = useState(post?.body ?? "");
-	const [uploading, setUploading] = useState(false);
-	const [imgErr, setImgErr] = useState<string | null>(null);
 	const [title, setTitle] = useState(post?.title ?? "");
 	const [slug, setSlug] = useState(post?.slug ?? "");
 	const [slugTouched] = useState(Boolean(post));
@@ -172,38 +168,10 @@ function PostEditor({
 		return () => window.removeEventListener("keydown", onKey);
 	}, [onClose]);
 
-	const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (!file) return;
-		if (!file.type.startsWith("image/")) {
-			setImgErr("Choose an image file.");
-			return;
-		}
-		if (file.size > 5 * 1024 * 1024) {
-			setImgErr("Image must be under 5 MB.");
-			return;
-		}
-		setImgErr(null);
-		setUploading(true);
-		const ext = file.name.split(".").pop() || "jpg";
-		const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-		const { error } = await supabase.storage
-			.from("blog-images")
-			.upload(path, file, { cacheControl: "3600", upsert: false });
-		if (error) {
-			setImgErr(error.message);
-			setUploading(false);
-			return;
-		}
-		const { data } = supabase.storage.from("blog-images").getPublicUrl(path);
-		setCoverUrl(data.publicUrl);
-		setUploading(false);
-	};
-
 	if (typeof document === "undefined") return null;
 
 	return createPortal(
-		<div className="fixed inset-0 z-[1100] flex flex-col bg-deep">
+		<div className="fixed inset-0 z-1100 flex flex-col bg-deep">
 			<div className="flex flex-none items-center justify-between gap-4 border-b border-white/10 px-6 py-4 md:px-10">
 				<div className="flex items-center gap-5">
 					<button
@@ -297,33 +265,12 @@ function PostEditor({
 
 						<div className="flex flex-col gap-1.5">
 							<span className={labelCls}>Cover image</span>
-							{coverUrl ? (
-								<div className="relative overflow-hidden rounded-sm border border-white/10">
-									{/* eslint-disable-next-line @next/next/no-img-element */}
-									<img src={coverUrl} alt="" className="h-44 w-full object-cover" />
-									<button
-										type="button"
-										onClick={() => setCoverUrl("")}
-										className="absolute right-2 top-2 rounded-sm bg-black/70 p-1 text-white/80 transition-colors hover:text-white cursor-pointer"
-										aria-label="Remove image"
-									>
-										<X size={14} />
-									</button>
-								</div>
-							) : (
-								<label className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-dashed border-white/15 py-6 text-white/65 text-xs transition-colors hover:border-accent-500 hover:text-accent-500">
-									<Upload size={14} />
-									{uploading ? "Uploading…" : "Upload cover (PNG/JPG, ≤5MB)"}
-									<input
-										type="file"
-										accept="image/*"
-										onChange={onUpload}
-										disabled={uploading}
-										className="hidden"
-									/>
-								</label>
-							)}
-							{imgErr && <span className="text-red-400 text-xs">{imgErr}</span>}
+							<ImageField
+								value={coverUrl}
+								onChange={setCoverUrl}
+								bucket="blog-images"
+								aspect={16 / 9}
+							/>
 						</div>
 
 						<div className="flex flex-col gap-1.5">

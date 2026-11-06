@@ -1,96 +1,104 @@
 "use client";
 
-import { useReveal } from "@/hooks/use-reveal";
+import { useRef, type ReactNode } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
+import { LiquidField } from "@/components/ui/liquid-field";
+import { RotatingWord } from "@/components/ui/rotating-word";
+import { LiquidCode } from "@/components/ui/liquid-code";
 
 /*
- * The intro band at the top of every inner page: eyebrow, a two-tone title
- * and a short lead over the ice ground with a soft brand-blue glow. On wide
- * screens the lead sits in a right-hand column, aligned to the title's base.
- * The title is the largest type on the page, above every section heading.
+ * The one hero every page uses, so the headline, the gap beneath it, the lede and the
+ * action area sit in exactly the same place from page to page. Content is anchored to the
+ * bottom of the screen, and it is always a full screen tall, the same as the home page's.
  */
 export function PageHero({
-	eyebrow,
-	title,
-	titleAccent,
+	lines,
+	rotate,
+	bigFirst = false,
+	lede,
+	action,
 	children,
-	as: Tag = "section",
+	flex = false,
 }: {
-	eyebrow: string;
-	title: React.ReactNode;
-	titleAccent?: React.ReactNode;
-	children?: React.ReactNode;
-	as?: "section" | "header";
+	lines: string[];
+	/** A final headline line that changes through these words (liquid reveal). */
+	rotate?: string[];
+	/** Sets the first line much larger, in the accent, for a status code such as 404. */
+	bigFirst?: boolean;
+	lede: ReactNode;
+	action?: ReactNode;
+	children?: ReactNode;
+	flex?: boolean;
 }) {
-	const scope = useReveal<HTMLDivElement>({ y: 16, blur: 4, stagger: 0.08 });
+	const root = useRef<HTMLElement>(null);
+
+	useGSAP(
+		() => {
+			const mm = gsap.matchMedia();
+			mm.add("(prefers-reduced-motion: no-preference)", () => {
+				gsap.set("[data-line]", { yPercent: 135 });
+				gsap.set("[data-in]", { autoAlpha: 0, y: 16 });
+				gsap
+					.timeline({ defaults: { ease: "expoOut" } })
+					.to("[data-line]", { yPercent: 0, duration: 1.3, stagger: 0.1 }, 0.1)
+					.to("[data-in]", { autoAlpha: 1, y: 0, duration: 1, stagger: 0.1 }, 0.7);
+			});
+		},
+		{ scope: root },
+	);
 
 	return (
-		<Tag className="relative overflow-hidden bg-background pt-36 pb-12 md:pt-44 md:pb-16">
-			<BrandGlow className="[mask-image:linear-gradient(to_bottom,black_55%,transparent)]" />
-			<div ref={scope} className="relative z-10 mx-auto max-w-7xl px-6 sm:px-10">
-				<Eyebrow data-reveal className="mb-8">
-					{eyebrow}
-				</Eyebrow>
-
-				<div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
-					<h1
-						data-reveal
-						className="text-5xl font-semibold leading-none tracking-tight text-foreground sm:text-6xl md:text-7xl lg:col-span-7 lg:text-8xl"
-					>
-						{title}
-						{titleAccent && (
-							<>
-								{" "}
-								<span className="font-light text-muted">
-									{titleAccent}
+		<section
+			ref={root}
+			data-surface="hero"
+			className={`relative flex flex-col justify-end overflow-hidden bg-background text-foreground min-h-svh ${flex ? "flex-1" : ""}`}
+		>
+			<LiquidField />
+			<div className="relative mx-auto w-full max-w-7xl px-6 pb-14 pt-40 sm:px-10 lg:pb-20">
+				<h1 className="font-heading text-[clamp(2.4rem,9.5vw,10rem)] font-semibold leading-[0.92] tracking-[-0.03em] text-foreground">
+					{lines.map((line, n) =>
+						bigFirst && n === 0 ? (
+							// A status code is made of the liquid itself (it has its own entrance, so it isn't one of the sliding lines).
+							<span key={line} className="block text-[1.7em] leading-[0.9] text-accent-ink">
+								<LiquidCode text={line} />
+							</span>
+						) : (
+							<span key={line} className="block overflow-hidden -mx-[0.05em] -mb-[0.16em] -mt-[0.1em] px-[0.05em] pb-[0.24em] pt-[0.1em]">
+								<span data-line className="block">
+									{line}
 								</span>
-							</>
-						)}
-					</h1>
+							</span>
+						),
+					)}
+					{rotate && (
+						<span className="block overflow-hidden -mx-[0.05em] -mb-[0.16em] -mt-[0.1em] px-[0.05em] pb-[0.24em] pt-[0.1em]">
+							<span data-line className="block">
+								<RotatingWord words={rotate} />
+							</span>
+						</span>
+					)}
+				</h1>
 
-					{children && (
-						<p
-							data-reveal
-							className="max-w-xl text-base font-light leading-relaxed text-foreground/75 md:text-lg lg:col-span-5 lg:pb-2"
-						>
-							{children}
+				{/* Same 12-column grid as the footer and every list: the lede on the left, actions from column 8. */}
+				<div className="mt-12 grid gap-8 md:mt-16 lg:grid-cols-12 lg:items-center lg:gap-x-10">
+					<div className="lg:col-span-6">
+						<p data-in className="max-w-[26rem] text-pretty text-lg leading-[1.55] tracking-[-0.005em] text-foreground/75 md:text-xl">
+							{lede}
 						</p>
+						{action && (
+							<div data-in className="mt-8">
+								{action}
+							</div>
+						)}
+					</div>
+					{children && (
+						<div data-in className="flex flex-col gap-3 sm:flex-row sm:items-center lg:col-span-5 lg:col-start-8">
+							{children}
+						</div>
 					)}
 				</div>
 			</div>
-		</Tag>
-	);
-}
-
-/* Small label above a heading: a blue rule and spaced capitals. */
-export function Eyebrow({
-	children,
-	className = "",
-	...rest
-}: React.ComponentProps<"div">) {
-	return (
-		<div className={`flex items-center gap-3 ${className}`} {...rest}>
-			<span className="h-px w-8 bg-accent" />
-			<span className="type-label text-accent-ink">
-				{children}
-			</span>
-		</div>
-	);
-}
-
-/* Soft blue glow + dot grid that sits behind dark brand sections. */
-export function BrandGlow({ className = "" }: { className?: string }) {
-	return (
-		<div aria-hidden className={`pointer-events-none absolute inset-0 ${className}`}>
-			<div className="absolute -top-1/3 right-[-10%] h-[42rem] w-[42rem] rounded-full bg-accent/15 blur-[120px]" />
-			<div className="absolute -bottom-1/2 left-[-15%] h-[36rem] w-[36rem] rounded-full bg-sky/5 blur-[120px]" />
-			<div
-				className="absolute inset-0 opacity-[0.07] [mask-image:linear-gradient(to_bottom,black,transparent)]"
-				style={{
-					backgroundImage:
-						"radial-gradient(circle at center, var(--color-foreground) 1px, transparent 1px)",
-					backgroundSize: "32px 32px",
-				}}
-			/>
-		</div>
+		</section>
 	);
 }

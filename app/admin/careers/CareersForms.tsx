@@ -86,7 +86,7 @@ export function CareersForm({ careers }: { careers: CareersContent }) {
 		<form action={action} className="space-y-10">
 			<input type="hidden" name="payload" value={payload} />
 
-			<section className="border border-white/10 bg-white/[0.02] p-8">
+			<section className="border border-white/10 bg-white/2 p-8">
 				<Eyebrow>Intro</Eyebrow>
 
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -170,14 +170,14 @@ export function CareersForm({ careers }: { careers: CareersContent }) {
 				</button>
 			</section>
 
-			<section className="border border-white/10 bg-white/[0.02] p-8">
+			<section className="border border-white/10 bg-white/2 p-8">
 				<Eyebrow>Open positions</Eyebrow>
 
 				<div className="space-y-px">
 					{openings.map((o, i) => (
 						<div
 							key={i}
-							className="relative border border-white/10 bg-white/[0.02] p-6"
+							className="relative border border-white/10 bg-white/2 p-6"
 						>
 							<button
 								type="button"

@@ -94,7 +94,7 @@ export function AboutValuesForm({ section }: { section: AboutValuesSection }) {
 	return (
 		<form
 			action={action}
-			className="border border-white/10 bg-white/[0.02] p-8"
+			className="border border-white/10 bg-white/2 p-8"
 		>
 			<input type="hidden" name="payload" value={JSON.stringify(data)} />
 			<Eyebrow>Purpose & direction</Eyebrow>
@@ -196,7 +196,7 @@ export function AboutTimelineForm({
 	return (
 		<form
 			action={action}
-			className="border border-white/10 bg-white/[0.02] p-8"
+			className="border border-white/10 bg-white/2 p-8"
 		>
 			<input type="hidden" name="payload" value={JSON.stringify(data)} />
 			<Eyebrow>Milestones</Eyebrow>
@@ -240,7 +240,7 @@ export function AboutTimelineForm({
 				{data.items.map((it, i) => (
 					<div
 						key={i}
-						className="relative border border-white/10 bg-white/[0.02] p-6"
+						className="relative border border-white/10 bg-white/2 p-6"
 					>
 						<div className="absolute right-5 top-5">
 							<RemoveBtn onClick={() => setItems(data.items.filter((_, j) => j !== i))} />
@@ -323,7 +323,7 @@ export function AboutCertsForm({ section }: { section: AboutCertsSection }) {
 	return (
 		<form
 			action={action}
-			className="border border-white/10 bg-white/[0.02] p-8"
+			className="border border-white/10 bg-white/2 p-8"
 		>
 			<input type="hidden" name="payload" value={JSON.stringify(data)} />
 			<Eyebrow>Certifications</Eyebrow>

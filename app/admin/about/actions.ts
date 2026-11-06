@@ -16,7 +16,7 @@ import {
 
 export type AboutState = { ok?: string; error?: string };
 
-const DEV_NOTICE = "Dev mode — connect Supabase to save content.";
+const DEV_NOTICE = "Dev mode, connect Supabase to save content.";
 const s = (v: unknown) => String(v ?? "").trim();
 
 function parse<T>(formData: FormData): T | null {
