@@ -7,7 +7,7 @@ import { getPublishedAbout } from "@/lib/cms/snapshots";
 
 export const metadata: Metadata = {
     title: "About",
-    description: "Since 2008, SM Chemicals has engineered high-precision industrial chemicals for India's infrastructure. Learn about our standards, journey and certifications.",
+    description: "Since 2008, SM Chemicals has made water treatment, construction, textile and process chemicals in Hyderabad. Learn about our standards, journey and certifications.",
     alternates: { canonical: "/about" },
 };
 

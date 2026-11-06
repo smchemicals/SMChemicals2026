@@ -48,7 +48,7 @@ export const defaultAbout: AboutContent = {
 		cards: [
 			{
 				title: "Mission",
-				body: "Engineering high-precision chemical solutions that drive innovation across India's infrastructure.",
+				body: "Making high-precision chemicals that keep industry across India running.",
 			},
 			{
 				title: "Vision",

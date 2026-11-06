@@ -6,7 +6,8 @@ const jsonb = (o: Record<string, unknown>) =>
 	`'${JSON.stringify(o).replace(/'/g, "''")}'::jsonb`;
 
 const lines: string[] = [
-	"-- AUTO-GENERATED from data/products.ts (scripts/gen-products-seed.ts). Idempotent.",
+	"-- 0003 catalogue: the categories and chemicals, generated from data/products.ts by scripts/gen-products-seed.ts.",
+	"-- Needs 0002. Categories are refreshed on a re-run; products are added only when the table is empty.",
 	"",
 ];
 
@@ -41,7 +42,17 @@ lines.push(
 	"",
 );
 
-const out = "supabase/migrations/0004_products_seed.sql";
+// The categories that carry the Popular tag at launch (they can be changed any time in the admin).
+const POPULAR = ["water-boiler", "ro", "etp", "cooling"];
+lines.push(
+	"-- Popular tags at launch. Only set on a fresh catalogue, so a re-run never undoes what the admin changed.",
+	"update public.product_categories set popular = true",
+	`  where id in (${POPULAR.map(q).join(", ")})`,
+	"  and not exists (select 1 from public.product_categories where popular);",
+	"",
+);
+
+const out = "supabase/migrations/0003_catalogue_seed.sql";
 writeFileSync(out, lines.join("\n"));
 console.log(
 	`wrote ${out} — ${productCategories.length} categories, ${prodRows.length} products`,

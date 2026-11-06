@@ -8,7 +8,7 @@ export interface RoleRow {
 	is_system: boolean;
 }
 
-// Built-in fallback (dev / no Supabase) mirroring the 0008 seed.
+// Built-in fallback (dev / no Supabase) mirroring the roles seeded in 0001_core.sql.
 const DEV_ROLES: RoleRow[] = [
 	{ key: "founder", label: "Founder", is_system: true },
 	{ key: "admin", label: "Admin", is_system: true },

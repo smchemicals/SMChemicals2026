@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requirePermission } from "@/lib/auth";
 import { getViewStats } from "@/lib/cms/analytics";
+import { PageHeader, Panel } from "@/components/admin/ui";
 
 export const metadata = { title: "Analytics" };
 
@@ -16,104 +17,92 @@ export default async function AnalyticsAdmin({ searchParams }: { searchParams: P
 	const stats = await getViewStats(days);
 
 	return (
-		<div className="mx-auto max-w-6xl px-6 py-12 md:px-10 md:py-14">
-			<div className="mb-10">
-				<div className="mb-5 flex items-center gap-3">
-					<span className="h-px w-7 bg-accent-500" />
-					<span className="type-label text-accent-500">Analytics</span>
-				</div>
-				<h1 className="text-white text-4xl md:text-5xl font-semibold tracking-tight leading-none">
-					Page views<span className="text-white/50 font-light">.</span>
-				</h1>
-				<p className="mt-6 text-white/65 text-sm font-light tracking-wide">
-					How many times each page was opened. Only counts are kept: nothing about who looked.
-				</p>
-			</div>
+		<div className="mx-auto max-w-5xl px-6 py-10 md:px-10 md:py-14">
+			<PageHeader title="Page views">
+				How many times each page was opened. Only counts are kept: nothing about who looked.
+			</PageHeader>
 
 			{!stats.available ? (
-				<div className="border border-white/10 bg-white/2 px-6 py-10 text-white/70 text-sm font-light leading-relaxed">
-					{stats.reason === "not-configured" ? (
-						<p>Views are counted once Supabase is connected.</p>
-					) : (
-						<>
-							<p className="text-white font-medium">Counting isn&rsquo;t switched on yet.</p>
-							<p className="mt-3">
-								Run <code className="text-accent-500">supabase/migrations/0010_page_views.sql</code> in the Supabase SQL editor. The website keeps
-								working either way; views are simply counted from the moment it has run.
-							</p>
-						</>
-					)}
-					<p className="mt-4 text-white/50">
-						The visit counts from Vercel Analytics are in your Vercel project, under Analytics. They are separate from this page.
-					</p>
-				</div>
+				<Panel>
+					<div className="space-y-3 text-base text-muted">
+						{stats.reason === "not-configured" ? (
+							<p>Views are counted once Supabase is connected.</p>
+						) : (
+							<>
+								<p className="font-heading text-lg font-semibold text-foreground">Counting isn&rsquo;t switched on yet.</p>
+								<p>
+									The <code className="rounded bg-background px-1.5 py-0.5 text-sm text-foreground">page_views</code> table is missing. In the Supabase SQL editor run <code className="rounded bg-background px-1.5 py-0.5 text-sm text-foreground">supabase/existing-project-update.sql</code> (or <code className="rounded bg-background px-1.5 py-0.5 text-sm text-foreground">0002_content.sql</code> on a new project).
+									The website keeps working either way; views are counted from the moment it has run.
+								</p>
+							</>
+						)}
+						<p>The visit counts from Vercel Analytics are in your Vercel project, under Analytics. They are separate from this page.</p>
+					</div>
+				</Panel>
 			) : (
 				<>
-					<div className="mb-8 flex flex-wrap gap-2">
+					<nav aria-label="Range" className="mb-8 flex flex-wrap gap-2">
 						{RANGES.map((r) => (
 							<Link
 								key={r}
 								href={r === 30 ? "/admin/analytics" : `/admin/analytics?range=${r}`}
-								className={`type-label border px-4 py-2 transition-colors ${
-									days === r ? "border-accent-500/40 bg-accent-500/10 text-accent-500" : "border-white/15 text-white/65 hover:text-white"
+								aria-current={days === r ? "page" : undefined}
+								className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+									days === r ? "bg-foreground text-background" : "bg-surface text-muted hover:text-foreground"
 								}`}
 							>
 								Last {r} days
 							</Link>
 						))}
-					</div>
+					</nav>
 
-					<dl className="grid gap-px bg-white/10 sm:grid-cols-3">
+					<dl className="grid gap-4 sm:grid-cols-3">
 						{[
 							["Views", stats.total.toLocaleString("en-IN")],
 							["Today", stats.today.toLocaleString("en-IN")],
 							["Daily average", stats.average.toLocaleString("en-IN")],
 						].map(([k, v]) => (
-							<div key={k} className="bg-[#0b1d28] px-6 py-6">
-								<dt className="type-label text-white/55">{k}</dt>
-								<dd className="mt-3 text-white text-4xl font-semibold tracking-tight">{v}</dd>
+							<div key={k} className="rounded-xl bg-surface px-6 py-6">
+								<dt className="text-sm font-medium text-muted">{k}</dt>
+								<dd className="mt-3 font-heading text-4xl font-semibold tracking-[-0.04em] tabular-nums text-foreground">{v}</dd>
 							</div>
 						))}
 					</dl>
 
-					<section className="mt-12" aria-label="Views per day">
-						<h2 className="type-label text-white/55">Per day</h2>
-						<div className="mt-5 flex h-44 items-end gap-[3px]" role="img" aria-label={`Views per day over the last ${days} days`}>
+					<Panel title="Per day" className="mt-8">
+						<div className="flex h-44 items-end gap-[3px]" role="img" aria-label={`Views per day over the last ${days} days`}>
 							{(() => {
 								const max = Math.max(1, ...stats.perDay.map((d) => d.views));
 								return stats.perDay.map((d) => (
 									<div key={d.day} className="group relative flex h-full min-w-0 flex-1 items-end" title={`${short(d.day)}: ${d.views}`}>
-										<div className="w-full bg-accent-500/70 transition-colors group-hover:bg-accent-500" style={{ height: `${Math.max(d.views ? 3 : 0, (d.views / max) * 100)}%` }} />
+										<div className="w-full rounded-t-sm bg-accent/60 transition-colors group-hover:bg-accent" style={{ height: `${Math.max(d.views ? 3 : 0, (d.views / max) * 100)}%` }} />
 									</div>
 								));
 							})()}
 						</div>
-						<div className="mt-2 flex justify-between text-white/45 text-xs font-light">
+						<div className="mt-3 flex justify-between text-sm text-muted">
 							<span>{short(stats.perDay[0].day)}</span>
 							<span>{short(stats.perDay[stats.perDay.length - 1].day)}</span>
 						</div>
-					</section>
+					</Panel>
 
-					<section className="mt-12" aria-label="Most viewed pages">
-						<h2 className="type-label text-white/55">Most viewed pages</h2>
+					<Panel title="Most viewed pages" className="mt-8">
 						{stats.pages.length === 0 ? (
-							<p className="mt-5 border border-white/10 bg-white/2 px-6 py-10 text-center text-white/55 text-sm font-light">
-								No views yet. They appear here once the live site has visitors.
-							</p>
+							<p className="text-base text-muted">No views yet. They appear here once the live site has visitors.</p>
 						) : (
-							<div className="mt-5 border-t border-white/10">
+							<ul className="divide-y divide-line">
 								{stats.pages.map((p) => (
-									<div key={p.path} className="flex items-baseline justify-between gap-6 border-b border-white/10 py-3">
-										<span className="min-w-0 truncate text-white text-sm">{label(p.path)}</span>
-										<span className="shrink-0 text-white/70 text-sm tabular-nums">
+									<li key={p.path} className="flex items-baseline justify-between gap-6 py-3">
+										<span className="min-w-0 truncate text-base text-foreground">{label(p.path)}</span>
+										<span className="shrink-0 text-base tabular-nums text-foreground">
 											{p.views.toLocaleString("en-IN")}
-											<span className="ml-3 text-white/45 text-xs">{stats.total ? Math.round((p.views / stats.total) * 100) : 0}%</span>
+											<span className="ml-3 text-sm text-muted">{stats.total ? Math.round((p.views / stats.total) * 100) : 0}%</span>
 										</span>
-									</div>
+									</li>
 								))}
-							</div>
+							</ul>
 						)}
-					</section>
+					</Panel>
 				</>
 			)}
 		</div>

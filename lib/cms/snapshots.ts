@@ -8,6 +8,7 @@ import {
 	withPopularDefaults,
 } from "@/lib/cms/products";
 import { diffData } from "@/lib/cms/diff";
+import { cleanContact, cleanHome } from "@/lib/cms/clean";
 import {
 	defaultHome,
 	defaultContact,
@@ -48,9 +49,9 @@ export const SNAPSHOT_PATHS: Record<SnapshotKey, string> = {
 export async function buildDraft(key: SnapshotKey): Promise<unknown> {
 	switch (key) {
 		case "home":
-			return getSetting<HomeContent>("home", defaultHome);
+			return cleanHome(await getSetting<HomeContent>("home", defaultHome));
 		case "contact":
-			return getSetting<ContactContent>("contact", defaultContact);
+			return cleanContact(await getSetting<ContactContent>("contact", defaultContact));
 		case "about":
 			return getSetting<AboutContent>("about", defaultAbout);
 		case "careers":
@@ -104,13 +105,17 @@ async function isDraft(): Promise<boolean> {
 // Public-site reads: the published snapshot, falling back to the static
 // defaults so the site always renders (pre-publish, or with no Supabase).
 export const getPublishedHome = async (): Promise<HomeContent> =>
-	(await isDraft())
-		? getSetting<HomeContent>("home", defaultHome)
-		: ((await published<HomeContent>("home")) ?? defaultHome);
+	cleanHome(
+		(await isDraft())
+			? await getSetting<HomeContent>("home", defaultHome)
+			: ((await published<HomeContent>("home")) ?? defaultHome),
+	);
 export const getPublishedContact = async (): Promise<ContactContent> =>
-	(await isDraft())
-		? getSetting<ContactContent>("contact", defaultContact)
-		: ((await published<ContactContent>("contact")) ?? defaultContact);
+	cleanContact(
+		(await isDraft())
+			? await getSetting<ContactContent>("contact", defaultContact)
+			: ((await published<ContactContent>("contact")) ?? defaultContact),
+	);
 export const getPublishedAbout = async (): Promise<AboutContent> =>
 	(await isDraft())
 		? getSetting<AboutContent>("about", defaultAbout)

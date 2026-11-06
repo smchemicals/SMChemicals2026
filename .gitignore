@@ -27,3 +27,7 @@ scripts/bootstrap-admin.mjs
 
 # Local placeholder product photos (dev only; see lib/test-images.ts)
 /public/test-products/
+
+# All SQL stays local: migrations, reset, seeds and the old setup in supabase/legacy
+*.sql
+/supabase/legacy/

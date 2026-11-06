@@ -19,6 +19,7 @@ export function Select({
 	className,
 	size = "lg",
 	placeholder = "Select",
+	inPanel = false,
 }: {
 	value: string;
 	onChange: (value: string) => void;
@@ -27,6 +28,8 @@ export function Select({
 	className?: string;
 	size?: "md" | "lg";
 	placeholder?: string;
+	/** Sits on a surface-coloured panel, so the field and its list use the page colour instead. */
+	inPanel?: boolean;
 }) {
 	const id = useId();
 	const root = useRef<HTMLDivElement>(null);
@@ -111,8 +114,9 @@ export function Select({
 				onClick={() => (open ? setOpen(false) : show())}
 				onKeyDown={onKey}
 				className={cn(
-					"flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg bg-surface px-4 text-left text-base font-semibold text-foreground outline-none ring-2 ring-transparent transition-shadow hover:ring-foreground/15 focus-visible:ring-accent",
+					"flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-4 text-left text-base font-semibold text-foreground outline-none ring-2 ring-transparent transition-shadow hover:ring-foreground/15 focus-visible:ring-accent",
 					size === "lg" ? "h-14" : "h-12",
+					inPanel ? "bg-background" : "bg-surface",
 					open && "ring-accent",
 				)}
 			>
@@ -125,7 +129,7 @@ export function Select({
 					id={`${id}-list`}
 					role="listbox"
 					aria-label={label}
-					className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-72 overflow-y-auto rounded-lg bg-surface py-2 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.35)]"
+					className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-72 overflow-y-auto rounded-lg bg-surface py-2 ring-1 ring-foreground/10 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.35)]"
 					data-lenis-prevent
 				>
 					{options.map((o, i) => {

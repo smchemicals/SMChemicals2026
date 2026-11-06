@@ -65,6 +65,9 @@
     --color-ok: #8fe0b8;
     --color-ok-soft: rgb(143 224 184 / 0.22);
     --color-ok-ink: #bff1d6;
+    --color-warn: #ffd58a;
+    --color-warn-soft: rgb(255 213 138 / 0.22);
+    --color-warn-ink: #ffe6b8;
     --color-background: var(--tune-inverse-background, var(--palette-foreground));
     --color-foreground: var(--tune-inverse-foreground, var(--palette-background));
     --color-muted: var(--tune-inverse-muted, color-mix(in oklab, var(--palette-background) 72%, var(--palette-foreground)));
@@ -83,6 +86,9 @@
     --color-ok: #8fe0b8;
     --color-ok-soft: rgb(143 224 184 / 0.22);
     --color-ok-ink: #bff1d6;
+    --color-warn: #ffd58a;
+    --color-warn-soft: rgb(255 213 138 / 0.22);
+    --color-warn-ink: #ffe6b8;
     --color-background: var(--tune-inverse-background, var(--palette-foreground));
     --color-foreground: var(--tune-inverse-foreground, var(--palette-background));
     --color-muted: var(--tune-inverse-muted, color-mix(in oklab, var(--palette-background) 72%, var(--palette-foreground)));
@@ -99,6 +105,9 @@
     --color-ok: #2f9e6b;
     --color-ok-soft: #dff5e9;
     --color-ok-ink: #145c3a;
+    --color-warn: #b7791f;
+    --color-warn-soft: #fdf1d8;
+    --color-warn-ink: #7a4f0c;
     --color-background: var(--tune-base-background, var(--palette-background));
     --color-foreground: var(--tune-base-foreground, var(--palette-foreground));
     --color-muted: var(--tune-base-muted, var(--palette-muted));
@@ -116,6 +125,9 @@
     --color-ok: #2f9e6b;
     --color-ok-soft: #dff5e9;
     --color-ok-ink: #145c3a;
+    --color-warn: #b7791f;
+    --color-warn-soft: #fdf1d8;
+    --color-warn-ink: #7a4f0c;
     --color-background: var(--tune-base-background, var(--palette-background));
     --color-foreground: var(--tune-base-foreground, var(--palette-foreground));
     --color-muted: var(--tune-base-muted, var(--palette-muted));
@@ -208,6 +220,9 @@
   --color-ok: #2f9e6b;
   --color-ok-soft: #dff5e9;
   --color-ok-ink: #145c3a;
+  --color-warn: #b7791f;
+  --color-warn-soft: #fdf1d8;
+  --color-warn-ink: #7a4f0c;
   /* Navy for overlays and scrims over the light ground. */
   --color-deep: #071722;
   --color-sky: #65b6df;

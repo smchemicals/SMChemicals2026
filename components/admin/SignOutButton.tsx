@@ -10,7 +10,7 @@ export default function SignOutButton() {
 			<button
 				type="submit"
 				disabled={pending}
-				className="type-label whitespace-nowrap cursor-pointer text-white/70 transition-colors hover:text-accent-500 disabled:opacity-60"
+				className="cursor-pointer whitespace-nowrap rounded text-sm font-medium text-muted outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
 			>
 				Sign out
 			</button>

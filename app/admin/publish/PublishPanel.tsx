@@ -2,27 +2,16 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
 import { publishPage, publishAll, discardPage } from "./actions";
 import type { PageDraft, PageStatus } from "@/lib/cms/snapshots";
+import { formatDateTime } from "@/lib/format-date";
+import { BTN, BTN_QUIET, LINK_BTN, LINK_DANGER, Panel, Status } from "@/components/admin/ui";
 
 function StatusChip({ status, count }: { status: PageStatus; count: number }) {
-	if (status === "dirty")
-		return (
-			<span className="type-label border border-accent-500/40 bg-accent-500/10 px-2.5 py-0.5 text-accent-500">
-				{count} unpublished change{count === 1 ? "" : "s"}
-			</span>
-		);
-	if (status === "unpublished")
-		return (
-			<span className="type-label border border-white/20 px-2.5 py-0.5 text-white/70">
-				Not published
-			</span>
-		);
-	return (
-		<span className="type-label border border-white/10 px-2.5 py-0.5 text-white/50">
-			Up to date
-		</span>
-	);
+	if (status === "dirty") return <Status tone="warn">{count} unpublished change{count === 1 ? "" : "s"}</Status>;
+	if (status === "unpublished") return <Status tone="warn">Not published</Status>;
+	return <Status tone="ok">Up to date</Status>;
 }
 
 function Item({ row }: { row: PageDraft }) {
@@ -30,76 +19,64 @@ function Item({ row }: { row: PageDraft }) {
 	const [pending, start] = useTransition();
 	const [msg, setMsg] = useState("");
 	const [open, setOpen] = useState(false);
+	const [confirming, setConfirming] = useState(false);
 
-	const when = row.publishedAt
-		? `Published ${new Date(row.publishedAt).toLocaleString()}`
-		: "Not published yet, nothing live";
+	const when = row.publishedAt ? `Published ${formatDateTime(row.publishedAt)}` : "Not published yet, nothing live";
 
 	return (
-		<div className="border-b border-white/10 py-5 last:border-b-0">
-			<div className="flex flex-wrap items-center justify-between gap-4">
+		<li className="py-5 first:pt-0 last:pb-0">
+			<div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
 				<div className="min-w-0">
-					<div className="flex items-center gap-3">
-						<span className="text-white text-lg font-bold tracking-tight">
-							{row.label}
-						</span>
+					<div className="flex flex-wrap items-center gap-3">
+						<span className="font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">{row.label}</span>
 						<StatusChip status={row.status} count={row.changes.length} />
 					</div>
-					<div className="mt-1 text-white/65 text-xs font-light tracking-wide">
-						{msg || when}
-					</div>
+					<div className="mt-1 text-sm text-muted" role="status">{msg || when}</div>
 				</div>
-				<div className="flex items-center gap-5">
+				<div className="flex flex-wrap items-center gap-x-5 gap-y-3">
 					{row.status === "dirty" && (
 						<>
-							<button
-								type="button"
-								onClick={() => setOpen((v) => !v)}
-								className="type-label text-accent-500 transition-opacity hover:opacity-70 cursor-pointer"
-							>
-								{open ? "Hide" : "Review"}
+							<button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} className={LINK_BTN}>
+								{open ? "Hide changes" : "Review changes"}
 							</button>
-							<button
-								type="button"
-								disabled={pending}
-								onClick={() => {
-									if (
-										!window.confirm(
-											`Discard all unpublished changes to ${row.label}? This restores the live published version and cannot be undone.`,
-										)
-									)
-										return;
-									start(async () => {
-										setMsg("");
-										const res = await discardPage(row.key);
-										setMsg(res.error ? res.error : "Draft discarded");
-										setOpen(false);
-										router.refresh();
-									});
-								}}
-								className="type-label text-white/70 transition-colors hover:text-white disabled:opacity-50 cursor-pointer"
-							>
-								Discard
-							</button>
+							{confirming ? (
+								<span className="inline-flex items-center gap-3 text-sm text-muted">
+									Restore the live version?
+									<button
+										type="button"
+										disabled={pending}
+										className={`${LINK_DANGER} font-semibold text-danger-ink`}
+										onClick={() =>
+											start(async () => {
+												setMsg("");
+												const res = await discardPage(row.key);
+												setMsg(res.error ? res.error : "Draft discarded");
+												setOpen(false);
+												setConfirming(false);
+												router.refresh();
+											})
+										}
+									>
+										Yes, discard
+									</button>
+									<button type="button" onClick={() => setConfirming(false)} className={LINK_BTN}>
+										Keep
+									</button>
+								</span>
+							) : (
+								<button type="button" disabled={pending} onClick={() => setConfirming(true)} className={LINK_DANGER}>
+									Discard
+								</button>
+							)}
 						</>
 					)}
 					{row.status !== "clean" && (
-						<a
-							href={`/preview?path=${encodeURIComponent(row.path)}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="type-label text-accent-500 transition-opacity hover:opacity-70"
-						>
-							Preview draft ↗
+						<a href={`/preview?path=${encodeURIComponent(row.path)}`} target="_blank" rel="noopener noreferrer" className={LINK_BTN}>
+							Preview draft <ArrowUpRight size={14} aria-hidden />
 						</a>
 					)}
-					<a
-						href={row.path}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="type-label text-white/70 transition-colors hover:text-white"
-					>
-						View live ↗
+					<a href={row.path} target="_blank" rel="noopener noreferrer" className={LINK_BTN}>
+						View live <ArrowUpRight size={14} aria-hidden />
 					</a>
 					<button
 						type="button"
@@ -113,25 +90,22 @@ function Item({ row }: { row: PageDraft }) {
 								router.refresh();
 							})
 						}
-						className="type-label bg-cta px-6 py-2.5 text-white transition-colors hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-30 cursor-pointer"
+						className={`${BTN} disabled:cursor-not-allowed disabled:opacity-40`}
 					>
 						{pending ? "Publishing…" : "Publish"}
 					</button>
-				</div> 
+				</div>
 			</div>
 			{open && row.changes.length > 0 && (
-				<ul className="mt-4 space-y-1 border border-white/10 bg-white/2 px-4 py-3">
+				<ul className="mt-4 space-y-1.5 rounded-lg bg-background px-4 py-3">
 					{row.changes.map((c, i) => (
-						<li
-							key={i}
-							className="text-white/70 text-[0.8rem] font-light leading-relaxed"
-						>
+						<li key={i} className="text-sm leading-relaxed text-muted">
 							{c}
 						</li>
 					))}
 				</ul>
 			)}
-		</div>
+		</li>
 	);
 }
 
@@ -142,11 +116,13 @@ export function PublishPanel({ pages }: { pages: PageDraft[] }) {
 	const dirty = pages.filter((p) => p.status !== "clean").length;
 
 	return (
-		<div className="flex flex-col">
-			{pages.map((row) => (
-				<Item key={row.key} row={row} />
-			))}
-			<div className="mt-7 flex items-center gap-4">
+		<Panel>
+			<ul className="divide-y divide-line">
+				{pages.map((row) => (
+					<Item key={row.key} row={row} />
+				))}
+			</ul>
+			<div className="mt-8 flex flex-wrap items-center gap-4">
 				<button
 					type="button"
 					disabled={pending || dirty === 0}
@@ -158,12 +134,12 @@ export function PublishPanel({ pages }: { pages: PageDraft[] }) {
 							router.refresh();
 						})
 					}
-					className="type-label border border-accent-500/40 px-6 py-2.5 text-accent-500 transition-colors hover:bg-accent-500/10 disabled:cursor-not-allowed disabled:opacity-30 cursor-pointer"
+					className={`${BTN_QUIET} disabled:cursor-not-allowed disabled:opacity-40`}
 				>
 					{pending ? "Publishing all…" : "Publish all"}
 				</button>
-				{msg && <span className="text-white/70 text-sm font-light">{msg}</span>}
+				{msg && <span role="status" className="text-sm text-muted">{msg}</span>}
 			</div>
-		</div>
+		</Panel>
 	);
 }

@@ -54,12 +54,6 @@ const CategorySchema = z.object({
 	popular: z.boolean(),
 });
 
-/* Friendlier message when migration 0009 (the `popular` column) hasn't run. */
-const MISSING_POPULAR =
-	"The “popular” column is missing, run supabase/migrations/0009_category_popular.sql.";
-const popularError = (message: string) =>
-	/popular/i.test(message) ? MISSING_POPULAR : message;
-
 export async function createCategory(
 	_prev: ActionState,
 	formData: FormData,
@@ -94,7 +88,7 @@ export async function createCategory(
 			error:
 				error.code === "23505"
 					? `A category “${id}” already exists.`
-					: popularError(error.message),
+					: error.message,
 		};
 
 	revalidate();
@@ -128,7 +122,7 @@ export async function updateCategory(
 			popular: parsed.data.popular,
 		})
 		.eq("id", id);
-	if (error) return { error: popularError(error.message) };
+	if (error) return { error: error.message };
 
 	revalidate();
 	await logActivity("edit", "Products", `Updated category “${parsed.data.name}”`);
@@ -149,7 +143,7 @@ export async function setCategoryPopular(
 		.from("product_categories")
 		.update({ popular })
 		.eq("id", id);
-	if (error) return { error: popularError(error.message) };
+	if (error) return { error: error.message };
 
 	revalidate();
 	await logActivity(

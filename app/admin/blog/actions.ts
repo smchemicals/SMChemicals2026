@@ -82,6 +82,7 @@ export async function savePost(
 
 	revalidatePath("/blog");
 	revalidatePath(`/blog/${slug}`);
+	revalidatePath("/sitemap.xml");
 	revalidatePath("/admin/blog");
 	await logActivity("edit", "Blog", `${published ? "Published" : "Saved"} “${title}”`);
 	return { ok: "Saved." };
@@ -97,6 +98,7 @@ export async function deletePost(id: string): Promise<RowResult> {
 	if (error) return { error: error.message };
 
 	revalidatePath("/blog");
+	revalidatePath("/sitemap.xml");
 	revalidatePath("/admin/blog");
 	await logActivity("edit", "Blog", "Deleted a post");
 	return { ok: true };

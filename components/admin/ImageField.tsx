@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Cropper, { type Area, type MediaSize } from "react-easy-crop";
 import { Upload, Crop, RefreshCw, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { BTN, BTN_QUIET } from "@/components/admin/ui";
 
 /*
  * Image upload with cropping, for the admin (ported from the SP Design Studio
@@ -83,7 +84,7 @@ function validate(file: File): string | null {
 }
 
 const overlayBtn =
-	"type-label inline-flex w-36 cursor-pointer items-center justify-center gap-2 rounded-md border border-white/30 bg-black/40 px-3 py-2 text-white transition-colors hover:border-accent-500 hover:text-accent-500";
+	"inline-flex h-10 w-36 cursor-pointer items-center justify-center gap-2 rounded-md bg-background px-3 text-sm font-semibold text-foreground outline-none transition-colors hover:bg-foreground hover:text-background focus-visible:ring-2 focus-visible:ring-accent";
 
 export function ImageField({
 	value,
@@ -194,17 +195,17 @@ export function ImageField({
 		<div
 			role="status"
 			aria-live="polite"
-			className="absolute inset-0 z-10 flex items-center justify-center gap-2.5 bg-deep/85"
+			className="absolute inset-0 z-10 flex items-center justify-center gap-2.5 bg-background/90"
 		>
-			<RefreshCw size={14} className="animate-spin text-accent-500" />
-			<span className="type-label text-accent-500">{busy}…</span>
+			<RefreshCw size={16} aria-hidden className="animate-spin text-accent-ink" />
+			<span className="text-sm font-medium text-foreground">{busy}…</span>
 		</div>
 	);
 
 	return (
 		<div>
 			{value ? (
-				<div className="group relative overflow-hidden rounded-md border border-white/10">
+				<div className="group relative overflow-hidden rounded-xl bg-surface">
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					<img
 						src={value}
@@ -213,22 +214,22 @@ export function ImageField({
 					/>
 					{veil}
 					<div
-						className={`absolute inset-0 flex flex-col items-center justify-center gap-2 bg-deep/75 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100 ${
+						className={`absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/80 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100 ${
 							busy ? "pointer-events-none" : ""
 						}`}
 					>
 						<button type="button" onClick={() => inputRef.current?.click()} className={overlayBtn}>
-							<Upload size={13} /> Replace
+							<Upload size={16} aria-hidden /> Replace
 						</button>
 						<button
 							type="button"
 							onClick={() => openCrop(value, mimeFromName(value), false)}
 							className={overlayBtn}
 						>
-							<Crop size={13} /> Crop
+							<Crop size={16} aria-hidden /> Crop
 						</button>
 						<button type="button" onClick={() => onChange("")} className={overlayBtn}>
-							<X size={13} /> Remove
+							<X size={16} aria-hidden /> Remove
 						</button>
 					</div>
 				</div>
@@ -247,17 +248,15 @@ export function ImageField({
 						pick(e.dataTransfer.files?.[0]);
 					}}
 					disabled={!!busy}
-					className={`relative flex w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md border border-dashed py-8 text-center transition-colors ${
-						drag
-							? "border-accent-500 bg-accent-500/5"
-							: "border-white/20 hover:border-accent-500/60"
+					className={`relative flex w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl py-10 text-center outline-none ring-2 transition-shadow focus-visible:ring-accent ${
+						drag ? "bg-accent/10 ring-accent" : "bg-surface ring-transparent hover:ring-foreground/15"
 					}`}
 				>
 					{veil}
-					<Upload size={16} className="text-white/60" />
-					<span className="text-white/80 text-sm">Drag &amp; drop or click to upload</span>
-					<span className="text-white/50 text-xs">
-						{hint ?? "JPG · PNG · WebP, max 5 MB. You'll crop it before it uploads."}
+					<Upload size={20} aria-hidden className="text-muted" />
+					<span className="text-base font-medium text-foreground">Drop a photo here, or click to choose one</span>
+					<span className="max-w-xs text-sm text-muted">
+						{hint ?? "JPG, PNG or WebP, up to 5 MB. You crop it before it uploads."}
 					</span>
 				</button>
 			)}
@@ -274,15 +273,15 @@ export function ImageField({
 			/>
 
 			{error && (
-				<div role="alert" className="mt-2 flex items-start justify-between gap-3 rounded-md border border-red-400/40 bg-red-400/10 px-3 py-2">
-					<p className="text-red-300 text-sm">{error}</p>
+				<div role="alert" className="mt-2 flex items-start justify-between gap-3 rounded-lg bg-danger-soft px-4 py-3">
+					<p className="text-sm font-medium text-danger-ink">{error}</p>
 					<button
 						type="button"
 						onClick={() => setError(null)}
 						aria-label="Dismiss"
-						className="cursor-pointer text-white/60 hover:text-white"
+						className="cursor-pointer rounded text-danger-ink outline-none focus-visible:ring-2 focus-visible:ring-accent"
 					>
-						<X size={14} />
+						<X size={16} aria-hidden />
 					</button>
 				</div>
 			)}
@@ -294,22 +293,20 @@ export function ImageField({
 						aria-modal="true"
 						aria-label="Crop image"
 						data-lenis-prevent
-						className="fixed inset-0 z-1300 flex flex-col bg-deep/95 p-4 text-white md:p-8"
+						className="fixed inset-0 z-1300 flex flex-col bg-background p-4 text-foreground md:p-8"
 					>
 						<div className="mx-auto mb-4 flex w-full max-w-3xl flex-wrap items-center justify-between gap-3">
-							<span className="font-heading text-xl font-semibold tracking-tight">Crop image</span>
+							<span className="font-heading text-2xl font-semibold tracking-[-0.03em]">Crop photo</span>
 							<div className="flex flex-wrap items-center gap-1.5">
-								{product && <span className="type-label text-white/70">4:3, as shown on the website</span>}
+								{product && <span className="text-sm text-muted">4:3, as shown on the website</span>}
 								{!product && RATIOS.map((r) => (
 									<button
 										key={r.label}
 										type="button"
 										onClick={() => setChoice(r.value)}
 										aria-pressed={choice === r.value}
-										className={`type-label cursor-pointer rounded-md border px-3 py-1.5 transition-colors ${
-											choice === r.value
-												? "border-accent-500 bg-accent-500/15 text-accent-500"
-												: "border-white/20 text-white/70 hover:border-accent-500 hover:text-accent-500"
+										className={`cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent ${
+											choice === r.value ? "bg-foreground text-background" : "bg-surface text-muted hover:text-foreground"
 										}`}
 									>
 										{r.label}
@@ -318,7 +315,7 @@ export function ImageField({
 							</div>
 						</div>
 
-						<div className="relative mx-auto w-full max-w-3xl flex-1 overflow-hidden rounded-md bg-black/40">
+						<div className="relative mx-auto w-full max-w-3xl flex-1 overflow-hidden rounded-xl bg-black/60">
 							<Cropper
 								image={cropSrc}
 								crop={crop}
@@ -338,14 +335,14 @@ export function ImageField({
 							/>
 						</div>
 
-						<p className="mx-auto mt-3 w-full max-w-3xl text-white/60 text-sm">
+						<p className="mx-auto mt-3 w-full max-w-3xl text-muted text-sm">
 							{product
 								? "The frame is exactly how the product panel shows this photo. Drag to position, and zoom out to leave white space around the product so all of it shows."
 								: `${siteLabel} matches how this image is shown on the website. Drag to position, scroll or use the slider to zoom.`}
 						</p>
 
 						<div className="mx-auto mt-4 flex w-full max-w-3xl flex-wrap items-center gap-4">
-							<span className="type-label text-white/70">Zoom</span>
+							<span className="text-sm font-medium text-muted">Zoom</span>
 							<input
 								type="range"
 								min={minZoom}
@@ -359,7 +356,7 @@ export function ImageField({
 							<button
 								type="button"
 								onClick={closeCrop}
-								className="type-label cursor-pointer rounded-md border border-white/30 px-5 py-2.5 text-white/85 transition-colors hover:border-white/60 hover:text-white"
+								className={BTN_QUIET}
 							>
 								Cancel
 							</button>
@@ -367,7 +364,7 @@ export function ImageField({
 								type="button"
 								onClick={applyCrop}
 								disabled={!area}
-								className="type-label cursor-pointer rounded-md bg-cta px-6 py-2.5 text-white transition-colors hover:bg-cta-hover disabled:opacity-50"
+								className={BTN}
 							>
 								Use crop
 							</button>

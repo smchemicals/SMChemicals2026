@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/cms/products";
 
 /*
- * First-party page-view counts: one number per page per day, kept in our own database (migration 0010). No cookies, no
+ * First-party page-view counts: one number per page per day, kept in our own database (the page_views table). No cookies, no
  * visitor identifiers, nothing about who looked. The site adds a view through /api/view; the admin Analytics page reads
  * them. If the table isn't there yet, recording does nothing and the admin says how to switch it on.
  */

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { SITE } from "@/lib/site";
+import { getPublishedContact } from "@/lib/cms/snapshots";
 import { inquiryNotification, acknowledgement } from "@/lib/email/templates";
 import { allow, clientIp, sameOrigin } from "@/lib/security/rate-limit";
 import { verifyTurnstile, turnstileEnabled } from "@/lib/security/turnstile";
@@ -142,7 +143,7 @@ export async function POST(req: Request) {
 			from,
 			to: email,
 			subject: `We received your inquiry | ${SITE.name}`,
-			html: acknowledgement(name, heading),
+			html: acknowledgement(name, heading, (await getPublishedContact().catch(() => null))?.phone),
 		});
 		if (ackError) console.warn("[contact] acknowledgement not sent:", ackError);
 

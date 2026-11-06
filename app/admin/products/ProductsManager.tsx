@@ -14,36 +14,26 @@ import {
 	deleteProduct,
 	type ActionState,
 } from "./actions";
+import { BTN, BTN_QUIET, FIELD, FIELD_IN_PANEL, ICON_BTN, LABEL, LINK_BTN, Field, Notice, Status } from "@/components/admin/ui";
+import { ConfirmAction } from "@/components/admin/confirm-action";
+import { Select } from "@/components/ui/select";
 
 const SPEC_FIELDS: { key: keyof ProductSpec; label: string }[] = [
-	{ key: "chemicalName", label: "Chemical Name" },
+	{ key: "chemicalName", label: "Chemical name" },
 	{ key: "formula", label: "Formula" },
-	{ key: "cas", label: "CAS No." },
+	{ key: "cas", label: "CAS number" },
 	{ key: "appearance", label: "Appearance" },
 	{ key: "purity", label: "Purity" },
 	{ key: "grade", label: "Grade" },
-	{ key: "solidContent", label: "Solid Content" },
+	{ key: "solidContent", label: "Solid content" },
 	{ key: "packaging", label: "Packaging" },
-	{ key: "endUse", label: "End Use" },
+	{ key: "endUse", label: "End use" },
 	{ key: "synonyms", label: "Synonyms" },
 ];
 
-const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
-const labelCls =
-	"type-label text-white/60";
-const btnPrimary =
-	"type-label inline-flex items-center gap-2 bg-cta px-6 py-3 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
-const btnGhost =
-	"type-label inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white cursor-pointer";
-
 type DrawerState = { categoryId: string; product: Product | null } | null;
 
-export function ProductsManager({
-	categories,
-}: {
-	categories: ProductCategory[];
-}) {
+export function ProductsManager({ categories }: { categories: ProductCategory[] }) {
 	const router = useRouter();
 	const [query, setQuery] = useState("");
 	const [newCatOpen, setNewCatOpen] = useState(false);
@@ -62,18 +52,16 @@ export function ProductsManager({
 					(p) =>
 						p.name.toLowerCase().includes(q) ||
 						p.description.toLowerCase().includes(q) ||
-						Object.values(p.spec).some((v) =>
-							String(v).toLowerCase().includes(q),
-						),
+						Object.values(p.spec).some((v) => String(v).toLowerCase().includes(q)),
 				),
 			}))
 			.filter((c) => c.products.length > 0);
 	}, [q, categories]);
 
-	const remove = (run: () => Promise<{ ok?: boolean; error?: string }>) =>
+	const run = (fn: () => Promise<{ ok?: boolean; error?: string }>) =>
 		start(async () => {
 			setMsg(null);
-			const res = await run();
+			const res = await fn();
 			if (res.error) setMsg(res.error);
 			else router.refresh();
 		});
@@ -81,20 +69,18 @@ export function ProductsManager({
 	return (
 		<div>
 			<div className="mb-8 flex flex-wrap items-center gap-4">
-				<div className="relative flex-1 min-w-48">
-					<Search
-						size={15}
-						className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-white/50"
-					/>
+				<div className="relative min-w-48 flex-1">
+					<Search size={18} aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
 					<input
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
-						placeholder="Search catalog…"
-						className="w-full border-b border-white/15 bg-transparent py-2.5 pl-6 text-white text-sm font-light outline-none placeholder:text-white/45 focus:border-accent-500"
+						placeholder="Search products"
+						aria-label="Search products"
+						className={`${FIELD} h-12 pl-11`}
 					/>
 				</div>
-				<button onClick={() => setNewCatOpen((v) => !v)} className={btnPrimary}>
-					<Plus size={14} /> New category
+				<button type="button" onClick={() => setNewCatOpen((v) => !v)} aria-expanded={newCatOpen} className={BTN}>
+					<Plus size={16} aria-hidden /> New category
 				</button>
 			</div>
 
@@ -104,151 +90,112 @@ export function ProductsManager({
 						setNewCatOpen(false);
 						router.refresh();
 					}}
+					onCancel={() => setNewCatOpen(false)}
 				/>
 			)}
 
-			{msg && (
-				<p className="mb-6 border border-red-400/30 bg-red-400/5 px-4 py-2 text-red-400 text-xs">
-					{msg}
-				</p>
-			)}
+			{msg && <Notice tone="danger" className="mb-6">{msg}</Notice>}
 
-			<div className="space-y-12">
+			<div className="space-y-8">
 				{filtered.map((cat) => (
-					<section key={cat.id}>
-						<div className="mb-4 border-b border-white/10 pb-3">
-							{editingCat === cat.id ? (
-								<CategoryForm
-									category={cat}
-									onDone={() => {
-										setEditingCat(null);
-										router.refresh();
-									}}
-									onCancel={() => setEditingCat(null)}
-								/>
-							) : (
-								<div className="flex items-center justify-between gap-4">
-									<div className="flex items-baseline gap-3">
-										<h2 className="font-heading text-lg font-semibold tracking-tight text-white">
-											{cat.name}
-										</h2>
-										<span className="text-white/50 text-[0.6rem] font-bold tabular-nums">
-											{String(cat.products.length).padStart(2, "0")}
-										</span>
-										{cat.popular && (
-											<span className="type-label inline-flex items-center gap-1.5 self-center rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-0.5 text-amber-300">
-												<Star size={10} className="fill-amber-300" /> Popular
-											</span>
-										)}
-									</div>
-									<div className="flex items-center gap-4">
-										<button
-											disabled={pending}
-											aria-pressed={Boolean(cat.popular)}
-											title={
-												cat.popular
-													? "Remove the Popular badge on the homepage"
-													: "Show a Popular badge on the homepage"
-											}
-											onClick={() =>
-												remove(() => setCategoryPopular(cat.id, !cat.popular))
-											}
-											className={`type-label inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 ${
-												cat.popular
-													? "text-amber-300 hover:text-amber-200"
-													: "text-white/65 hover:text-amber-300"
-											}`}
-										>
-											<Star
-												size={12}
-												className={cat.popular ? "fill-amber-300" : ""}
-											/>
-											{cat.popular ? "Popular" : "Mark popular"}
-										</button>
-										<button
-											onClick={() => setDrawer({ categoryId: cat.id, product: null })}
-											className={btnGhost}
-										>
-											<Plus size={13} /> Product
-										</button>
-										<button onClick={() => setEditingCat(cat.id)} className={btnGhost}>
-											<Pencil size={12} /> Edit
-										</button>
-										<button
-											disabled={pending}
-											onClick={() => {
-												if (
-													window.confirm(
-														`Delete category “${cat.name}” and its ${cat.products.length} products?`,
-													)
-												)
-													remove(() => deleteCategory(cat.id));
-											}}
-											className="type-label inline-flex items-center gap-1.5 text-white/65 transition-colors hover:text-red-400 cursor-pointer disabled:opacity-50"
-										>
-											<Trash2 size={12} /> Delete
-										</button>
-									</div>
+					<section key={cat.id} aria-label={cat.name}>
+						{editingCat === cat.id ? (
+							<CategoryForm
+								category={cat}
+								onDone={() => {
+									setEditingCat(null);
+									router.refresh();
+								}}
+								onCancel={() => setEditingCat(null)}
+							/>
+						) : (
+							<div className="mb-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+								<div className="flex flex-wrap items-center gap-3">
+									<h2 className="font-heading text-2xl font-semibold tracking-[-0.03em] text-foreground">{cat.name}</h2>
+									<span className="text-sm tabular-nums text-muted">{cat.products.length} {cat.products.length === 1 ? "product" : "products"}</span>
+									{cat.popular && (
+										<Status tone="warn">
+											<Star size={12} aria-hidden className="fill-current" /> Popular
+										</Status>
+									)}
 								</div>
-							)}
-						</div>
+								<div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+									<button
+										type="button"
+										disabled={pending}
+										aria-pressed={Boolean(cat.popular)}
+										title={cat.popular ? "Remove the Popular tag" : "Show a Popular tag on this category"}
+										onClick={() => run(() => setCategoryPopular(cat.id, !cat.popular))}
+										className={LINK_BTN}
+									>
+										<Star size={16} aria-hidden className={cat.popular ? "fill-current text-warn-ink" : ""} />
+										{cat.popular ? "Remove Popular" : "Mark Popular"}
+									</button>
+									<button type="button" onClick={() => setDrawer({ categoryId: cat.id, product: null })} className={LINK_BTN}>
+										<Plus size={16} aria-hidden /> Product
+									</button>
+									<button type="button" onClick={() => setEditingCat(cat.id)} className={LINK_BTN}>
+										<Pencil size={16} aria-hidden /> Edit
+									</button>
+									<ConfirmAction
+										disabled={pending}
+										prompt={cat.products.length ? `Delete ${cat.name} and its ${cat.products.length === 1 ? "product" : `${cat.products.length} products`}?` : `Delete ${cat.name}?`}
+										onConfirm={() => run(() => deleteCategory(cat.id))}
+									>
+										<Trash2 size={16} aria-hidden /> Delete
+									</ConfirmAction>
+								</div>
+							</div>
+						)}
 
-						<div className="border-t border-l border-white/10">
-							{cat.products.map((product) => (
-								<div
-									key={product.id}
-									className="group flex items-center justify-between gap-4 border-b border-r border-white/10 px-6 py-4"
-								>
-									<div className="min-w-0">
-										<span className="block text-white text-[15px] font-medium truncate">
-											{product.name}
-										</span>
-										<span className="mt-0.5 flex flex-wrap gap-x-4 text-white/60 text-[0.68rem] font-light">
-											{product.spec.cas && (
-												<span>
-													CAS{" "}
-													<span className="text-white/65 tabular-nums">
-														{product.spec.cas}
+						<div className="rounded-xl bg-surface p-2 md:p-3">
+							{cat.products.length === 0 ? (
+								<p className="px-4 py-3 text-base text-muted">No products yet.</p>
+							) : (
+								<ul className="divide-y divide-line">
+									{cat.products.map((product) => (
+										<li key={product.id} className="flex items-center justify-between gap-4 px-3 py-3 md:px-4">
+											<div className="flex min-w-0 items-center gap-4">
+												{product.image ? (
+													// eslint-disable-next-line @next/next/no-img-element
+													<img src={product.image} alt="" loading="lazy" className="h-12 w-16 shrink-0 rounded-md bg-background object-cover" />
+												) : (
+													<span aria-hidden className="flex h-12 w-16 shrink-0 items-center justify-center rounded-md bg-background text-xs text-muted">
+														No photo
 													</span>
-												</span>
-											)}
-											{product.spec.purity && (
-												<span>
-													Purity{" "}
-													<span className="text-white/65">{product.spec.purity}</span>
-												</span>
-											)}
-										</span>
-									</div>
-									<div className="flex shrink-0 items-center gap-4 opacity-60 transition-opacity group-hover:opacity-100">
-										<button
-											onClick={() => setDrawer({ categoryId: cat.id, product })}
-											className={btnGhost}
-										>
-											<Pencil size={12} /> Edit
-										</button>
-										<button
-											disabled={pending}
-											onClick={() => {
-												if (window.confirm(`Delete “${product.name}”?`))
-													remove(() => deleteProduct(product.id));
-											}}
-											className="text-white/60 transition-colors hover:text-red-400 cursor-pointer disabled:opacity-50"
-											aria-label="Delete product"
-										>
-											<Trash2 size={14} />
-										</button>
-									</div>
-								</div>
-							))}
-							{cat.products.length === 0 && (
-								<p className="border-b border-r border-white/10 px-6 py-5 text-white/50 text-xs font-light">
-									No products yet.
-								</p>
+												)}
+												<div className="min-w-0">
+													<span className="block truncate text-base font-medium text-foreground">{product.name}</span>
+													{(product.spec.cas || product.spec.purity) && (
+														<span className="flex flex-wrap gap-x-4 text-sm text-muted">
+															{product.spec.cas && <span>CAS <span className="tabular-nums">{product.spec.cas}</span></span>}
+															{product.spec.purity && <span>Purity {product.spec.purity}</span>}
+														</span>
+													)}
+												</div>
+											</div>
+											<div className="flex shrink-0 items-center gap-1">
+												<button type="button" onClick={() => setDrawer({ categoryId: cat.id, product })} className={ICON_BTN} aria-label={`Edit ${product.name}`} title="Edit">
+													<Pencil size={18} aria-hidden />
+												</button>
+												<ConfirmAction
+													disabled={pending}
+													prompt={`Delete ${product.name}?`}
+													ariaLabel={`Delete ${product.name}`}
+													className={`${ICON_BTN} hover:text-danger-ink`}
+													onConfirm={() => run(() => deleteProduct(product.id))}
+												>
+													<Trash2 size={18} aria-hidden />
+												</ConfirmAction>
+											</div>
+										</li>
+									))}
+								</ul>
 							)}
 						</div>
 					</section>
 				))}
+				{filtered.length === 0 && <Notice>Nothing matches “{query}”.</Notice>}
 			</div>
 
 			{drawer && (
@@ -284,51 +231,30 @@ function CategoryForm({
 	}, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
-		<form
-			action={formAction}
-			className="mb-8 border border-white/10 bg-white/2 p-6"
-		>
+		<form action={formAction} className="mb-6 rounded-xl bg-surface p-5 md:p-6">
 			{category && <input type="hidden" name="id" value={category.id} />}
 			<div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Category name</span>
-					<input
-						name="name"
-						defaultValue={category?.name}
-						required
-						placeholder="e.g. Boiler Chemicals"
-						className={inputCls}
-					/>
-				</label>
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Blurb</span>
-					<input
-						name="blurb"
-						defaultValue={category?.blurb}
-						placeholder="Short description"
-						className={inputCls}
-					/>
-				</label>
+				<Field label="Category name">
+					<input name="name" defaultValue={category?.name} required placeholder="e.g. Boiler chemicals" className={FIELD_IN_PANEL} />
+				</Field>
+				<Field label="Short description">
+					<input name="blurb" defaultValue={category?.blurb} className={FIELD_IN_PANEL} />
+				</Field>
 			</div>
-			<label className="mt-5 inline-flex cursor-pointer items-center gap-3 text-white/80 text-sm">
-				<input
-					type="checkbox"
-					name="popular"
-					defaultChecked={Boolean(category?.popular)}
-					className="h-4 w-4 cursor-pointer accent-amber-400"
-				/>
-				Show a “Popular” badge for this category on the homepage
+			<label className="mt-5 inline-flex cursor-pointer items-center gap-3 text-base text-foreground">
+				<input type="checkbox" name="popular" defaultChecked={Boolean(category?.popular)} className="h-5 w-5 cursor-pointer accent-[var(--color-accent)]" />
+				Show a Popular tag for this category
 			</label>
-			<div className="mt-5 flex items-center gap-4">
-				<button type="submit" disabled={pending} className={btnPrimary}>
+			<div className="mt-5 flex flex-wrap items-center gap-4">
+				<button type="submit" disabled={pending} className={BTN}>
 					{pending ? "Saving…" : category ? "Save category" : "Add category"}
 				</button>
 				{onCancel && (
-					<button type="button" onClick={onCancel} className={btnGhost}>
+					<button type="button" onClick={onCancel} className={BTN_QUIET}>
 						Cancel
 					</button>
 				)}
-				{state.error && <span className="text-red-400 text-xs">{state.error}</span>}
+				{state.error && <Status tone="danger">{state.error}</Status>}
 			</div>
 		</form>
 	);
@@ -349,6 +275,7 @@ function ProductDrawer({
 }) {
 	const [state, formAction, pending] = useActionState(saveProduct, {} as ActionState);
 	const [imageUrl, setImageUrl] = useState(product?.image ?? "");
+	const [category, setCategory] = useState(categoryId);
 
 	useEffect(() => {
 		if (state.ok) onSaved();
@@ -361,108 +288,60 @@ function ProductDrawer({
 	}, [onClose]);
 
 	return (
-		<div className="fixed inset-0 z-1100 flex justify-end">
-			<div
-				className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-				onClick={onClose}
-			/>
-			<div className="relative h-full w-full max-w-xl overflow-y-auto border-l border-white/10 bg-deep shadow-2xl">
-				<div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-deep px-8 py-6">
-					<div className="flex items-center gap-3">
-						<span className="h-px w-5 bg-accent-500" />
-						<span className="type-label text-accent-500">
-							{product ? "Edit product" : "New product"}
-						</span>
-					</div>
-					<button
-						onClick={onClose}
-						className="text-white/60 hover:text-white transition-colors cursor-pointer"
-						aria-label="Close"
-					>
-						<X size={20} />
+		<div className="fixed inset-0 z-1100 flex justify-end" role="dialog" aria-modal="true" aria-label={product ? "Edit product" : "New product"}>
+			<div className="absolute inset-0 bg-black/60" onClick={onClose} />
+			<div className="relative h-full w-full max-w-xl overflow-y-auto bg-background shadow-[0_0_80px_-20px_rgb(0_0_0/0.5)]">
+				<div className="sticky top-0 z-10 flex items-center justify-between bg-background px-6 py-5 md:px-8">
+					<h2 className="font-heading text-2xl font-semibold tracking-[-0.03em] text-foreground">{product ? "Edit product" : "New product"}</h2>
+					<button type="button" onClick={onClose} className={ICON_BTN} aria-label="Close">
+						<X size={20} aria-hidden />
 					</button>
 				</div>
 
-				<form action={formAction} className="p-8">
+				<form action={formAction} className="px-6 pb-10 md:px-8">
 					{product && <input type="hidden" name="id" value={product.id} />}
+					<input type="hidden" name="category_id" value={category} />
+					<input type="hidden" name="image_url" value={imageUrl} />
 
 					<div className="space-y-5">
-						<label className="flex flex-col gap-1.5">
-							<span className={labelCls}>Category</span>
-							<select
-								name="category_id"
-								defaultValue={categoryId}
-								className={`${inputCls} cursor-pointer`}
-							>
-								{categories.map((c) => (
-									<option key={c.id} value={c.id} className="bg-deep">
-										{c.name}
-									</option>
-								))}
-							</select>
-						</label>
-						<label className="flex flex-col gap-1.5">
-							<span className={labelCls}>Product name</span>
-							<input
-								name="name"
-								defaultValue={product?.name}
-								required
-								placeholder="e.g. Polyaluminium Chloride"
-								className={inputCls}
-							/>
-						</label>
-						<label className="flex flex-col gap-1.5">
-							<span className={labelCls}>Description</span>
-							<textarea
-								name="description"
-								defaultValue={product?.description}
-								rows={4}
-								placeholder="Product description…"
-								className={`${inputCls} resize-none`}
-							/>
-						</label>
+						<div className="flex flex-col gap-2">
+							<span className={LABEL}>Category</span>
+							<Select size="md" label="Category" value={category} onChange={setCategory} options={categories.map((c) => ({ value: c.id, label: c.name }))} />
+						</div>
+						<Field label="Product name">
+							<input name="name" defaultValue={product?.name} required placeholder="e.g. Polyaluminium Chloride" className={FIELD} />
+						</Field>
+						<Field label="Description">
+							<textarea name="description" defaultValue={product?.description} rows={4} className={`${FIELD} resize-none`} />
+						</Field>
 
-						<div className="flex flex-col gap-1.5">
-							<span className={labelCls}>Image</span>
+						<div className="flex flex-col gap-2">
+							<span className={LABEL}>Photo</span>
 							<ImageField
 								value={imageUrl}
 								onChange={setImageUrl}
 								bucket="product-images"
 								aspect={4 / 3}
 								variant="product"
-								hint="JPG, PNG or WebP, max 5 MB. You'll fit it to the product panel before it uploads."
+								hint="JPG, PNG or WebP, up to 5 MB. You fit it to the product panel before it uploads."
 							/>
 						</div>
 					</div>
 
-					<input type="hidden" name="image_url" value={imageUrl} />
-
-					<div className="mt-8 mb-4 flex items-center gap-3">
-						<span className="h-px w-5 bg-accent-500/60" />
-						<span className="type-label text-white/75">
-							Specifications
-						</span>
-					</div>
+					<h3 className="mb-4 mt-10 font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">Specifications</h3>
 					<div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
 						{SPEC_FIELDS.map(({ key, label }) => (
-							<label key={key} className="flex flex-col gap-1.5">
-								<span className={labelCls}>{label}</span>
-								<input
-									name={key}
-									defaultValue={product?.spec[key] ?? ""}
-									className={inputCls}
-								/>
-							</label>
+							<Field key={key} label={label}>
+								<input name={key} defaultValue={product?.spec[key] ?? ""} className={FIELD} />
+							</Field>
 						))}
 					</div>
 
-					<div className="mt-8 flex items-center gap-4">
-						<button type="submit" disabled={pending} className={btnPrimary}>
+					<div className="mt-8 flex flex-wrap items-center gap-4">
+						<button type="submit" disabled={pending} className={BTN}>
 							{pending ? "Saving…" : product ? "Save product" : "Add product"}
 						</button>
-						{state.error && (
-							<span className="text-red-400 text-xs">{state.error}</span>
-						)}
+						{state.error && <Status tone="danger">{state.error}</Status>}
 					</div>
 				</form>
 			</div>

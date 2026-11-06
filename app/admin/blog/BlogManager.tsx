@@ -13,17 +13,15 @@ import { ImageField } from "@/components/admin/ImageField";
 import { RichText } from "@/components/admin/rich-text";
 import { savePost, deletePost, type BlogState } from "./actions";
 import type { BlogPost } from "@/data/blog";
+import { formatDate } from "@/lib/format-date";
+import { Notice, BTN, FIELD, ICON_BTN, LABEL, LINK_BTN, LINK_DANGER, Panel, Status, SaveResult } from "@/components/admin/ui";
 
-const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
-const labelCls =
-	"type-label text-white/60";
-const btnPrimary =
-	"type-label inline-flex items-center gap-2 bg-cta px-7 py-3.5 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
+// The editor is a page of its own, so its fields take the surface colour.
+const inputCls = FIELD;
+const labelCls = LABEL;
+const btnPrimary = BTN;
 
-function fmt(iso: string | null) {
-	return iso ? new Date(iso).toLocaleDateString() : "Not set";
-}
+const fmt = (iso: string | null) => formatDate(iso);
 
 function slugify(s: string): string {
 	return s
@@ -38,91 +36,70 @@ export function BlogManager({ posts }: { posts: BlogPost[] }) {
 	const [editing, setEditing] = useState<BlogPost | "new" | null>(null);
 	const [pending, start] = useTransition();
 	const [msg, setMsg] = useState<string | null>(null);
+	const [confirmId, setConfirmId] = useState<string | null>(null);
 
-	const onDelete = (p: BlogPost) => {
-		if (!window.confirm(`Delete “${p.title}”? This cannot be undone.`)) return;
+	const onDelete = (p: BlogPost) =>
 		start(async () => {
 			const res = await deletePost(p.id);
 			setMsg(res.error ? res.error : "Post deleted.");
+			setConfirmId(null);
 			router.refresh();
 		});
-	};
 
 	return (
 		<div>
-			<div className="mb-6 flex items-center justify-between gap-4">
-				<button
-					type="button"
-					onClick={() => setEditing("new")}
-					className={btnPrimary}
-				>
-					<Plus size={14} /> New post
+			<div className="mb-6 flex flex-wrap items-center gap-4">
+				<button type="button" onClick={() => setEditing("new")} className={btnPrimary}>
+					<Plus size={16} aria-hidden /> New post
 				</button>
-				{msg && <span className="text-white/70 text-xs">{msg}</span>}
+				{msg && <span role="status" className="text-sm text-muted">{msg}</span>}
 			</div>
 
 			{posts.length === 0 ? (
-				<p className="border border-white/10 bg-white/2 px-6 py-10 text-center text-white/55 text-sm font-light">
-					No posts yet. Create your first one.
-				</p>
+				<Panel>
+					<p className="text-base text-muted">No posts yet. Create your first one.</p>
+				</Panel>
 			) : (
-				<div className="border-t border-white/10">
-					{posts.map((p) => (
-						<div
-							key={p.id}
-							className="flex items-center justify-between gap-4 border-b border-white/10 py-4"
-						>
-							<div className="min-w-0">
-								<div className="flex items-center gap-3">
-									<span className="truncate text-white text-sm font-medium">
-										{p.title}
-									</span>
-									<span
-										className={`type-label shrink-0 border px-2 py-0.5 ${
-											p.published
-												? "border-accent-500/40 bg-accent-500/10 text-accent-500"
-												: "border-white/15 text-white/65"
-										}`}
-									>
-										{p.published ? "Published" : "Draft"}
-									</span>
+				<Panel>
+					<ul className="divide-y divide-line">
+						{posts.map((p) => (
+							<li key={p.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 py-4 first:pt-0 last:pb-0">
+								<div className="min-w-0">
+									<div className="flex flex-wrap items-center gap-3">
+										<span className="truncate font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">{p.title}</span>
+										<Status tone={p.published ? "ok" : "info"}>{p.published ? "Published" : "Draft"}</Status>
+									</div>
+									<span className="text-sm text-muted">/blog/{p.slug}, {fmt(p.publishedAt)}</span>
 								</div>
-								<span className="text-white/55 text-xs font-light tracking-wide">
-									/{p.slug} · {fmt(p.publishedAt)}
-								</span>
-							</div>
-							<div className="flex shrink-0 items-center gap-2">
-								<a
-									href={`/preview?path=/blog/${p.slug}`}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="p-2 text-white/65 transition-colors hover:text-accent-500 cursor-pointer"
-									aria-label="Preview"
-									title="Preview"
-								>
-									<Eye size={15} />
-								</a>
-								<button
-									type="button"
-									onClick={() => setEditing(p)}
-									className="p-2 text-white/65 transition-colors hover:text-accent-500 cursor-pointer"
-									aria-label="Edit"
-								>
-									<Pencil size={15} />
-								</button>
-								<button
-									type="button"
-									disabled={pending}
-									onClick={() => onDelete(p)}
-									className="p-2 text-white/65 transition-colors hover:text-red-400 disabled:opacity-50 cursor-pointer"
-									aria-label="Delete"
-								>
-									<Trash2 size={15} />
-								</button>
-							</div>
-						</div>
-					))}
-				</div>
+								<div className="flex shrink-0 items-center gap-1">
+									{confirmId === p.id ? (
+										<span className="inline-flex items-center gap-3 text-sm text-muted">
+											Delete this post?
+											<button type="button" disabled={pending} onClick={() => onDelete(p)} className={`${LINK_DANGER} font-semibold text-danger-ink`}>
+												Yes, delete
+											</button>
+											<button type="button" onClick={() => setConfirmId(null)} className={LINK_BTN}>
+												Keep
+											</button>
+										</span>
+									) : (
+										<>
+											<a href={`/preview?path=/blog/${p.slug}`} target="_blank" rel="noopener noreferrer" className={ICON_BTN} aria-label={`Preview ${p.title}`} title="Preview">
+												<Eye size={18} aria-hidden />
+											</a>
+											<button type="button" onClick={() => setEditing(p)} className={ICON_BTN} aria-label={`Edit ${p.title}`} title="Edit">
+												<Pencil size={18} aria-hidden />
+											</button>
+											<button type="button" onClick={() => setConfirmId(p.id)} className={`${ICON_BTN} hover:text-danger-ink`} aria-label={`Delete ${p.title}`} title="Delete">
+												<Trash2 size={18} aria-hidden />
+											</button>
+										</>
+									)}
+								</div>
+							</li>
+						))}
+					</ul>
+				</Panel>
 			)}
 
 			{editing && (
@@ -171,45 +148,22 @@ function PostEditor({
 	if (typeof document === "undefined") return null;
 
 	return createPortal(
-		<div className="fixed inset-0 z-1100 flex flex-col bg-deep">
-			<div className="flex flex-none items-center justify-between gap-4 border-b border-white/10 px-6 py-4 md:px-10">
+		<div className="fixed inset-0 z-1100 flex flex-col bg-background">
+			<div className="flex flex-none flex-wrap items-center justify-between gap-4 px-6 py-4 md:px-10">
 				<div className="flex items-center gap-5">
-					<button
-						type="button"
-						onClick={onClose}
-						className="inline-flex items-center gap-2 text-white/75 transition-colors hover:text-white cursor-pointer"
-					>
-						<ArrowLeft size={16} />
-						<span className="type-label">
-							Back
-						</span>
+					<button type="button" onClick={onClose} className={LINK_BTN}>
+						<ArrowLeft size={18} aria-hidden />
+						Back
 					</button>
-					<span className="h-4 w-px bg-white/15" />
-					<span className="type-label text-accent-500">
-						{post ? "Edit post" : "New post"}
-					</span>
+					<h2 className="font-heading text-xl font-semibold tracking-[-0.02em] text-foreground">{post ? "Edit post" : "New post"}</h2>
 				</div>
-				<div className="flex items-center gap-5">
-					{state.error && (
-						<span className="hidden text-red-400 text-xs sm:inline">
-							{state.error}
-						</span>
-					)}
-					<button
-						type="submit"
-						form="post-editor-form"
-						disabled={pending}
-						className={btnPrimary}
-					>
+				<div className="flex items-center gap-4">
+					<span className="hidden sm:inline"><SaveResult error={state.error} /></span>
+					<button type="submit" form="post-editor-form" disabled={pending} className={btnPrimary}>
 						{pending ? "Saving…" : post ? "Save post" : "Create post"}
 					</button>
-					<button
-						type="button"
-						onClick={onClose}
-						className="text-white/60 hover:text-white transition-colors cursor-pointer"
-						aria-label="Close"
-					>
-						<X size={20} />
+					<button type="button" onClick={onClose} className={ICON_BTN} aria-label="Close editor">
+						<X size={20} aria-hidden />
 					</button>
 				</div>
 			</div>
@@ -241,7 +195,7 @@ function PostEditor({
 						<label className="flex flex-col gap-1.5">
 							<span className={labelCls}>
 								Slug{" "}
-								<span className="text-white/45">/blog/{slug || "…"}</span>
+								<span className="font-normal text-muted/80">/blog/{slug || "…"}</span>
 							</span>
 							<input
 								name="slug"
@@ -249,7 +203,7 @@ function PostEditor({
 								readOnly
 								tabIndex={-1}
 								placeholder="auto-filled from title"
-								className={`${inputCls} cursor-default text-white/65`}
+								className={`${inputCls} cursor-default text-muted`}
 							/>
 						</label>
 						<label className="flex flex-col gap-1.5">
@@ -279,22 +233,18 @@ function PostEditor({
 							<input type="hidden" name="body" value={body} />
 						</div>
 
-						<label className="flex items-center gap-3 pt-2 cursor-pointer">
+						<label className="flex cursor-pointer items-center gap-3 pt-2">
 							<input
 								type="checkbox"
 								name="published"
 								defaultChecked={post?.published ?? false}
-								className="h-4 w-4 accent-accent-500 cursor-pointer"
+								className="h-5 w-5 cursor-pointer accent-[var(--color-accent)]"
 							/>
-							<span className="type-label text-white/70">
-								Published (live on the site)
-							</span>
+							<span className="text-base text-foreground">Published (live on the site)</span>
 						</label>
 					</div>
 
-					{state.error && (
-						<p className="mt-8 text-red-400 text-xs">{state.error}</p>
-					)}
+					{state.error && <Notice tone="danger" className="mt-8">{state.error}</Notice>}
 				</form>
 			</div>
 		</div>,

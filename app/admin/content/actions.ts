@@ -52,13 +52,14 @@ export async function saveHome(
 	}
 
 	const home: HomeContent = {
-		sectors: lines(formData.get("sectors")),
-		tagline: String(formData.get("tagline") ?? "").trim(),
+		heroText: String(formData.get("heroText") ?? "").trim(),
+		sectors: lines(formData.get("sectors")).map((w) => w.replace(/\.$/, "")),
 		stats,
 	};
 
-	if (!home.tagline) return { error: "Tagline is required." };
-	if (home.sectors.length === 0) return { error: "Add at least one sector." };
+	if (home.sectors.length < 2) return { error: "Add at least two sectors, one per line, so the hero has something to rotate." };
+	if (home.sectors.some((w) => w.length > 28)) return { error: "Keep each sector under 28 characters so it fits on a phone." };
+	if (!home.heroText) return { error: "The hero paragraph can't be empty." };
 	if (home.stats.length === 0) return { error: "Add at least one stat." };
 
 	const res = await writeSetting("home", home);
@@ -79,10 +80,10 @@ export async function saveContact(
 		email: String(formData.get("email") ?? "").trim(),
 		hours: String(formData.get("hours") ?? "").trim(),
 		mapsUrl: String(formData.get("mapsUrl") ?? "").trim(),
-		mapCid: String(formData.get("mapCid") ?? "").trim(),
 	};
 
 	if (!contact.email) return { error: "Email is required." };
+	if (contact.mapsUrl && !/^https:\/\//i.test(contact.mapsUrl)) return { error: "The Maps link must start with https://, or be left empty." };
 
 	const res = await writeSetting("contact", contact);
 	if (res.ok) await logActivity("edit", "Contact", "Updated contact details");

@@ -29,7 +29,7 @@ export function ProofBand({
             <span key={s}>
               <span className="font-semibold">{s}</span>
               {i < sectors.length - 1 ? (
-                <span className="text-muted">{i === sectors.length - 2 ? ", and " : ", "}</span>
+                <span className="text-muted">{i === sectors.length - 2 ? (sectors.length === 2 ? " and " : ", and ") : ", "}</span>
               ) : (
                 <span className="text-muted">.</span>
               )}

@@ -12,6 +12,7 @@ import { createInk, type Ink } from "@/lib/ink-gl";
 import { Button } from "@/components/ui/button";
 import { openInquiry } from "@/lib/inquiry";
 import { SITE } from "@/lib/site";
+import { defaultContact } from "@/data/content";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useOpenStatus } from "@/hooks/use-open-status";
 
@@ -60,10 +61,12 @@ export function Header({
   phone = "+91 98765 43210",
   email = "info@smchemicals.co.in",
   hours = "",
+  addressLines = defaultContact.addressLines,
 }: {
   phone?: string;
   email?: string;
   hours?: string;
+  addressLines?: string[];
 }) {
   const status = useOpenStatus(hours);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -411,7 +414,9 @@ export function Header({
                 {phone}
               </a>
               <address className="mt-3 text-base not-italic leading-[1.5] text-muted">
-                {SITE.location}, Telangana
+                {addressLines.map((l, i) => (
+                  <span key={i} className="block">{l}</span>
+                ))}
               </address>
             </div>
 

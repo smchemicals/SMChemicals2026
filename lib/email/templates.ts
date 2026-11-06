@@ -65,7 +65,7 @@ export function inquiryNotification(
 	return wrap(`${heading(`${esc(label)}`)}${rows}`);
 }
 
-export function acknowledgement(name: string, label: string): string {
+export function acknowledgement(name: string, label: string, phone: string = SITE.phone): string {
 	const kind = label.toLowerCase();
 	return wrap(
 		`${heading(`Thank you, ${esc(name)}.`)}
@@ -73,7 +73,7 @@ export function acknowledgement(name: string, label: string): string {
       We&rsquo;ve received your ${esc(kind)} and our team will be in touch within two working days.
     </p>
     <p style="margin:0;font-family:${SANS};color:${C.creamMuted};font-size:12px;letter-spacing:0.04em;">
-      ${SITE.name} &middot; ${SITE.phone}
+      ${SITE.name} &middot; ${esc(phone)}
     </p>`,
 	);
 }

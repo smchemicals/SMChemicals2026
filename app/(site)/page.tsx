@@ -17,7 +17,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection sectors={home.sectors} stats={home.stats} tagline={home.tagline} />
+      <HeroSection sectors={home.sectors} heroText={home.heroText} />
       <ProofBand sectors={home.sectors} stats={home.stats} />
       <IndustriesSection categories={catalog} />
       <FeaturesSection />

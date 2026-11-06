@@ -3,12 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
-import {
-	saveAboutValues,
-	saveAboutTimeline,
-	saveAboutCerts,
-	type AboutState,
-} from "./actions";
+import { saveAboutValues, saveAboutTimeline, saveAboutCerts, type AboutState } from "./actions";
 import type {
 	AboutValuesSection,
 	AboutTimelineSection,
@@ -17,56 +12,25 @@ import type {
 	TimelineItem,
 	CertSpec,
 } from "@/data/about";
+import { BTN, BTN_QUIET, FIELD_IN_PANEL as FIELD, Field, ICON_BTN, Panel, SaveResult } from "@/components/admin/ui";
 
-const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
-const labelCls =
-	"type-label text-white/60";
-const btnCls =
-	"type-label inline-flex items-center gap-2 bg-cta px-7 py-3.5 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
-const ghostBtnCls =
-	"type-label inline-flex items-center gap-2 border border-white/15 px-4 py-2.5 text-white/75 transition-colors hover:border-accent-500 hover:text-accent-500 cursor-pointer";
+/* Every form here edits what the About page shows; a section saves on its own. */
 
-function Eyebrow({ children }: { children: React.ReactNode }) {
+function Remove({ onClick, what }: { onClick: () => void; what: string }) {
 	return (
-		<div className="mb-8 flex items-center gap-3">
-			<span className="h-px w-6 bg-accent-500" />
-			<h2 className="type-label text-accent-500">
-				{children}
-			</h2>
-		</div>
-	);
-}
-
-function RemoveBtn({ onClick }: { onClick: () => void }) {
-	return (
-		<button
-			type="button"
-			onClick={onClick}
-			aria-label="Remove"
-			className="shrink-0 text-white/50 transition-colors hover:text-red-400 cursor-pointer"
-		>
-			<Trash2 size={15} />
+		<button type="button" onClick={onClick} aria-label={`Remove ${what}`} title="Remove" className={`${ICON_BTN} hover:text-danger-ink`}>
+			<Trash2 size={18} aria-hidden />
 		</button>
 	);
 }
 
-function SaveRow({
-	pending,
-	state,
-	label,
-}: {
-	pending: boolean;
-	state: AboutState;
-	label: string;
-}) {
+function SaveRow({ pending, state, label }: { pending: boolean; state: AboutState; label: string }) {
 	return (
-		<div className="mt-8 flex items-center gap-4">
-			<button type="submit" disabled={pending} className={btnCls}>
+		<div className="mt-8 flex flex-wrap items-center gap-4">
+			<button type="submit" disabled={pending} className={BTN}>
 				{pending ? "Saving…" : label}
 			</button>
-			{state.error && <span className="text-red-400 text-xs">{state.error}</span>}
-			{state.ok && <span className="text-accent-500 text-xs">{state.ok}</span>}
+			<SaveResult {...state} />
 		</div>
 	);
 }
@@ -78,232 +42,102 @@ function useSavedRefresh(state: AboutState) {
 	}, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-/* ---------------- Purpose & Direction ---------------- */
+/* An edit of one entry in a list, leaving the rest alone. */
+function edit<T>(list: T[], i: number, patch: Partial<T>): T[] {
+	return list.map((x, j) => (j === i ? { ...x, ...patch } : x));
+}
+
+/* ---------------- Purpose and direction ---------------- */
 
 export function AboutValuesForm({ section }: { section: AboutValuesSection }) {
-	const [state, action, pending] = useActionState(
-		saveAboutValues,
-		{} as AboutState,
-	);
+	const [state, action, pending] = useActionState(saveAboutValues, {} as AboutState);
 	const [data, setData] = useState<AboutValuesSection>(section);
 	useSavedRefresh(state);
-
-	const setCards = (cards: AboutValueCard[]) =>
-		setData((p) => ({ ...p, cards }));
+	const setCards = (cards: AboutValueCard[]) => setData((p) => ({ ...p, cards }));
 
 	return (
-		<form
-			action={action}
-			className="border border-white/10 bg-white/2 p-8"
-		>
+		<form action={action}>
 			<input type="hidden" name="payload" value={JSON.stringify(data)} />
-			<Eyebrow>Purpose & direction</Eyebrow>
+			<Panel title="Purpose and direction">
+				<Field label="Heading">
+					<input value={data.heading} onChange={(e) => setData((p) => ({ ...p, heading: e.target.value }))} className={FIELD} />
+				</Field>
 
-			<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Eyebrow</span>
-					<input
-						value={data.eyebrow}
-						onChange={(e) => setData((p) => ({ ...p, eyebrow: e.target.value }))}
-						className={inputCls}
-					/>
-				</label>
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Heading</span>
-					<input
-						value={data.heading}
-						onChange={(e) => setData((p) => ({ ...p, heading: e.target.value }))}
-						className={inputCls}
-					/>
-				</label>
-			</div>
+				<ul className="mt-8 space-y-4">
+					{data.cards.map((c, i) => (
+						<li key={i} className="flex items-start gap-3 rounded-lg bg-background p-4">
+							<div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3">
+								<Field label="Title">
+									<input value={c.title} onChange={(e) => setCards(edit(data.cards, i, { title: e.target.value }))} className={FIELD.replace("bg-background", "bg-surface")} />
+								</Field>
+								<Field label="Text" className="sm:col-span-2">
+									<input value={c.body} onChange={(e) => setCards(edit(data.cards, i, { body: e.target.value }))} className={FIELD.replace("bg-background", "bg-surface")} />
+								</Field>
+							</div>
+							<div className="mt-7">
+								<Remove what={c.title || "card"} onClick={() => setCards(data.cards.filter((_, j) => j !== i))} />
+							</div>
+						</li>
+					))}
+				</ul>
+				<button type="button" onClick={() => setCards([...data.cards, { title: "", body: "" }])} className={`${BTN_QUIET} mt-4`}>
+					<Plus size={16} aria-hidden /> Add card
+				</button>
 
-			<div className="mt-8 mb-2 flex items-center gap-3">
-				<span className="h-px w-5 bg-accent-500/60" />
-				<span className="type-label text-white/75">
-					Cards
-				</span>
-			</div>
-			<div className="divide-y divide-white/10">
-				{data.cards.map((c, i) => (
-					<div key={i} className="flex items-start gap-4 py-4">
-						<div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3">
-							<label className="flex flex-col gap-1">
-								<span className={labelCls}>Title</span>
-								<input
-									value={c.title}
-									onChange={(e) =>
-										setCards(
-											data.cards.map((x, j) =>
-												j === i ? { ...x, title: e.target.value } : x,
-											),
-										)
-									}
-									className={inputCls}
-								/>
-							</label>
-							<label className="flex flex-col gap-1 sm:col-span-2">
-								<span className={labelCls}>Body</span>
-								<input
-									value={c.body}
-									onChange={(e) =>
-										setCards(
-											data.cards.map((x, j) =>
-												j === i ? { ...x, body: e.target.value } : x,
-											),
-										)
-									}
-									className={inputCls}
-								/>
-							</label>
-						</div>
-						<div className="mt-5">
-							<RemoveBtn onClick={() => setCards(data.cards.filter((_, j) => j !== i))} />
-						</div>
-					</div>
-				))}
-			</div>
-			<button
-				type="button"
-				onClick={() => setCards([...data.cards, { title: "", body: "" }])}
-				className={`${ghostBtnCls} mt-5`}
-			>
-				<Plus size={13} /> Add card
-			</button>
-
-			<SaveRow pending={pending} state={state} label="Save purpose" />
+				<SaveRow pending={pending} state={state} label="Save purpose" />
+			</Panel>
 		</form>
 	);
 }
 
 /* ---------------- Milestones ---------------- */
 
-export function AboutTimelineForm({
-	section,
-}: {
-	section: AboutTimelineSection;
-}) {
-	const [state, action, pending] = useActionState(
-		saveAboutTimeline,
-		{} as AboutState,
-	);
+export function AboutTimelineForm({ section }: { section: AboutTimelineSection }) {
+	const [state, action, pending] = useActionState(saveAboutTimeline, {} as AboutState);
 	const [data, setData] = useState<AboutTimelineSection>(section);
 	useSavedRefresh(state);
-
-	const setItems = (items: TimelineItem[]) =>
-		setData((p) => ({ ...p, items }));
+	const setItems = (items: TimelineItem[]) => setData((p) => ({ ...p, items }));
+	const inner = FIELD.replace("bg-background", "bg-surface");
 
 	return (
-		<form
-			action={action}
-			className="border border-white/10 bg-white/2 p-8"
-		>
+		<form action={action}>
 			<input type="hidden" name="payload" value={JSON.stringify(data)} />
-			<Eyebrow>Milestones</Eyebrow>
+			<Panel title="Milestones">
+				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+					<Field label="Heading">
+						<input value={data.heading} onChange={(e) => setData((p) => ({ ...p, heading: e.target.value }))} className={FIELD} />
+					</Field>
+					<Field label="Highlighted ending" hint="Shown in the brand blue after the heading.">
+						<input value={data.headingAccent} onChange={(e) => setData((p) => ({ ...p, headingAccent: e.target.value }))} className={FIELD} />
+					</Field>
+				</div>
 
-			<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Eyebrow</span>
-					<input
-						value={data.eyebrow}
-						onChange={(e) => setData((p) => ({ ...p, eyebrow: e.target.value }))}
-						className={inputCls}
-					/>
-				</label>
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Heading</span>
-					<input
-						value={data.heading}
-						onChange={(e) => setData((p) => ({ ...p, heading: e.target.value }))}
-						className={inputCls}
-					/>
-				</label>
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Heading accent</span>
-					<input
-						value={data.headingAccent}
-						onChange={(e) =>
-							setData((p) => ({ ...p, headingAccent: e.target.value }))
-						}
-						className={inputCls}
-					/>
-				</label>
-			</div>
+				<ul className="mt-8 space-y-4">
+					{data.items.map((it, i) => (
+						<li key={i} className="relative rounded-lg bg-background p-4 md:p-5">
+							<div className="absolute right-3 top-3">
+								<Remove what={it.title || "milestone"} onClick={() => setItems(data.items.filter((_, j) => j !== i))} />
+							</div>
+							<div className="grid grid-cols-1 gap-4 pr-12 sm:grid-cols-3">
+								<Field label="Year">
+									<input value={it.year} onChange={(e) => setItems(edit(data.items, i, { year: e.target.value }))} className={inner} />
+								</Field>
+								<Field label="Title" className="sm:col-span-2">
+									<input value={it.title} onChange={(e) => setItems(edit(data.items, i, { title: e.target.value }))} className={inner} />
+								</Field>
+							</div>
+							<Field label="Description" className="mt-4">
+								<textarea value={it.description} onChange={(e) => setItems(edit(data.items, i, { description: e.target.value }))} rows={2} className={`${inner} resize-none`} />
+							</Field>
+						</li>
+					))}
+				</ul>
+				<button type="button" onClick={() => setItems([...data.items, { year: "", title: "", description: "" }])} className={`${BTN_QUIET} mt-4`}>
+					<Plus size={16} aria-hidden /> Add milestone
+				</button>
 
-			<div className="mt-8 mb-2 flex items-center gap-3">
-				<span className="h-px w-5 bg-accent-500/60" />
-				<span className="type-label text-white/75">
-					Entries
-				</span>
-			</div>
-			<div className="space-y-px">
-				{data.items.map((it, i) => (
-					<div
-						key={i}
-						className="relative border border-white/10 bg-white/2 p-6"
-					>
-						<div className="absolute right-5 top-5">
-							<RemoveBtn onClick={() => setItems(data.items.filter((_, j) => j !== i))} />
-						</div>
-						<div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-							<label className="flex flex-col gap-1.5">
-								<span className={labelCls}>Year</span>
-								<input
-									value={it.year}
-									onChange={(e) =>
-										setItems(
-											data.items.map((x, j) =>
-												j === i ? { ...x, year: e.target.value } : x,
-											),
-										)
-									}
-									className={inputCls}
-								/>
-							</label>
-							<label className="flex flex-col gap-1.5 sm:col-span-2">
-								<span className={labelCls}>Title</span>
-								<input
-									value={it.title}
-									onChange={(e) =>
-										setItems(
-											data.items.map((x, j) =>
-												j === i ? { ...x, title: e.target.value } : x,
-											),
-										)
-									}
-									className={inputCls}
-								/>
-							</label>
-						</div>
-						<label className="mt-5 flex flex-col gap-1.5">
-							<span className={labelCls}>Description</span>
-							<textarea
-								value={it.description}
-								onChange={(e) =>
-									setItems(
-										data.items.map((x, j) =>
-											j === i ? { ...x, description: e.target.value } : x,
-										),
-									)
-								}
-								rows={2}
-								className={`${inputCls} resize-none`}
-							/>
-						</label>
-					</div>
-				))}
-			</div>
-			<button
-				type="button"
-				onClick={() =>
-					setItems([...data.items, { year: "", title: "", description: "" }])
-				}
-				className={`${ghostBtnCls} mt-5`}
-			>
-				<Plus size={13} /> Add milestone
-			</button>
-
-			<SaveRow pending={pending} state={state} label="Save milestones" />
+				<SaveRow pending={pending} state={state} label="Save milestones" />
+			</Panel>
 		</form>
 	);
 }
@@ -311,116 +145,52 @@ export function AboutTimelineForm({
 /* ---------------- Certifications ---------------- */
 
 export function AboutCertsForm({ section }: { section: AboutCertsSection }) {
-	const [state, action, pending] = useActionState(
-		saveAboutCerts,
-		{} as AboutState,
-	);
+	const [state, action, pending] = useActionState(saveAboutCerts, {} as AboutState);
 	const [data, setData] = useState<AboutCertsSection>(section);
 	useSavedRefresh(state);
-
 	const setSpecs = (specs: CertSpec[]) => setData((p) => ({ ...p, specs }));
+	const inner = FIELD.replace("bg-background", "bg-surface");
 
 	return (
-		<form
-			action={action}
-			className="border border-white/10 bg-white/2 p-8"
-		>
+		<form action={action}>
 			<input type="hidden" name="payload" value={JSON.stringify(data)} />
-			<Eyebrow>Certifications</Eyebrow>
+			<Panel title="Certifications">
+				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+					<Field label="Heading">
+						<input value={data.heading} onChange={(e) => setData((p) => ({ ...p, heading: e.target.value }))} className={FIELD} />
+					</Field>
+					<Field label="Highlighted ending" hint="Shown in the brand blue under the heading.">
+						<input value={data.headingAccent} onChange={(e) => setData((p) => ({ ...p, headingAccent: e.target.value }))} className={FIELD} />
+					</Field>
+				</div>
 
-			<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Eyebrow</span>
-					<input
-						value={data.eyebrow}
-						onChange={(e) => setData((p) => ({ ...p, eyebrow: e.target.value }))}
-						className={inputCls}
-					/>
-				</label>
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Heading</span>
-					<input
-						value={data.heading}
-						onChange={(e) => setData((p) => ({ ...p, heading: e.target.value }))}
-						className={inputCls}
-					/>
-				</label>
-				<label className="flex flex-col gap-1.5">
-					<span className={labelCls}>Heading accent</span>
-					<input
-						value={data.headingAccent}
-						onChange={(e) =>
-							setData((p) => ({ ...p, headingAccent: e.target.value }))
-						}
-						className={inputCls}
-					/>
-				</label>
-			</div>
+				<Field label="Text beside the heading" className="mt-6">
+					<textarea value={data.body} onChange={(e) => setData((p) => ({ ...p, body: e.target.value }))} rows={3} className={`${FIELD} resize-none`} />
+				</Field>
 
-			<label className="mt-6 flex flex-col gap-1.5">
-				<span className={labelCls}>Body</span>
-				<textarea
-					value={data.body}
-					onChange={(e) => setData((p) => ({ ...p, body: e.target.value }))}
-					rows={3}
-					className={`${inputCls} resize-none`}
-				/>
-			</label>
+				<ul className="mt-8 space-y-4">
+					{data.specs.map((sp, i) => (
+						<li key={i} className="flex items-start gap-3 rounded-lg bg-background p-4">
+							<div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
+								<Field label="Standard">
+									<input value={sp.title} onChange={(e) => setSpecs(edit(data.specs, i, { title: e.target.value }))} className={inner} />
+								</Field>
+								<Field label="Detail">
+									<input value={sp.detail} onChange={(e) => setSpecs(edit(data.specs, i, { detail: e.target.value }))} className={inner} />
+								</Field>
+							</div>
+							<div className="mt-7">
+								<Remove what={sp.title || "standard"} onClick={() => setSpecs(data.specs.filter((_, j) => j !== i))} />
+							</div>
+						</li>
+					))}
+				</ul>
+				<button type="button" onClick={() => setSpecs([...data.specs, { title: "", detail: "" }])} className={`${BTN_QUIET} mt-4`}>
+					<Plus size={16} aria-hidden /> Add standard
+				</button>
 
-			<div className="mt-8 mb-2 flex items-center gap-3">
-				<span className="h-px w-5 bg-accent-500/60" />
-				<span className="type-label text-white/75">
-					Spec tiles
-				</span>
-			</div>
-			<div className="divide-y divide-white/10">
-				{data.specs.map((sp, i) => (
-					<div key={i} className="flex items-start gap-4 py-4">
-						<div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
-							<label className="flex flex-col gap-1">
-								<span className={labelCls}>Title</span>
-								<input
-									value={sp.title}
-									onChange={(e) =>
-										setSpecs(
-											data.specs.map((x, j) =>
-												j === i ? { ...x, title: e.target.value } : x,
-											),
-										)
-									}
-									className={inputCls}
-								/>
-							</label>
-							<label className="flex flex-col gap-1">
-								<span className={labelCls}>Detail</span>
-								<input
-									value={sp.detail}
-									onChange={(e) =>
-										setSpecs(
-											data.specs.map((x, j) =>
-												j === i ? { ...x, detail: e.target.value } : x,
-											),
-										)
-									}
-									className={inputCls}
-								/>
-							</label>
-						</div>
-						<div className="mt-5">
-							<RemoveBtn onClick={() => setSpecs(data.specs.filter((_, j) => j !== i))} />
-						</div>
-					</div>
-				))}
-			</div>
-			<button
-				type="button"
-				onClick={() => setSpecs([...data.specs, { title: "", detail: "" }])}
-				className={`${ghostBtnCls} mt-5`}
-			>
-				<Plus size={13} /> Add spec tile
-			</button>
-
-			<SaveRow pending={pending} state={state} label="Save certifications" />
+				<SaveRow pending={pending} state={state} label="Save certifications" />
+			</Panel>
 		</form>
 	);
 }

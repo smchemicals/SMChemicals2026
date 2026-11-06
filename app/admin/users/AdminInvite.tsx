@@ -1,19 +1,20 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createUser, type CreateUserState } from "./actions";
 import type { RoleRow } from "@/lib/cms/roles";
+import { FIELD_IN_PANEL, LABEL, BTN, SaveResult } from "@/components/admin/ui";
+import { Select } from "@/components/ui/select";
 
 const initial: CreateUserState = {};
 
-const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-3 text-white font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
-const labelCls =
-	"type-label text-white/60";
+const inputCls = FIELD_IN_PANEL;
+const labelCls = LABEL;
 
 export function AdminInvite({ roles }: { roles: RoleRow[] }) {
 	const [state, action, pending] = useActionState(createUser, initial);
 	const assignable = roles.filter((r) => r.key !== "founder");
+	const [role, setRole] = useState(assignable.find((r) => r.key === "editor")?.key ?? assignable[0]?.key ?? "");
 
 	return (
 		<form action={action} className="flex flex-col gap-6">
@@ -37,24 +38,16 @@ export function AdminInvite({ roles }: { roles: RoleRow[] }) {
 						className={inputCls}
 					/>
 				</label>
-				<label className="flex flex-col gap-2">
-					<span className={labelCls}>Role</span>
-					<select
-						name="role"
-						defaultValue="editor"
-						className={`${inputCls} cursor-pointer`}
-					>
-						{assignable.map((r) => (
-							<option key={r.key} value={r.key} className="bg-deep">
-								{r.label}
-							</option>
-						))}
-					</select>
-				</label>
+				<div className="flex flex-col gap-2">
+					<span className={labelCls} id="invite-role">Role</span>
+					<input type="hidden" name="role" value={role} />
+					<Select inPanel size="md" label="Role" value={role} onChange={setRole} options={assignable.map((r) => ({ value: r.key, label: r.label }))} />
+				</div>
 				<label className="flex flex-col gap-2">
 					<span className={labelCls}>Temporary password</span>
 					<input
 						type="text"
+						autoComplete="off"
 						name="password"
 						required
 						minLength={8}
@@ -64,19 +57,12 @@ export function AdminInvite({ roles }: { roles: RoleRow[] }) {
 				</label>
 			</div>
 
-			<button
-				type="submit"
-				disabled={pending}
-				className="type-label group mt-2 inline-flex w-fit cursor-pointer items-center gap-3 bg-cta px-8 py-4 text-white transition-colors hover:bg-cta-hover disabled:opacity-50"
-			>
-				{pending ? "Creating…" : "Create user"}
-				<span className="transition-transform duration-500 group-hover:translate-x-1">
-					&rarr;
-				</span>
-			</button>
-
-			{state.error && <p className="text-sm text-red-400">{state.error}</p>}
-			{state.ok && <p className="text-sm text-accent-500">{state.ok}</p>}
+			<div className="flex flex-wrap items-center gap-4">
+				<button type="submit" disabled={pending} className={BTN}>
+					{pending ? "Creating…" : "Create user"}
+				</button>
+				<SaveResult {...state} />
+			</div>
 		</form>
 	);
 }

@@ -1,14 +1,14 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
-import type { ContactContent } from "@/data/content";
+import { mapsLink, type ContactContent } from "@/data/content";
 import { PageHero } from "@/components/ui/page-hero";
 import { Button } from "@/components/ui/button";
 import { openInquiry } from "@/lib/inquiry";
 import { useOpenStatus } from "@/hooks/use-open-status";
 
 /* Large contact link; its arrow swaps corner-to-corner on hover. */
-function BigLink({ href, children, external }: { href: string; children: string; external?: boolean }) {
+function BigLink({ href, children, external }: { href: string; children: React.ReactNode; external?: boolean }) {
 	return (
 		<a
 			href={href}
@@ -40,8 +40,10 @@ export function ContactHero({ contact }: { contact: ContactContent }) {
 			<div className="group/l flex flex-col gap-3">
 				<BigLink href={`mailto:${contact.email}`}>{contact.email}</BigLink>
 				<BigLink href={`tel:${contact.phone.replace(/\s+/g, "")}`}>{contact.phone}</BigLink>
-				<BigLink href={contact.mapsUrl} external>
-					{contact.addressLines[contact.addressLines.length - 1] ?? "View on Google Maps"}
+				<BigLink href={mapsLink(contact)} external>
+					{contact.addressLines.map((l, i) => (
+						<span key={i} className="block">{l}</span>
+					))}
 				</BigLink>
 				{/* Opening hours, with whether the office is open right now (India time). */}
 				<p className="mt-2 text-base leading-[1.5] text-foreground/70">

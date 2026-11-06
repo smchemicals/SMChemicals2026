@@ -12,9 +12,8 @@ export function supabaseConfigured() {
 	);
 }
 
-/* Categories badged "Popular" before the flag lived in the database. Used
-   for the static fallback and for published snapshots taken before the
-   `popular` column existed (supabase/migrations/0009_category_popular.sql). */
+/* Categories badged "Popular" in the built-in list, used when there is no database yet or a published
+   snapshot has no Popular flags at all. */
 const DEFAULT_POPULAR = new Set(["water-boiler", "ro", "etp", "cooling"]);
 
 export function withPopularDefaults(
@@ -31,26 +30,17 @@ export async function getCatalog(): Promise<ProductCategory[]> {
 	if (!supabaseConfigured()) return withPopularDefaults(productCategories);
 	try {
 		const supabase = await createClient();
-		const categoriesQuery = (columns: string) =>
+		const [catsRes, { data: prods }] = await Promise.all([
 			supabase
 				.from("product_categories")
-				.select(columns)
-				.order("sort_order", { ascending: true });
-
-		const [catsRes, { data: prods }] = await Promise.all([
-			categoriesQuery("id, name, blurb, sort_order, popular"),
+				.select("id, name, blurb, sort_order, popular")
+				.order("sort_order", { ascending: true }),
 			supabase
 				.from("products")
 				.select("id, category_id, name, description, spec, image_url, sort_order")
 				.order("sort_order", { ascending: true }),
 		]);
-		// Before migration 0009 the `popular` column doesn't exist; read the
-		// catalog without it rather than losing it.
-		let cats = catsRes.data as Record<string, unknown>[] | null;
-		if (catsRes.error)
-			cats = (await categoriesQuery("id, name, blurb, sort_order")).data as
-				| Record<string, unknown>[]
-				| null;
+		const cats = catsRes.data as Record<string, unknown>[] | null;
 
 		if (!cats || cats.length === 0) return withPopularDefaults(productCategories);
 

@@ -11,13 +11,11 @@ import {
 	setRolePermissions,
 	type RoleState,
 } from "./role-actions";
+import { FIELD_IN_PANEL, LABEL, BTN, Status, SaveResult } from "@/components/admin/ui";
 
-const inputCls =
-	"w-full border-b border-white/15 bg-transparent py-2.5 text-white text-sm font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
-const labelCls =
-	"type-label text-white/60";
-const btnCls =
-	"type-label inline-flex items-center gap-2 bg-cta px-6 py-3 text-white transition-colors hover:bg-cta-hover disabled:opacity-50 cursor-pointer";
+const inputCls = FIELD_IN_PANEL;
+const labelCls = LABEL;
+const btnCls = BTN;
 
 function RoleCard({
 	role,
@@ -38,18 +36,11 @@ function RoleCard({
 		);
 
 	return (
-		<div className="border border-white/10 bg-white/2 p-6">
+		<div className="rounded-xl bg-background p-5 md:p-6">
 			<div className="mb-5 flex items-center justify-between gap-4">
 				<div className="flex items-center gap-3">
-					<span className="text-white text-lg font-bold tracking-tight">
-						{role.label}
-					</span>
-					<span className="text-white/50 text-xs font-light">/{role.key}</span>
-					{role.is_system && (
-						<span className="type-label border border-white/15 px-2 py-0.5 text-white/60">
-							Built-in
-						</span>
-					)}
+					<span className="font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">{role.label}</span>
+					{role.is_system && <Status tone="info">Built-in</Status>}
 				</div>
 				{!role.is_system && (
 					<button
@@ -66,16 +57,16 @@ function RoleCard({
 								router.refresh();
 							});
 						}}
-						className="text-white/60 transition-colors hover:text-red-400 disabled:opacity-50 cursor-pointer"
-						aria-label="Delete role"
+						className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted outline-none transition-colors hover:text-danger-ink focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50"
+						aria-label={`Delete the ${role.label} role`}
 					>
-						<Trash2 size={15} />
+						<Trash2 size={18} aria-hidden />
 					</button>
 				)}
 			</div>
 
 			{isFounder ? (
-				<p className="text-white/60 text-xs font-light">
+				<p className="text-base text-muted">
 					Founder always has full access to every section.
 				</p>
 			) : (
@@ -84,17 +75,15 @@ function RoleCard({
 						{SECTIONS.map((s) => (
 							<label
 								key={s.key}
-								className="flex cursor-pointer items-center gap-2"
+								className="flex cursor-pointer items-center gap-3 py-1"
 							>
 								<input
 									type="checkbox"
 									checked={sel.includes(s.key)}
 									onChange={() => toggle(s.key)}
-									className="h-4 w-4 accent-accent-500 cursor-pointer"
+									className="h-5 w-5 cursor-pointer accent-[var(--color-accent)]"
 								/>
-								<span className="text-white/70 text-xs font-light">
-									{s.label}
-								</span>
+								<span className="text-base text-foreground">{s.label}</span>
 							</label>
 						))}
 					</div>
@@ -117,15 +106,7 @@ function RoleCard({
 						>
 							{pending ? "Saving…" : "Save permissions"}
 						</button>
-						{msg && (
-							<span
-								className={`text-xs font-light ${
-									msg.error ? "text-red-400" : "text-accent-500"
-								}`}
-							>
-								{msg.text}
-							</span>
-						)}
+						{msg && <Status tone={msg.error ? "danger" : "ok"}>{msg.text}</Status>}
 					</div>
 				</>
 			)}
@@ -157,14 +138,9 @@ export function RolesManager({
 
 			<form
 				action={action}
-				className="border border-white/10 bg-white/2 p-6"
+				className="rounded-xl bg-background p-5 md:p-6"
 			>
-				<div className="mb-4 flex items-center gap-3">
-					<span className="h-px w-5 bg-accent-500/60" />
-					<span className="type-label text-white/75">
-						New role
-					</span>
-				</div>
+				<h3 className="mb-4 font-heading text-lg font-semibold tracking-[-0.02em] text-foreground">New role</h3>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<label className="flex flex-col gap-1.5">
 						<span className={labelCls}>Role name</span>
@@ -177,12 +153,9 @@ export function RolesManager({
 				</div>
 				<div className="mt-6 flex items-center gap-4">
 					<button type="submit" disabled={pending} className={btnCls}>
-						<Plus size={13} /> {pending ? "Creating…" : "Create role"}
+						<Plus size={16} aria-hidden /> {pending ? "Creating…" : "Create role"}
 					</button>
-					{state.error && (
-						<span className="text-red-400 text-xs">{state.error}</span>
-					)}
-					{state.ok && <span className="text-accent-500 text-xs">{state.ok}</span>}
+					<SaveResult {...state} />
 				</div>
 			</form>
 		</div>

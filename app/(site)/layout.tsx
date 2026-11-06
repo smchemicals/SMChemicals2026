@@ -78,9 +78,9 @@ export default async function SiteLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="flex min-h-dvh flex-col">
-        <Header phone={contact.phone} email={contact.email} hours={contact.hours} />
+        <Header phone={contact.phone} email={contact.email} hours={contact.hours} addressLines={contact.addressLines} />
         <main className="flex flex-1 flex-col">{children}</main>
-        <Footer phone={contact.phone} email={contact.email} />
+        <Footer phone={contact.phone} email={contact.email} addressLines={contact.addressLines} />
       </div>
       {isDraft && <PreviewBanner />}
     </SmoothScroll>

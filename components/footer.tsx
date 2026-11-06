@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { SITE } from "@/lib/site";
+import { defaultContact } from "@/data/content";
 import { Button } from "@/components/ui/button";
 import { openInquiry } from "@/lib/inquiry";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -34,9 +35,11 @@ const columns = [
 export function Footer({
   phone = "+91 98765 43210",
   email = "info@smchemicals.co.in",
+  addressLines = defaultContact.addressLines,
 }: {
   phone?: string;
   email?: string;
+  addressLines?: string[];
 }) {
   const year = new Date().getFullYear();
   // On the homepage the footer is the closing moment: the "Let's talk" call to action and the
@@ -84,7 +87,9 @@ export function Footer({
               {phone}
             </a>
             <address className={`mt-8 text-base not-italic leading-relaxed ${muted}`}>
-              {SITE.location}, Telangana, India
+              {addressLines.map((l, i) => (
+                <span key={i} className="block">{l}</span>
+              ))}
             </address>
           </div>
 

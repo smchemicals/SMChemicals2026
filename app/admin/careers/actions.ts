@@ -74,7 +74,6 @@ export async function saveCareers(
 		})
 		.filter((o) => o.title);
 
-	if (!intro.heading) return { error: "Intro heading is required." };
 	if (!intro.body) return { error: "Intro body is required." };
 
 	const content: CareersContent = { intro, openings };

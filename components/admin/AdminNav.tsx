@@ -75,7 +75,7 @@ export function AdminSidebar({ permissions }: { permissions: string[] }) {
 			{groups.map((g) => (
 				<div key={g.title ?? "main"}>
 					{g.title && (
-						<p className="type-label mb-2 px-3 text-white/45">{g.title}</p>
+						<p className="mb-2 px-3 text-sm font-medium text-muted/80">{g.title}</p>
 					)}
 					<ul className="space-y-0.5">
 						{g.links.map(({ href, label, icon: Icon }) => {
@@ -85,20 +85,12 @@ export function AdminSidebar({ permissions }: { permissions: string[] }) {
 									<Link
 										href={href}
 										aria-current={on ? "page" : undefined}
-										className={`group relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-											on
-												? "bg-white/[0.07] text-white"
-												: "text-white/65 hover:bg-white/4 hover:text-white"
+										className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.9375rem] transition-colors ${
+											on ? "bg-foreground/8 text-foreground" : "text-muted hover:bg-foreground/5 hover:text-foreground"
 										}`}
 									>
-										<span
-											aria-hidden
-											className={`absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-accent-500 transition-opacity ${
-												on ? "opacity-100" : "opacity-0"
-											}`}
-										/>
 										<Icon
-											className={`h-4 w-4 shrink-0 ${on ? "text-accent-500" : "text-white/45 group-hover:text-white/80"}`}
+											className={`h-4 w-4 shrink-0 ${on ? "text-accent-ink" : "text-muted group-hover:text-foreground"}`}
 										/>
 										{label}
 									</Link>
@@ -129,13 +121,11 @@ export function AdminNav({ permissions }: { permissions: string[] }) {
 						key={href}
 						href={href}
 						aria-current={on ? "page" : undefined}
-						className={`flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors ${
-							on
-								? "bg-white/[0.07] text-white"
-								: "text-white/65 hover:text-white"
+						className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+							on ? "bg-foreground/8 text-foreground" : "text-muted hover:text-foreground"
 						}`}
 					>
-						<Icon className={`h-3.5 w-3.5 ${on ? "text-accent-500" : "text-white/45"}`} />
+						<Icon className={`h-3.5 w-3.5 ${on ? "text-accent-ink" : "text-muted"}`} />
 						{label}
 					</Link>
 				);

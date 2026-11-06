@@ -4,6 +4,11 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { login } from "./actions";
 import AuthOverlay from "@/components/admin/AuthOverlay";
+import { BTN, Field, Notice } from "@/components/admin/ui";
+
+// On the page itself the field is the surface colour.
+const FIELD =
+	"w-full rounded-lg bg-surface px-4 py-3 text-[0.9375rem] text-foreground outline-none ring-2 ring-transparent transition-shadow placeholder:text-muted/70 hover:ring-foreground/15 focus:ring-accent";
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
@@ -42,7 +47,7 @@ export default function AdminLoginPage() {
 			if (widgetId.current) return;
 			widgetId.current = window.turnstile.render(boxRef.current, {
 				sitekey: SITE_KEY,
-				theme: "dark",
+				theme: document.documentElement.dataset.theme === "light" ? "light" : "dark",
 				callback: (t: string) => setToken(t),
 				"error-callback": () => setToken(""),
 				"expired-callback": () => setToken(""),
@@ -82,85 +87,32 @@ export default function AdminLoginPage() {
 		}
 	}, [state]);
 
-	const inputCls =
-		"w-full border-b border-white/15 bg-transparent py-3 text-white text-xl font-light outline-none transition-colors placeholder:text-white/40 focus:border-accent-500";
-
 	return (
-		<div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-deep px-6 selection:bg-accent-500 selection:text-black">
-			<div
-				className="pointer-events-none absolute inset-0 opacity-[0.06]"
-				style={{
-					backgroundImage:
-						"radial-gradient(circle at center, var(--color-accent) 1px, transparent 1px)",
-					backgroundSize: "34px 34px",
-				}}
-			/>
+		<div className="flex min-h-dvh items-center justify-center bg-background px-6 py-16 selection:bg-accent selection:text-background">
 			<AuthOverlay show={pending} label="Signing you in" />
 			{SITE_KEY && (
-				<Script
-					src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-					strategy="afterInteractive"
-				/>
+				<Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" />
 			)}
-			<div className="relative z-10 w-full max-w-sm">
-				<div className="mb-4 flex items-center gap-3">
-					<span className="h-px w-6 bg-accent-500" />
-					<span className="type-label text-accent-500">
-						SM Chemicals
-					</span>
-				</div>
-				<h1 className="mb-10 text-white text-4xl md:text-5xl font-bold tracking-tighter leading-[0.9]">
-					Chemicals <span className="text-white/45 font-light">CMS.</span>
-				</h1>
+			<div className="w-full max-w-sm">
+				<h1 className="mb-2 font-heading text-5xl font-semibold leading-none tracking-[-0.04em] text-foreground">Sign in</h1>
+				<p className="mb-10 text-base text-muted">SM Chemicals team</p>
 
 				<form action={formAction} className="flex flex-col gap-6">
 					<input type="hidden" name="next" value={next} />
-					{SITE_KEY && (
-						<input type="hidden" name="cf-turnstile-response" value={token} />
-					)}
-					<label className="flex flex-col gap-2">
-						<span className="type-label text-white/60">
-							Email
-						</span>
-						<input
-							type="email"
-							name="email"
-							required
-							autoFocus
-							autoComplete="username"
-							placeholder="you@smchemicals.co.in"
-							className={inputCls}
-						/>
-					</label>
-					<label className="flex flex-col gap-2">
-						<span className="type-label text-white/60">
-							Password
-						</span>
-						<input
-							type="password"
-							name="password"
-							required
-							autoComplete="current-password"
-							placeholder="••••••••"
-							className={inputCls}
-						/>
-					</label>
+					{SITE_KEY && <input type="hidden" name="cf-turnstile-response" value={token} />}
+					<Field label="Email">
+						<input type="email" name="email" required autoFocus autoComplete="username" placeholder="you@smchemicals.co.in" className={FIELD} />
+					</Field>
+					<Field label="Password">
+						<input type="password" name="password" required autoComplete="current-password" className={FIELD} />
+					</Field>
 
 					{SITE_KEY && <div ref={boxRef} className="min-h-16.25" />}
 
-					<button
-						type="submit"
-						disabled={pending}
-						className="type-label group mt-2 inline-flex w-fit cursor-pointer items-center gap-3 bg-cta px-9 py-4 text-white transition-colors hover:bg-cta-hover disabled:opacity-50"
-					>
+					<button type="submit" disabled={pending} className={`${BTN} h-12 w-full`}>
 						{pending ? "Signing in…" : "Sign in"}
-						<span className="transition-transform duration-500 group-hover:translate-x-1">
-							&rarr;
-						</span>
 					</button>
-					{state.error && (
-						<p className="text-sm text-accent-500">{state.error}</p>
-					)}
+					{state.error && <Notice tone="danger">{state.error}</Notice>}
 				</form>
 			</div>
 		</div>

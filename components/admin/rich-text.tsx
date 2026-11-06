@@ -54,10 +54,8 @@ function Btn({
 			disabled={disabled}
 			aria-label={label}
 			title={label}
-			className={`flex h-8 w-8 items-center justify-center rounded-sm transition-colors disabled:opacity-30 cursor-pointer ${
-				active
-					? "bg-cta text-white"
-					: "text-white/75 hover:bg-white/10 hover:text-white"
+			className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-default disabled:opacity-30 ${
+				active ? "bg-foreground text-background" : "text-muted hover:bg-foreground/10 hover:text-foreground"
 			}`}
 		>
 			{children}
@@ -66,7 +64,7 @@ function Btn({
 }
 
 function Divider() {
-	return <span className="mx-1 h-5 w-px bg-white/10" />;
+	return <span aria-hidden className="mx-1 h-5 w-px bg-foreground/15" />;
 }
 
 function Toolbar({ editor }: { editor: Editor }) {
@@ -100,7 +98,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 	const inTable = editor.isActive("table");
 
 	return (
-		<div className="border-b border-white/10 bg-white/2">
+		<div className="border-b border-foreground/10">
 			<div className="flex flex-wrap items-center gap-1 p-2">
 				<Btn label="Bold" on={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
 					<Bold size={15} />
@@ -192,8 +190,8 @@ function Toolbar({ editor }: { editor: Editor }) {
 			</div>
 
 			{inTable && (
-				<div className="type-label flex flex-wrap items-center gap-2 border-t border-white/10 px-2 py-1.5">
-					<span className="text-white/50">Table</span>
+				<div className="flex flex-wrap items-center gap-2 border-t border-foreground/10 px-2 py-2 text-sm font-medium">
+					<span className="text-muted">Table</span>
 					{[
 						{ l: "+ Row", f: () => editor.chain().focus().addRowAfter().run() },
 						{ l: "+ Col", f: () => editor.chain().focus().addColumnAfter().run() },
@@ -207,7 +205,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 							type="button"
 							onMouseDown={(e) => e.preventDefault()}
 							onClick={b.f}
-							className="rounded-sm px-2 py-1 text-white/70 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
+							className="cursor-pointer rounded-md px-2.5 py-1.5 text-muted outline-none transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent"
 						>
 							{b.l}
 						</button>
@@ -241,33 +239,33 @@ export function RichText({
 		editorProps: {
 			attributes: {
 				class:
-					"min-h-[280px] outline-none px-4 py-4 text-white/90 text-sm font-light leading-relaxed " +
-					"[&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-white " +
-					"[&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-white " +
-					"[&_h3]:mt-3 [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-white " +
-					"[&_p]:mb-3 [&_strong]:font-bold [&_strong]:text-white [&_em]:italic " +
-					"[&_u]:underline [&_s]:line-through [&_s]:text-white/75 " +
-					"[&_mark]:rounded [&_mark]:bg-accent-500/30 [&_mark]:px-0.5 [&_mark]:text-white " +
-					"[&_a]:text-accent-500 [&_a]:underline " +
-					"[&_code]:rounded [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.85em] " +
-					"[&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-black/40 [&_pre]:p-3 [&_pre]:font-mono [&_pre]:text-xs [&_pre_code]:bg-transparent [&_pre_code]:p-0 " +
-					"[&_hr]:my-4 [&_hr]:border-white/15 " +
+					"min-h-[280px] px-5 py-5 text-[0.9375rem] leading-relaxed text-foreground outline-none " +
+					"[&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:text-2xl [&_h1]:font-heading [&_h1]:font-semibold [&_h1]:text-foreground " +
+					"[&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-heading [&_h2]:font-semibold [&_h2]:text-foreground " +
+					"[&_h3]:mt-3 [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-heading [&_h3]:font-semibold [&_h3]:text-foreground " +
+					"[&_p]:mb-3 [&_strong]:font-semibold [&_em]:italic " +
+					"[&_u]:underline [&_s]:line-through [&_s]:text-muted " +
+					"[&_mark]:rounded [&_mark]:bg-accent/30 [&_mark]:px-0.5 [&_mark]:text-foreground " +
+					"[&_a]:text-accent-ink [&_a]:underline " +
+					"[&_code]:rounded [&_code]:bg-foreground/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.85em] " +
+					"[&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-background [&_pre]:p-3 [&_pre]:font-mono [&_pre]:text-xs [&_pre_code]:bg-transparent [&_pre_code]:p-0 " +
+					"[&_hr]:my-4 [&_hr]:border-line " +
 					"[&_img]:my-3 [&_img]:max-w-full [&_img]:rounded " +
 					"[&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1 " +
-					"[&_blockquote]:border-l-2 [&_blockquote]:border-accent-500 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-white/70 " +
-					"[&_table]:my-4 [&_table]:w-full [&_table]:border-collapse [&_th]:border [&_th]:border-white/20 [&_th]:bg-white/5 [&_th]:p-2 [&_th]:text-left [&_td]:border [&_td]:border-white/15 [&_td]:p-2",
+					"[&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:text-muted " +
+					"[&_table]:my-4 [&_table]:w-full [&_table]:border-collapse [&_th]:border [&_th]:border-line [&_th]:bg-foreground/5 [&_th]:p-2 [&_th]:text-left [&_td]:border [&_td]:border-line [&_td]:p-2",
 			},
 		},
 	});
 
 	if (!editor) {
 		return (
-			<div className="min-h-80 rounded-sm border border-white/15 bg-transparent" />
+			<div className="min-h-80 rounded-lg bg-surface" />
 		);
 	}
 
 	return (
-		<div className="overflow-hidden rounded-sm border border-white/15 focus-within:border-accent-500 transition-colors">
+		<div className="overflow-hidden rounded-lg bg-surface ring-2 ring-transparent transition-shadow focus-within:ring-accent">
 			<Toolbar editor={editor} />
 			<EditorContent editor={editor} />
 		</div>
