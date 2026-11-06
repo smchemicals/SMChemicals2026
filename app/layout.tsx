@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Sora, Instrument_Serif } from 'next/font/google'
 import { SiteAnalytics } from '@/components/site-analytics'
+import { ThemeKeeper } from '@/components/theme-keeper'
 import './globals.css'
 import { SITE } from '@/lib/site'
 
@@ -77,7 +78,8 @@ export default function RootLayout({
           <style>{`html.deep-link main > *,html.deep-link #catalogue > *,html.deep-link footer{visibility:visible!important}`}</style>
         </noscript>
       </head>
-      <body className="font-sans antialiased">
+      <body suppressHydrationWarning className="font-sans antialiased">
+        <ThemeKeeper />
         {children}
         <SiteAnalytics />
       </body>
