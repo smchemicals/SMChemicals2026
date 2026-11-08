@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { remember } from "@/lib/storage";
 
 type Theme = "light" | "dark";
@@ -39,6 +40,11 @@ function blobMask(): string {
  */
 export function ThemeToggle({ className = "" }: { className?: string }) {
 	const [theme, setTheme] = useState<Theme | null>(null);
+	// For a moment after a switch the label says what is now on ("Light theme on"), so the change is plain to see even where
+	// nothing around the toggle changes colour (the home page's footer is the brand blue in both themes).
+	const [flash, setFlash] = useState<Theme | null>(null);
+	const swatch = useRef<HTMLSpanElement>(null);
+	const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	useEffect(() => {
 		const read = () => setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
@@ -53,6 +59,19 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 		document.documentElement.classList.add("theme-switching");
 		document.documentElement.dataset.theme = next;
 		remember("smc:theme", next);
+		// Rendered now, not later, so the new label is part of what the reveal shows.
+		flushSync(() => {
+			setTheme(next);
+			setFlash(next);
+		});
+		// The little half-and-half dial turns to its new side. (An animation, not a transition: transitions are held off while
+		// the theme switches.)
+		swatch.current?.animate(
+			[{ transform: `rotate(${next === "dark" ? 0 : 180}deg) scale(1)` }, { transform: `rotate(${next === "dark" ? 180 : 360}deg) scale(1)` }],
+			{ duration: 1100, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
+		);
+		clearTimeout(timer.current);
+		timer.current = setTimeout(() => setFlash(null), 2600);
 		window.dispatchEvent(new Event("smc:theme"));
 		window.dispatchEvent(new Event("smc:close-menu"));
 	};
@@ -91,14 +110,43 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 		vt.finished.finally(settle);
 	};
 
+	useEffect(() => () => clearTimeout(timer.current), []);
+
+	const other: Theme = theme === "dark" ? "light" : "dark";
+	const showing = flash ? `on-${flash}` : `to-${other}`;
+
 	return (
-		<button
-			type="button"
-			onClick={flip}
-			aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-			className={`cursor-pointer outline-none transition-colors duration-300 focus-visible:text-accent-ink ${className}`}
-		>
-			{theme === null ? " " : theme === "dark" ? "Switch to light" : "Switch to dark"}
-		</button>
+		<>
+			<button
+				type="button"
+				onClick={flip}
+				aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+				className={`inline-flex cursor-pointer items-center gap-2.5 outline-none transition-colors duration-300 focus-visible:text-accent-ink ${className}`}
+			>
+				{theme !== null && (
+					<span
+						ref={swatch}
+						aria-hidden
+						className="relative block h-[0.95em] w-[0.95em] shrink-0 overflow-hidden rounded-full ring-[1.5px] ring-current"
+						style={{ transform: `rotate(${theme === "dark" ? 180 : 0}deg)` }}
+					>
+						<span className="absolute inset-y-0 left-0 w-1/2 bg-current" />
+					</span>
+				)}
+				{/* Both words sit in one cell, so the button never changes size; the one that applies is the one you see. */}
+				<span aria-hidden className="grid">
+					{theme === null
+						? " "
+						: [`to-light`, `to-dark`, `on-light`, `on-dark`].map((key) => (
+								<span key={key} className={`col-start-1 row-start-1 whitespace-nowrap transition-opacity duration-500 ${showing === key ? "opacity-100" : "opacity-0"}`}>
+									{key === "to-light" ? "Switch to light" : key === "to-dark" ? "Switch to dark" : key === "on-light" ? "Light theme on" : "Dark theme on"}
+								</span>
+							))}
+				</span>
+			</button>
+			<span role="status" aria-live="polite" className="sr-only">
+				{flash ? `${flash === "dark" ? "Dark" : "Light"} theme on` : ""}
+			</span>
+		</>
 	);
 }

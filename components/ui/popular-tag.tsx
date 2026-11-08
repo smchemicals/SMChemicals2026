@@ -13,6 +13,10 @@ import { fontReady } from "@/lib/ink-word";
  */
 const WORDS = ["Popular"];
 
+// The canvas is created before it has been sized (it is sized when the tag first changes), and a canvas with no size is 300 by
+// 150 pixels. Hidden or not, that box sticks out to the right of a tag near the screen edge and makes the whole page scroll
+// sideways on a phone, which also throws the fixed header off the screen. So it starts at no size at all.
+
 export function PopularTag({ className }: { className?: string }) {
 	const root = useRef<HTMLSpanElement>(null);
 	const canvas = useRef<HTMLCanvasElement>(null);
@@ -46,7 +50,7 @@ export function PopularTag({ className }: { className?: string }) {
 						{i === 0 && <i data-base aria-hidden className="inline-block h-0 w-0 align-baseline" />}
 					</span>
 				))}
-				<canvas ref={canvas} aria-hidden className="pointer-events-none absolute" style={{ visibility: "hidden" }} />
+				<canvas ref={canvas} aria-hidden className="pointer-events-none absolute" style={{ visibility: "hidden", width: 0, height: 0 }} />
 			</span>
 		</span>
 	);

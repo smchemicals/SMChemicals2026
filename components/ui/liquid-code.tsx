@@ -148,7 +148,7 @@ export function LiquidCode({ text, className = "" }: { text: string; className?:
 				{text}
 				<i data-base aria-hidden className="inline-block h-0 w-0 align-baseline" />
 			</span>
-			<canvas ref={canvas} aria-hidden className="pointer-events-none absolute" style={{ visibility: "hidden" }} />
+			<canvas ref={canvas} aria-hidden className="pointer-events-none absolute" style={{ visibility: "hidden", width: 0, height: 0 }} />
 		</span>
 	);
 }

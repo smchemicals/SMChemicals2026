@@ -266,6 +266,9 @@
   html {
     scroll-behavior: smooth;
     color-scheme: light;
+    /* A safety net: nothing may make the page scroll sideways. On a phone a single stray box wider than the screen widens the
+       whole page, which shifts the fixed header and the menu off the side. "clip" (unlike "hidden") keeps position: sticky working. */
+    overflow-x: clip;
   }
   * {
     @apply border-border;
