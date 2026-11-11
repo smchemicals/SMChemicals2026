@@ -61,10 +61,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${sora.variable} ${instrument.variable}`}>
       <head>
-        {/* Set the theme before first paint so there is no flash: saved choice, else the system's. */}
+        {/* Set the theme before first paint so there is no flash: a saved choice, else the device's own setting (see lib/theme.ts). */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('smc:theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t}catch(e){}`,
+            __html: `try{var t=localStorage.getItem('smc:theme'),src='saved';if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';src='system'}var r=document.documentElement;r.dataset.theme=t;r.dataset.themeSource=src;r.style.colorScheme=t}catch(e){}`,
           }}
         />
         {/* A shared link to a chemical (?product=): keep the page behind it unseen until the chemical has opened, so the

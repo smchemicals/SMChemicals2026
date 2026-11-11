@@ -22,7 +22,14 @@ uniform sampler2D u_text; uniform float u_tin; uniform float u_hasText;
 uniform sampler2D u_cnt; uniform sampler2D u_cntPrev; uniform vec4 u_cbox; uniform float u_hasCnt; uniform float u_cin; uniform float u_cmix;
 uniform vec3 u_ground; uniform float u_dark; uniform float u_light; uniform float u_inv; uniform vec3 u_tint; uniform float u_useTint;
 
-float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+// A hash with no sin(). The usual one-liner, fract(sin(dot(p, k)) * 43758.5), asks sin() for huge angles, and GPUs differ a lot in
+// how well they answer: on many Windows machines (Direct3D through ANGLE) the answers are coarse, and the noise turns into
+// visible rectangles that follow the grid. This one uses only multiply, add and fract, which every GPU does exactly.
+float hash(vec2 p){
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
+}
 float noise(vec2 p){
   vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
   return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);

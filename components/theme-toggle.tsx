@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { remember } from "@/lib/storage";
+import { paintTheme } from "@/lib/theme";
 
 type Theme = "light" | "dark";
 
@@ -57,7 +58,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 		// Colours must change in one step. With the usual hover transitions running, every link and label would fade from its
 		// old colour inside the revealed area, which reads as a flicker. The class is lifted once the change has settled.
 		document.documentElement.classList.add("theme-switching");
-		document.documentElement.dataset.theme = next;
+		// From here on this is the visitor's own choice, so a later change of the device's setting no longer overrides it.
+		paintTheme(next, "user");
 		remember("smc:theme", next);
 		// Rendered now, not later, so the new label is part of what the reveal shows.
 		flushSync(() => {

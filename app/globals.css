@@ -270,6 +270,10 @@
        whole page, which shifts the fixed header and the menu off the side. "clip" (unlike "hidden") keeps position: sticky working. */
     overflow-x: clip;
   }
+  /* Scrollbars, form fields and the like are drawn by the browser; tell it which scheme the page is in. */
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
   * {
     @apply border-border;
   }
