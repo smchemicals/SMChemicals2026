@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { HASH_GLSL, bindNoise } from "@/lib/noise-table";
+import { isSoftwareRenderer } from "@/lib/gpu";
 
 const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }`;
 
@@ -17,14 +19,7 @@ precision mediump float;
 #endif
 uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse; uniform float u_light;
 
-// A hash with no sin(). The usual one-liner, fract(sin(dot(p, k)) * 43758.5), asks sin() for huge angles, and GPUs differ a lot in
-// how well they answer: on many Windows machines (Direct3D through ANGLE) the answers are coarse, and the noise turns into
-// visible rectangles that follow the grid. This one uses only multiply, add and fract, which every GPU does exactly.
-float hash(vec2 p){
-  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-  p3 += dot(p3, p3.yzx + 33.33);
-  return fract((p3.x + p3.y) * p3.z);
-}
+${HASH_GLSL}
 float noise(vec2 p){
   vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
   return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);
@@ -88,6 +83,7 @@ export function LiquidField() {
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
     gl.useProgram(prog);
+    bindNoise(gl, prog);
 
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -101,14 +97,16 @@ export function LiquidField() {
     const uMouse = gl.getUniformLocation(prog, "u_mouse");
     const uLight = gl.getUniformLocation(prog, "u_light");
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // One still frame, not an animation, for people who asked for less motion and for machines with no real GPU (see lib/gpu.ts).
+    const soft = isSoftwareRenderer(gl);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches || soft;
     const mouse = { x: 0.7, y: 0.6, tx: 0.7, ty: 0.6 };
     let raf = 0;
     let visible = true;
     let t0 = performance.now();
     // The field is soft, so it is drawn small and at 30 frames a second, and it backs off further on a slow device: if
     // frames take too long it renders at a lower resolution until they don't. It also stops while the tab is hidden.
-    let quality = 1;
+    let quality = soft ? 0.5 : 1; // a software renderer draws its one frame smaller still
     let last = 0;
     let slow = 0;
     let frames = 0;

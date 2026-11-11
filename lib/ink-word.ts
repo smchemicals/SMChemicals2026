@@ -1,3 +1,4 @@
+import { HASH_GLSL, bindNoise } from "@/lib/noise-table";
 /*
  * One word turning into another through the site's liquid. The same family of noise as the preloader, the menu and
  * the page transition: a noisy front sweeps along the word from the left; behind it the new word has soaked in,
@@ -17,14 +18,7 @@ precision mediump float;
 uniform vec2 u_res; uniform float u_time; uniform float u_t; uniform float u_w; uniform float u_amp;
 uniform sampler2D u_a; uniform sampler2D u_b; uniform vec3 u_col; uniform vec3 u_glow;
 
-// A hash with no sin(). The usual one-liner, fract(sin(dot(p, k)) * 43758.5), asks sin() for huge angles, and GPUs differ a lot in
-// how well they answer: on many Windows machines (Direct3D through ANGLE) the answers are coarse, and the noise turns into
-// visible rectangles that follow the grid. This one uses only multiply, add and fract, which every GPU does exactly.
-float hash(vec2 p){
-  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-  p3 += dot(p3, p3.yzx + 33.33);
-  return fract((p3.x + p3.y) * p3.z);
-}
+${HASH_GLSL}
 float noise(vec2 p){
   vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
   return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);
@@ -93,6 +87,7 @@ export function createWordInk(canvas: HTMLCanvasElement, opts: WordInkOptions): 
 	gl.linkProgram(prog);
 	if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return null;
 	gl.useProgram(prog);
+	bindNoise(gl, prog);
 	const buf = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, buf);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
